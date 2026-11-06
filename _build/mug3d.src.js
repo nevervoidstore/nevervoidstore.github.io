@@ -56,13 +56,13 @@ export function mount(el, url, start = 0, onSide) {
   // sweep the whole print: rot 0 = handle right (side facing a right-handed drinker), PI/2 = handle behind (centre of the print), PI = handle left (side facing the person opposite)
   const centre = Math.PI / 2, AMP = Math.PI / 2 - 0.14, PERIOD = 11000, LIMIT = Math.PI / 2 + 0.2;
   const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let rot = start ? Math.PI - 0.14 : 0.14, drag = false, lastX = 0, resumeAt = 0, phase = 0, prev = 0, visible = true, running = false, ready = false, side = -1;
+  let rot = start ? Math.PI - 0.14 : 0.14, drag = false, lastX = 0, resumeAt = 0, phase = 0, prev = 0, visible = true, running = false, ready = false, side = -1, dead = false;
   phase = start ? Math.PI / 2 : -Math.PI / 2;
   function size() { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
   function draw() { const tx = 0.8 * Math.cos(rot); cam.position.x = tx; cam.lookAt(tx, -0.2, 0); report(); mug.rotation.y = rot; sh.position.x = 0.5 * Math.cos(rot); sh.position.z = -0.5 * Math.sin(rot); renderer.render(scene, cam); }
   function report() { if (!onSide) return; const f = rot / Math.PI, k = f < 0.3 ? 0 : f > 0.7 ? 2 : 1; if (k !== side) { side = k; onSide(k); } }
   function tick(now) {
-    if (!visible || still || !ready) { running = false; return; }
+    if (dead || !visible || still || !ready) { running = false; return; }
     const dt = Math.min(64, now - (prev || now)); prev = now;
     if (!drag && now > resumeAt) {
       phase += dt / PERIOD * 2 * Math.PI;
@@ -83,5 +83,5 @@ export function mount(el, url, start = 0, onSide) {
   new IntersectionObserver(es => { visible = es[0].isIntersecting && !el.hidden; run(); }).observe(el);
   function intro() { ready = true; draw(); run(); }
   size(); draw();
-  return { set(a) { rot = a; draw(); }, get: () => rot, centre, wake() { visible = !el.hidden; run(); } };
+  return { set(a) { rot = a; draw(); }, get: () => rot, centre, destroy() { dead = true; try { renderer.dispose(); renderer.forceContextLoss(); } catch (e) {} cv.remove(); el.classList.remove('ready', 'touched'); }, wake() { visible = !el.hidden; run(); } };
 }

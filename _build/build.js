@@ -200,39 +200,66 @@ function initialsCard(root) {
 function initialsPage() {
   const items = INITIALS(), url = `${BASE}/initials/`, have = Object.fromEntries(items.map(p => [p.letter, p]));
   const lead = items[0], wa = POL.CONTACT.whatsapp;
+  const data = Object.fromEntries(items.map(p => [p.letter, { slug: p.slug, name: p.name, id: p.id, view: p.view, alt: p.alt, start: p.view === "a" ? "3.1416" : "0" }]));
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(L => have[L]
-    ? `<a class="lt ok" href="../products/${have[L].slug}.html" aria-label="Letter ${L}: view the mug">${L}</a>`
-    : `<a class="lt ask" href="https://wa.me/${wa}?text=${encodeURIComponent(`Hi Antony, do you have the Christmas initial mug with the letter ${L}?`)}" target="_blank" rel="noopener" aria-label="Letter ${L}: ask on WhatsApp">${L}</a>`).join("");
-  const desc = "Christmas mugs with a big festive initial in a Santa hat, printed on both sides. Pick a letter A to Z. Made to order, delivered across Karnataka.";
+    ? `<button type="button" class="lt ok${L === lead.letter ? " on" : ""}" data-letter="${L}" aria-pressed="${L === lead.letter}" aria-label="Letter ${L}">${L}</button>`
+    : `<button type="button" class="lt soon" disabled aria-label="Letter ${L}, coming soon" title="Coming soon">${L}</button>`).join("");
+  const desc = "Christmas mugs with a big festive initial in a Santa hat, printed on both sides. Choose your letter and order. Made to order, delivered across Karnataka.";
   const jsonld = [
     {"@context":"https://schema.org","@type":"CollectionPage","name":"Christmas Initial Mugs","url":url,"description":desc,
       "mainEntity":{"@type":"ItemList","itemListElement":items.map((p,i)=>({"@type":"ListItem","position":i+1,"url":`${BASE}/products/${p.slug}.html`,"name":p.name}))}},
     {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Christmas Initial Mugs","item":url}]}];
+  const askUrl = `https://wa.me/${wa}?text=${encodeURIComponent("Hi Antony, I'd like the Christmas initial mug with the letter ")}`;
   return `${head({title:"Christmas Initial Mugs A–Z | Personalised Letter Mugs | Nevervoid Store", desc, url, image:`${BASE}/images/share/${lead.slug}.jpg`, root:"../", jsonld})}
 <body>
 ${header("../","shop")}
 <main class="wrap">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Christmas Initial Mugs</span></nav>
-  <section class="ini-hero">
-    <div class="ini-copy">
-      <span class="eyebrow">Christmas initials</span>
-      <h1>A Christmas mug with <em>their letter</em> on it</h1>
-      <p class="lead">A big festive initial in a Santa hat, strung with fairy lights, with a snowman, gifts and holly. Printed on both sides of an 11oz ceramic mug, so the letter faces them and whoever sits opposite.</p>
-      <div class="ini-price">${SALE.on ? `<s>${rupee(lead.price)}</s> ` : ""}<b>${rupee(salePrice(lead))}</b>${SALE.on ? ` <span>${SALE.label} · ${SALE.pct}% off</span>` : ""}</div>
-      <p class="pnote">Made to order · delivered across Karnataka</p>
+  <section class="pdp ini">
+    ${galleryHtml(lead)}
+    <div>
+      <div class="tags"><span class="tag">Christmas · Initial mug</span><span class="tag new">· New</span></div>
+      <h1 id="ini-name">${esc(lead.name)}</h1>
+      ${priceHtml(lead,"pprice")}${SALE.on ? `<div class="save">You save ${rupee(lead.price - salePrice(lead))} · ${SALE.label} ends 25 Dec</div>` : ""}
+      <div class="pnote">Made to order · delivering across Karnataka</div>
+      <div class="ini-pick">
+        <div class="pick-head"><b>Choose a letter</b><span id="ini-chosen">Selected: ${lead.letter}</span></div>
+        <div class="letters" role="group" aria-label="Choose a letter">${letters}</div>
+        ${items.length < 26 ? `<p class="pick-note">Greyed-out letters are coming soon. Need one now? <a href="${askUrl}" target="_blank" rel="noopener">Ask on WhatsApp</a></p>` : ""}
+      </div>
+      <div class="share"><button type="button" class="share-btn" data-share-url="${url}" data-share-title="Christmas Initial Mugs" data-share-text="Christmas initial mugs · ${SALE.on ? rupee(salePrice(lead)) + " in the Christmas Sale" : rupee(lead.price)} at NevervoidStore" aria-haspopup="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Share</span></button><div class="share-menu" hidden role="menu"><a role="menuitem" data-net="wa" target="_blank" rel="noopener">WhatsApp</a><a role="menuitem" data-net="fb" target="_blank" rel="noopener">Facebook</a><a role="menuitem" data-net="x" target="_blank" rel="noopener">X</a><button type="button" role="menuitem" data-net="copy">Copy link</button></div></div>
+      <p class="lead">A big festive initial in a Santa hat, strung with fairy lights, with a snowman, gifts and holly. Printed on both sides of an 11oz ceramic mug, so the letter faces you and whoever sits opposite.</p>
+      <div class="buybox">
+      ${orderBlock(lead)}
+      </div>
     </div>
-    <div class="ini-pic"><img class="photo" src="/images/mugs/${lead.slug}-${lead.view}.webp" alt="${esc(lead.name)}" width="620" height="620"></div>
-  </section>
-  <section class="ini-pick" aria-labelledby="pick">
-    <h2 id="pick">Pick a letter</h2>
-    <p class="muted">Letters in green are ready to order. For any other letter, tap it to ask on WhatsApp and we'll make it for you.</p>
-    <div class="letters">${letters}</div>
-  </section>
-  <section aria-labelledby="ready"><h2 id="ready">Ready to order</h2>
-    <div class="grid">${items.map(p => card(p, "../")).join("\n")}</div>
   </section>
 </main>
-${footer("../")}`;
+${footer("../")}
+<script>
+(function(){
+  var D = ${JSON.stringify(data)};
+  function pick(L, push){
+    var d = D[L]; if (!d) return;
+    document.querySelectorAll(".letters .lt.ok").forEach(function(b){ var on = b.dataset.letter === L; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+    document.getElementById("ini-name").textContent = d.name;
+    document.getElementById("ini-chosen").textContent = "Selected: " + L;
+    var img = document.getElementById("pimg"), views = document.querySelectorAll(".views .view:not(.v360)");
+    var srcs = ["/images/mugs/" + d.slug + "-" + d.view + ".webp", "/images/mugs/" + d.slug + "-" + d.alt + ".webp"];
+    views.forEach(function(v, i){ v.dataset.src = srcs[i]; var t = v.querySelector("img"); if (t) t.src = srcs[i]; });
+    var on = document.querySelector(".views .view.on"), onIdx = Array.prototype.indexOf.call(views, on);
+    if (img) img.src = srcs[onIdx >= 0 ? onIdx : 0];
+    var flat = document.querySelector(".flat-wrap img"); if (flat) flat.src = "/images/mugs/" + d.slug + "-flat.webp";
+    var box = document.getElementById("m3d");
+    if (box) { box.dataset.wrap = "/images/mugs/" + d.slug + "-wrap.webp"; box.dataset.start = d.start;
+      if (box._m) { box._m.destroy(); box._m = null; if (!box.hidden) { var b3 = document.querySelector(".views .v360"); if (b3) b3.click(); } } }
+    document.querySelectorAll(".buybox [data-order], .buybox [data-ask]").forEach(function(b){ b.dataset.name = d.name; if (b.dataset.id) b.dataset.id = d.id; });
+    if (push) history.replaceState(null, "", "?letter=" + L);
+  }
+  document.querySelectorAll(".letters .lt.ok").forEach(function(b){ b.addEventListener("click", function(){ pick(b.dataset.letter, true); }); });
+  var q = (location.search.match(/letter=([A-Za-z])/) || [])[1]; if (q) pick(q.toUpperCase(), false);
+})();
+</script>`;
 }
 
 // ---------- CSS ----------
@@ -318,7 +345,16 @@ const extraCss = `
 .letters{display:grid;grid-template-columns:repeat(13,1fr);gap:8px;margin-top:14px}
 .lt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:12px;font-family:Fraunces,Georgia,serif;font-size:22px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:#fff;color:var(--muted)}
 .lt.ok{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,77,54,.25)}
-.lt.ask:hover{border-color:var(--green);color:var(--green)}
+.lt{cursor:pointer;padding:0}
+.lt.ok{background:#fff;color:var(--green);border:2px solid var(--green);box-shadow:none}
+.lt.ok:hover{background:#eef4f0}
+.lt.ok.on{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,77,54,.25)}
+.lt.soon{cursor:not-allowed;opacity:.38;background:#f6f1e8}
+.ini .ini-pick{margin:16px 0 4px;padding:0}
+.pick-head{display:flex;justify-content:space-between;align-items:baseline;font-size:15px}.pick-head span{color:var(--muted);font-size:14px}
+.ini .letters{grid-template-columns:repeat(9,1fr);gap:6px;margin-top:10px}
+.ini .lt{font-size:18px;border-radius:10px}
+.pick-note{font-size:13px;color:var(--muted);margin:10px 0 0}.pick-note a{color:var(--green);font-weight:600}
 @media (max-width:760px){.ini-hero{grid-template-columns:1fr}.ini-pic{order:-1}.letters{grid-template-columns:repeat(7,1fr)}}
 .m3d{position:absolute;inset:0;z-index:2;background:#fff;border-radius:inherit;overflow:hidden}
 .m3d[hidden]{display:none}
@@ -562,6 +598,10 @@ const CONFIG = {
 // ---------- pages ----------
 const org = {"@type":"Organization","@id":BASE+"/#org","name":"NevervoidStore","founder":Object.assign({"@type":"Person","name":"Antony Pratap"}, POL.CONTACT.linkedin ? {"sameAs":[POL.CONTACT.linkedin]} : {}),"parentOrganization":{"@type":"Organization","name":"Nevervoid Photography","url":POL.CONTACT.photographySite},"url":BASE+"/","logo":BASE+"/images/og-home.jpg","sameAs":["https://instagram.com/nevervoidstore"]};
 
+function galleryHtml(p) {
+  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : p.art}</div>${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button></div><figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>` : ""}</div>`;
+}
+
 function productPage(p) {
   const url = `${BASE}/products/${p.slug}.html`, img = `${BASE}/images/share/${p.slug}.jpg`;
   const imgs = p.photoMug ? [img, `${BASE}/images/mugs/${p.slug}-b.webp`, `${BASE}/images/mugs/${p.slug}-a.webp`] : [img];
@@ -589,7 +629,7 @@ ${header("../","")}
 <main class="wrap">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › ${p.collection === "initials" ? `<a href="../initials/">Initials</a>` : `<a href="../index.html#${p.cat}">${catLabel(p)} gifts</a>`} › <span>${esc(p.name)}</span></nav>
   <section class="pdp">
-    <div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : p.art}</div>${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button></div><figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>` : ""}</div>
+    ${galleryHtml(p)}
     <div>
       <div class="tags"><span class="tag">${catLabel(p)} · ${typeLabel(p)}</span>${p.isNew?'<span class="tag new">· New</span>':''}</div>
       <h1>${esc(p.name)}</h1>

@@ -128,7 +128,7 @@ const CONFIG = {
     if (v.dataset.spin && box) {
       box.hidden = false; if (img) img.style.visibility = "hidden";
       if (box._m) box._m.wake();
-      else { try { const mod = await import("/assets/mug3d.js?v=2831964d"); const lab = box.querySelector(".m3d-side"), names = ["Faces you", "Centre · opposite the handle", "Faces the person opposite"]; box._m = mod.mount(box, box.dataset.wrap, +box.dataset.start, k => { lab.textContent = names[k]; }); } catch (e) { box.hidden = true; if (img) img.style.visibility = ""; } }
+      else { try { const mod = await import("/assets/mug3d.js?v=f305fb59"); const lab = box.querySelector(".m3d-side"), names = ["Faces you", "Centre · opposite the handle", "Faces the person opposite"]; box._m = mod.mount(box, box.dataset.wrap, +box.dataset.start, k => { lab.textContent = names[k]; }); } catch (e) { box.hidden = true; if (img) img.style.visibility = ""; } }
       return;
     }
     if (box) box.hidden = true;
