@@ -1,6 +1,7 @@
 const {chromium}=require('playwright');const fs=require('fs');
 const items=JSON.parse(fs.readFileSync('src/images.json','utf8'));
-const by=s=>items.find(i=>i.slug===s).art;
+const by=s=>{const i=items.find(i=>i.slug===s);return i?i.art:'';};
+const uri=f=>`<img src="data:image/webp;base64,${fs.readFileSync(f).toString('base64')}" style="width:100%;display:block">`;
 const fonts=`<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">`;
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1000,height:1000}});
 for(const it of items){
@@ -17,13 +18,13 @@ await c.goto('file://'+process.cwd()+'/site/corporate.html');await c.waitForTime
 const logoMug=await c.$eval('#heroMug',e=>e.innerHTML);
 const og=async(file,left,right)=>{await p.setViewportSize({width:1200,height:630});
  await p.setContent(`<body style="margin:0;width:1200px;height:630px;background:#fbf6ec;font-family:'DM Sans';display:flex;align-items:center">${fonts}
- <div style="width:600px;padding:0 0 0 70px">${left}</div><div style="width:560px;height:560px;border-radius:32px;background:radial-gradient(circle at 50% 45%,#fff 0,#efe7d6 72%);position:relative;margin-right:40px">${right}</div></body>`);
+ <div style="width:600px;padding:0 0 0 70px">${left}</div><div style="width:560px;height:560px;border-radius:32px;background:#fff;position:relative;margin-right:40px">${right}</div></body>`);
  await p.waitForTimeout(600);await p.screenshot({path:file,type:'jpeg',quality:88});};
 const brand=`<div style="font-family:Fraunces;font-weight:700;font-size:30px;color:#1c2420">NevervoidStore</div>`;
-await og('site/images/og-home.jpg',`${brand}<div style="font-family:Fraunces;font-weight:700;font-size:60px;line-height:1.05;color:#1c2420;margin:22px 0 18px">Christmas &amp; pet mugs, <i style="font-weight:500;color:#1f4d36">made to order</i></div><div style="font-size:24px;color:#5d6862">Mugs &amp; iPhone cases · ships across India</div>`,
- `<div style="position:absolute;width:62%;left:3%;top:20%">${by('sleigh-all-day-christmas-mug')}</div><div style="position:absolute;width:33%;right:7%;top:9%;transform:rotate(6deg)">${by('cat-pattern-iphone-case')}</div>`);
+await og('site/images/og-home.jpg',`${brand}<div style="font-family:Fraunces;font-weight:700;font-size:60px;line-height:1.05;color:#1c2420;margin:22px 0 18px">Christmas &amp; pet mugs, <i style="font-weight:500;color:#1f4d36">made to order</i></div><div style="font-size:24px;color:#5d6862">Mugs &amp; glass phone cases · delivered across Karnataka</div>`,
+ `<div style="position:absolute;width:62%;left:3%;top:20%">${uri('site/images/mugs/dear-santa-it-wasnt-me-mug-b.webp')}</div><div style="position:absolute;width:33%;right:7%;top:9%;transform:rotate(6deg)">${uri('site/images/cases/knitted-christmas-puppies/iphone-16-pro.webp')}</div>`);
 await og('site/images/og-corporate.jpg',`${brand}<div style="font-family:Fraunces;font-weight:700;font-size:56px;line-height:1.05;color:#1c2420;margin:22px 0 18px">Corporate Christmas gifts your team <i style="font-weight:500;color:#1f4d36">keeps</i></div><div style="font-size:24px;color:#5d6862">Logo &amp; team pet mugs · from ₹319 · sample first</div>`,
- `<div style="position:absolute;width:62%;left:3%;top:20%">${logoMug}</div><div style="position:absolute;width:33%;right:7%;top:9%;transform:rotate(6deg)">${by('holiday-plaid-iphone-case')}</div>`);
+ `<div style="position:absolute;width:62%;left:3%;top:20%">${logoMug}</div><div style="position:absolute;width:33%;right:7%;top:9%;transform:rotate(6deg)">${uri('site/images/cases/knitted-christmas-puppies/iphone-16-pro.webp')}</div>`);
 
 // share cards (1200x630) for link previews: product photo + name + price
 fs.mkdirSync('site/images/share',{recursive:true});

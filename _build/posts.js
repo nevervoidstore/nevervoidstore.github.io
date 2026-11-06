@@ -5,7 +5,7 @@ module.exports = [
   title: "Christmas Gifts for Coworkers Under ₹700 That They'll Actually Keep",
   desc: "Thoughtful Christmas gift ideas for coworkers under ₹700: how to pick for the coffee lover, the pet parent and the always-on-phone colleague, plus Secret Santa tips.",
   date: "2026-11-04",
-  cover: "mug-sleigh",
+  cover: "mug-dear-santa-it-wasnt-me-mug",
   excerpt: "Most office gifts end up in a drawer. Here's how to pick one that lands on a desk instead, with ideas for every kind of colleague.",
   body: `
 <p>Office gifting has a drawer problem. Scented candles, novelty pens and generic chocolate boxes are pleasant for a minute, then forgotten. The gifts people keep share three things: they're <strong>useful every day</strong>, they feel <strong>a little personal</strong>, and they're <strong>easy to say yes to</strong> on a budget.</p>
@@ -19,16 +19,16 @@ module.exports = [
 
 <h3>The coffee or chai person</h3>
 <p>A mug is the classic for a reason: it gets used daily, it sits on their desk, and it's a quiet reminder of you. Go festive if they love Christmas, or keep it neutral so it works all year.</p>
-{{product:mug-sleigh}}
+{{product:mug-tis-the-season-mug}}
 
 <h3>The pet parent</h3>
 <p>If their phone wallpaper is their dog, you already know the answer. Pet-themed gifts feel personal without needing to know someone well. For a close colleague, a portrait of their own pet is the kind of gift people photograph and share.</p>
-{{product:mug-dogmom}}
+{{product:mug-life-is-better-with-dogs-mug}}
 {{product:mug-custom}}
 
 <h3>The colleague who's always on their phone</h3>
 <p>A phone case is used every single day and seen constantly. The only catch is that you need their exact model, so ask casually or check during a meeting.</p>
-{{product:case-pines}}
+{{product:case-knitted-puppies}}
 
 <h2>3. Secret Santa tips that avoid awkward moments</h2>
 <ul>
@@ -49,7 +49,7 @@ module.exports = [
   title: "Corporate Christmas Gifting in India: A Simple Planning Guide for HR Teams",
   desc: "A step-by-step plan for corporate Christmas gifts in India: budget per head, choosing gifts people keep, collecting details, sampling and a week-by-week timeline.",
   date: "2026-11-04",
-  cover: "mug-cocoa",
+  cover: "mug-tis-the-season-mug",
   excerpt: "Budgets, personalisation, remote employees and deadlines: a week-by-week plan so team gifts arrive on time and actually get used.",
   body: `
 <p>Corporate gifting usually goes wrong in the same two ways: it starts too late, or it picks something nobody uses. This guide gives you a simple plan for both.</p>

@@ -43,6 +43,16 @@ MUGS.forEach(m => { m.view = m.view || "b"; m.alt = m.view === "a" ? "b" : "a"; 
 }); });
 REAL.forEach(r => { r.photoSrc = path.join(SRC, "real", r.folder, r.defaultModel + ".webp"); });
 PRODUCTS.unshift(...REAL, ...MUGS);
+// placeholder (drawn) designs are hidden until real artwork replaces them
+const HIDDEN = new Set(["mug-sleigh","mug-tree","mug-cocoa","mug-ginger","mug-dogmom","mug-cat","mug-paws","case-plaid","case-pines","case-cats","case-paws"]);
+for (let i = PRODUCTS.length - 1; i >= 0; i--) if (HIDDEN.has(PRODUCTS[i].id)) PRODUCTS.splice(i, 1);
+// custom products: photo tiles on the same Printrove mug / case photos as everything else
+{ const cm = PRODUCTS.find(p => p.id === "mug-custom");
+  Object.assign(cm, { photoMug: true, noExtras: true, view: "b", alt: "a", photoSrc: path.join(SRC, "realmugs", "custom-pet-portrait-mug-b.webp"),
+    art: `<img class="photo" src="/images/mugs/custom-pet-portrait-mug-b.webp" alt="Custom Pet Portrait Mug" width="620" height="620" loading="lazy">` });
+  const cc = PRODUCTS.find(p => p.id === "case-custom");
+  Object.assign(cc, { photoSrc: path.join(SRC, "custom", "custom-pet-case.webp"),
+    art: `<img class="photo" src="/images/cases/custom-pet-case.webp" alt="Custom Pet Glass Case" width="600" height="800" loading="lazy">` }); }
 const MASTER_MODELS = REAL[0].models;
 PRODUCTS.forEach(p => { if (p.type === "case" && !p.models) { p.models = MASTER_MODELS; p.imgFor = null; } });
 // Razorpay Payment Page item field for each product (field label lowercased, spaces -> underscores)
@@ -172,7 +182,7 @@ function card(p, root) {
   return `<article class="card" data-cat="${(p.cats||[p.cat]).join(" ")}" data-type="${p.type}">
     <a class="stage ${p.cat}${p.photoMug ? " ph" : ""}" href="${href}" aria-label="${esc(p.name)}">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}${p.art}</a>
     <div class="info">
-      <div class="tags"><span class="tag">${typeLabel(p)}</span>${p.isNew?'<span class="tag new">· New</span>':''}</div>
+      <div class="tags"><span class="tag">${p.type === "case" ? "Phone case" : typeLabel(p)}</span>${p.isNew?'<span class="tag new">· New</span>':''}</div>
       <h3><a href="${href}">${esc(p.name)}</a></h3>
       <p>${esc(p.desc)}</p>
       ${priceHtml(p)}
@@ -611,7 +621,7 @@ const CONFIG = {
 const org = {"@type":"Organization","@id":BASE+"/#org","name":"NevervoidStore","founder":Object.assign({"@type":"Person","name":"Antony Pratap"}, POL.CONTACT.linkedin ? {"sameAs":[POL.CONTACT.linkedin]} : {}),"parentOrganization":{"@type":"Organization","name":"Nevervoid Photography","url":POL.CONTACT.photographySite},"url":BASE+"/","logo":BASE+"/images/og-home.jpg","sameAs":["https://instagram.com/nevervoidstore"]};
 
 function galleryHtml(p) {
-  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : p.art}</div>${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button></div><figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>` : ""}</div>`;
+  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : p.art}</div>${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`;
 }
 
 function productPage(p) {
@@ -818,6 +828,7 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.mkdirSync(path.join(OUT,"initials"),{recursive:true}); fs.writeFileSync(path.join(OUT,"initials","index.html"), initialsPage());
 PRODUCTS.forEach(p => fs.writeFileSync(path.join(OUT,"products",p.slug+".html"), productPage(p)));
 fs.writeFileSync(path.join(OUT,".nojekyll"), "");
+fs.mkdirSync(path.join(OUT,"images","cases"),{recursive:true}); fs.copyFileSync(path.join(SRC,"custom","custom-pet-case.webp"), path.join(OUT,"images","cases","custom-pet-case.webp"));
 fs.mkdirSync(path.join(OUT,"policies"), {recursive:true});
 PAGES.forEach(pg => fs.writeFileSync(path.join(OUT,"policies",pg.slug+".html"), policyPage(pg)));
 fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
