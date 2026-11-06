@@ -1,0 +1,182 @@
+[
+{
+"brand": "Apple",
+"label": "iPhone 17 Pro Max",
+"slug": "iphone-17-pro-max"
+},
+{
+"brand": "Apple",
+"label": "iPhone 17 Pro",
+"slug": "iphone-17-pro"
+},
+{
+"brand": "Apple",
+"label": "iPhone Air",
+"slug": "iphone-air"
+},
+{
+"brand": "Apple",
+"label": "iPhone 17",
+"slug": "iphone-17"
+},
+{
+"brand": "Apple",
+"label": "iPhone 16 Pro Max",
+"slug": "iphone-16-pro-max"
+},
+{
+"brand": "Apple",
+"label": "iPhone 16 Pro",
+"slug": "iphone-16-pro"
+},
+{
+"brand": "Apple",
+"label": "iPhone 16 Plus",
+"slug": "iphone-16-plus"
+},
+{
+"brand": "Apple",
+"label": "iPhone 16",
+"slug": "iphone-16"
+},
+{
+"brand": "Apple",
+"label": "iPhone 15 Pro Max",
+"slug": "iphone-15-pro-max"
+},
+{
+"brand": "Apple",
+"label": "iPhone 15 Pro",
+"slug": "iphone-15-pro"
+},
+{
+"brand": "Apple",
+"label": "iPhone 15 Plus",
+"slug": "iphone-15-plus"
+},
+{
+"brand": "Apple",
+"label": "iPhone 15",
+"slug": "iphone-15"
+},
+{
+"brand": "Apple",
+"label": "iPhone 14 Pro Max",
+"slug": "iphone-14-pro-max"
+},
+{
+"brand": "Apple",
+"label": "iPhone 14 Pro",
+"slug": "iphone-14-pro"
+},
+{
+"brand": "Apple",
+"label": "iPhone 14 Plus",
+"slug": "iphone-14-plus"
+},
+{
+"brand": "Apple",
+"label": "iPhone 14",
+"slug": "iphone-14"
+},
+{
+"brand": "Apple",
+"label": "iPhone 13 Pro Max",
+"slug": "iphone-13-pro-max"
+},
+{
+"brand": "Apple",
+"label": "iPhone 13 Pro",
+"slug": "iphone-13-pro"
+},
+{
+"brand": "Apple",
+"label": "iPhone 13 mini",
+"slug": "iphone-13-mini"
+},
+{
+"brand": "Apple",
+"label": "iPhone 13",
+"slug": "iphone-13"
+},
+{
+"brand": "Apple",
+"label": "iPhone 12 Pro Max",
+"slug": "iphone-12-pro-max"
+},
+{
+"brand": "Apple",
+"label": "iPhone 12 Pro",
+"slug": "iphone-12-pro"
+},
+{
+"brand": "Apple",
+"label": "iPhone 12 mini",
+"slug": "iphone-12-mini"
+},
+{
+"brand": "Apple",
+"label": "iPhone 12",
+"slug": "iphone-12"
+},
+{
+"brand": "Apple",
+"label": "iPhone 11 Pro Max",
+"slug": "iphone-11-pro-max"
+},
+{
+"brand": "Apple",
+"label": "iPhone 11 Pro",
+"slug": "iphone-11-pro"
+},
+{
+"brand": "Apple",
+"label": "iPhone 11",
+"slug": "iphone-11"
+},
+{
+"brand": "Apple",
+"label": "iPhone XR",
+"slug": "iphone-xr"
+},
+{
+"brand": "Samsung",
+"label": "Galaxy S25",
+"slug": "galaxy-s25"
+},
+{
+"brand": "Samsung",
+"label": "Galaxy S24",
+"slug": "galaxy-s24"
+},
+{
+"brand": "Samsung",
+"label": "Galaxy S23",
+"slug": "galaxy-s23"
+},
+{
+"brand": "Samsung",
+"label": "Galaxy S22 Ultra",
+"slug": "galaxy-s22-ultra"
+},
+{
+"brand": "OnePlus",
+"label": "OnePlus 12",
+"slug": "oneplus-12"
+},
+{
+"brand": "OnePlus",
+"label": "OnePlus 12R",
+"slug": "oneplus-12r"
+},
+{
+"brand": "OnePlus",
+"label": "OnePlus 11",
+"slug": "oneplus-11"
+},
+{
+"brand": "OnePlus",
+"label": "OnePlus 11R",
+"slug": "oneplus-11r"
+}
+]

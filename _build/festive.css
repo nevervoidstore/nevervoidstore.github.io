@@ -1,0 +1,37 @@
+/* Festive season layer: sale bar, badges, snow, gentle motion */
+.fx-bar{background:linear-gradient(90deg,#9e1f27,#c8323a,#9e1f27);background-size:200% 100%;animation:fxShine 7s linear infinite;color:#fff;text-align:center;font-size:14px;padding:9px 14px;font-weight:500;line-height:1.6}
+.fx-bar a{color:#fff;font-weight:700;margin-left:6px;white-space:nowrap}
+.fx-bar .fx-days{display:inline-block;background:rgba(255,255,255,.2);border-radius:999px;padding:0 9px;margin-left:6px;font-size:13px;white-space:nowrap}
+@keyframes fxShine{from{background-position:0 0}to{background-position:200% 0}}
+.fx-snow{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.fx-snow i{position:absolute;top:-16px;font-style:normal;color:#9db4c6;animation:fxFall linear infinite}
+@keyframes fxFall{to{transform:translate3d(var(--drift),108vh,0) rotate(180deg)}}
+.price .was,.pprice .was{color:var(--muted);text-decoration:line-through;font-weight:500;font-size:.8em}
+.price .now,.pprice .now{color:#b3262e}
+.save{font-size:13.5px;color:#b3262e;font-weight:700;margin:2px 0 6px}
+.inline-prod s{color:var(--muted);font-weight:500}
+.card .stage{position:relative}
+.fx-badge{position:absolute;top:12px;left:12px;z-index:2;background:#b3262e;color:#fff;font-weight:700;font-size:12.5px;padding:4px 10px;border-radius:999px;box-shadow:0 4px 12px rgba(179,38,46,.25);animation:fxPulse 2.6s ease-in-out infinite}
+.fx-badge.big{font-size:15px;padding:6px 13px;top:18px;left:18px}
+@keyframes fxPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.card{transition:transform .25s ease,box-shadow .25s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(28,36,32,.09)}
+.card .stage svg{transition:transform .4s ease}
+.card:hover .stage svg{transform:rotate(-3deg) scale(1.04)}
+.hero-sale{display:inline-block;margin-top:14px;background:#b3262e;color:#fff;padding:8px 18px;border-radius:999px;font-size:15px;animation:fxPulse 3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.fx-bar,.fx-badge,.hero-sale{animation:none}.fx-snow{display:none}.card,.card .stage svg{transition:none}.card:hover,.card:hover .stage svg{transform:none}}
+/* WhatsApp chat */
+.wa-wrap{position:fixed;right:18px;bottom:18px;z-index:70;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:10px;font-family:"DM Sans",system-ui,sans-serif}
+.wa-btn{pointer-events:auto;width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,0,0,.18);transition:transform .2s}
+.wa-btn:hover{transform:scale(1.07)}
+.wa-card{width:290px;background:#fff;border:1px solid #e6dfd0;border-radius:18px;padding:16px;box-shadow:0 14px 34px rgba(28,36,32,.16);position:relative;opacity:0;transform:translateY(10px);pointer-events:none;transition:.3s}
+.wa-card.show{opacity:1;transform:none;pointer-events:auto}
+.wa-head{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.wa-av{width:40px;height:40px;border-radius:50%;background:#1f4d36;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-weight:700;font-size:18px;flex:none}
+.wa-head b{display:block;font-size:15px;color:#1c2420}
+.wa-head small{font-size:12px;color:#5d6862}
+.wa-card p{font-size:14px;color:#36413b;line-height:1.5;margin:0 0 12px}
+.wa-go{display:block;text-align:center;background:#25D366;color:#fff;font-weight:700;text-decoration:none;padding:10px;border-radius:10px;font-size:14.5px}
+.wa-x{position:absolute;top:8px;right:10px;border:0;background:none;font-size:20px;color:#5d6862;cursor:pointer;line-height:1}
+@media (max-width:760px){.wa-wrap{right:12px;bottom:12px}.wa-btn{width:52px;height:52px}.wa-card{width:min(290px,calc(100vw - 24px))}}
+@media (prefers-reduced-motion:reduce){.wa-card,.wa-btn{transition:none}}
