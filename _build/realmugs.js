@@ -1,6 +1,6 @@
 // Real mug designs (print wraps → generated mock-ups in src/realmugs/<slug>.webp and <slug>-flat.webp)
 module.exports = [
-  { slug: "christmas-initial-a-mug", name: "Christmas Initial A Mug", cats: ["christmas"], isNew: true,
+  { slug: "christmas-initial-a-mug", collection: "initials", letter: "A", name: "Christmas Initial A Mug", cats: ["christmas"], isNew: true,
     desc: "A glowing letter A in a Santa hat, with a snowman.",
     long: "A big festive letter A in a Santa hat, strung with fairy lights, with holly, gifts, a pine cone and a little snowman in the snow. Printed on both sides of an 11oz ceramic mug, so the A faces you and the person opposite. A thoughtful gift for anyone whose name starts with A." },
   { slug: "tis-the-season-mug", name: "Tis the Season Mug", cats: ["christmas"], isNew: true,

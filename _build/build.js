@@ -181,6 +181,60 @@ function card(p, root) {
   </article>`;
 }
 
+const INITIALS = () => PRODUCTS.filter(p => p.collection === "initials").sort((a, b) => a.letter.localeCompare(b.letter));
+function initialsCard(root) {
+  const items = INITIALS(); if (!items.length) return "";
+  const lead = items[0], href = `${root}initials/`;
+  const from = Math.min(...items.map(salePrice)), was = Math.min(...items.map(p => p.price));
+  return `<article class="card coll-card" data-cat="christmas" data-type="mug">
+    <a class="stage christmas ph" href="${href}" aria-label="Christmas Initial Mugs">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/mugs/${lead.slug}-${lead.view}.webp" alt="Christmas Initial Mugs" width="620" height="620" loading="lazy"><span class="coll-letters" aria-hidden="true">A–Z</span></a>
+    <div class="info">
+      <div class="tags"><span class="tag">Collection</span><span class="tag new">· New</span></div>
+      <h3><a href="${href}">Christmas Initial Mugs</a></h3>
+      <p>Their first letter in a Santa hat. Pick a letter A to Z.</p>
+      <div class="price">${SALE.on ? `<span class="was">${rupee(was)}</span> ` : ""}<span class="now">From ${rupee(from)}</span></div>
+      <a class="buy" href="${href}">Find your letter</a>
+    </div>
+  </article>`;
+}
+function initialsPage() {
+  const items = INITIALS(), url = `${BASE}/initials/`, have = Object.fromEntries(items.map(p => [p.letter, p]));
+  const lead = items[0], wa = POL.CONTACT.whatsapp;
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(L => have[L]
+    ? `<a class="lt ok" href="../products/${have[L].slug}.html" aria-label="Letter ${L}: view the mug">${L}</a>`
+    : `<a class="lt ask" href="https://wa.me/${wa}?text=${encodeURIComponent(`Hi Antony, do you have the Christmas initial mug with the letter ${L}?`)}" target="_blank" rel="noopener" aria-label="Letter ${L}: ask on WhatsApp">${L}</a>`).join("");
+  const desc = "Christmas mugs with a big festive initial in a Santa hat, printed on both sides. Pick a letter A to Z. Made to order, delivered across Karnataka.";
+  const jsonld = [
+    {"@context":"https://schema.org","@type":"CollectionPage","name":"Christmas Initial Mugs","url":url,"description":desc,
+      "mainEntity":{"@type":"ItemList","itemListElement":items.map((p,i)=>({"@type":"ListItem","position":i+1,"url":`${BASE}/products/${p.slug}.html`,"name":p.name}))}},
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Christmas Initial Mugs","item":url}]}];
+  return `${head({title:"Christmas Initial Mugs A–Z | Personalised Letter Mugs | Nevervoid Store", desc, url, image:`${BASE}/images/share/${lead.slug}.jpg`, root:"../", jsonld})}
+<body>
+${header("../","shop")}
+<main class="wrap">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Christmas Initial Mugs</span></nav>
+  <section class="ini-hero">
+    <div class="ini-copy">
+      <span class="eyebrow">Christmas initials</span>
+      <h1>A Christmas mug with <em>their letter</em> on it</h1>
+      <p class="lead">A big festive initial in a Santa hat, strung with fairy lights, with a snowman, gifts and holly. Printed on both sides of an 11oz ceramic mug, so the letter faces them and whoever sits opposite.</p>
+      <div class="ini-price">${SALE.on ? `<s>${rupee(lead.price)}</s> ` : ""}<b>${rupee(salePrice(lead))}</b>${SALE.on ? ` <span>${SALE.label} · ${SALE.pct}% off</span>` : ""}</div>
+      <p class="pnote">Made to order · delivered across Karnataka</p>
+    </div>
+    <div class="ini-pic"><img class="photo" src="/images/mugs/${lead.slug}-${lead.view}.webp" alt="${esc(lead.name)}" width="620" height="620"></div>
+  </section>
+  <section class="ini-pick" aria-labelledby="pick">
+    <h2 id="pick">Pick a letter</h2>
+    <p class="muted">Letters in green are ready to order. For any other letter, tap it to ask on WhatsApp and we'll make it for you.</p>
+    <div class="letters">${letters}</div>
+  </section>
+  <section aria-labelledby="ready"><h2 id="ready">Ready to order</h2>
+    <div class="grid">${items.map(p => card(p, "../")).join("\n")}</div>
+  </section>
+</main>
+${footer("../")}`;
+}
+
 // ---------- CSS ----------
 const extraCss = `
 .nav{display:flex;gap:8px;align-items:center}
@@ -251,6 +305,21 @@ const extraCss = `
 .share-menu[hidden]{display:none}
 .share-menu a,.share-menu button{display:block;text-align:left;padding:9px 12px;border-radius:8px;color:var(--ink);text-decoration:none;font:inherit;font-size:14px;background:none;border:0;cursor:pointer}
 .share-menu a:hover,.share-menu button:hover{background:#f4efe6}
+.coll-card .stage{position:relative}
+.coll-letters{position:absolute;right:12px;bottom:12px;background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:5px 11px;border-radius:99px}
+.chip-link{display:inline-flex;align-items:center;padding:8px 14px;border-radius:99px;border:1px solid var(--green);color:var(--green);font-size:14px;font-weight:600;text-decoration:none;background:#fff}
+.chip-link:hover{background:var(--green);color:#fff}
+.ini-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:20px 0 30px}
+.ini-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(32px,4.6vw,52px);line-height:1.05;margin:8px 0 14px}
+.ini-hero h1 em{color:var(--red,#a8332f)}
+.ini-price{font-size:18px;margin:14px 0 4px}.ini-price s{color:var(--muted)}.ini-price b{font-size:28px;color:#a8332f}.ini-price span{display:inline-block;margin-left:6px;background:#a8332f;color:#fff;font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;vertical-align:middle}
+.ini-pic{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden}.ini-pic img{width:100%;height:auto;display:block}
+.ini-pick{padding:10px 0 34px}.ini-pick h2,section h2{font-family:Fraunces,Georgia,serif}
+.letters{display:grid;grid-template-columns:repeat(13,1fr);gap:8px;margin-top:14px}
+.lt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:12px;font-family:Fraunces,Georgia,serif;font-size:22px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:#fff;color:var(--muted)}
+.lt.ok{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,77,54,.25)}
+.lt.ask:hover{border-color:var(--green);color:var(--green)}
+@media (max-width:760px){.ini-hero{grid-template-columns:1fr}.ini-pic{order:-1}.letters{grid-template-columns:repeat(7,1fr)}}
 .m3d{position:absolute;inset:0;z-index:2;background:#fff;border-radius:inherit;overflow:hidden}
 .m3d[hidden]{display:none}
 .m3d canvas{width:100%!important;height:100%!important;display:block}
@@ -518,7 +587,7 @@ function productPage(p) {
 <body>
 ${header("../","")}
 <main class="wrap">
-  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <a href="../index.html#${p.cat}">${catLabel(p)} gifts</a> › <span>${esc(p.name)}</span></nav>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › ${p.collection === "initials" ? `<a href="../initials/">Initials</a>` : `<a href="../index.html#${p.cat}">${catLabel(p)} gifts</a>`} › <span>${esc(p.name)}</span></nav>
   <section class="pdp">
     <div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : p.art}</div>${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button></div><figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>` : ""}</div>
     <div>
@@ -580,9 +649,10 @@ ${header("","shop")}
       <button data-f="pets">🐾 Pets</button>
       <button data-f="mug">Mugs</button>
       <button data-f="case">Phone cases</button>
+      <a class="chip-link" href="initials/">🔤 Initials A–Z</a>
     </div>
     <div class="grid" id="grid">
-${PRODUCTS.map(p => card(p, "")).join("\n")}
+${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(1, 0, initialsCard("")); return list.join("\n"); })()}
     </div>
   </div>
   <section class="band">
@@ -693,6 +763,7 @@ fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));
 fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join(SRC,"festive.js"),"utf8").replace("__SALE__", JSON.stringify(SALE)));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
+fs.mkdirSync(path.join(OUT,"initials"),{recursive:true}); fs.writeFileSync(path.join(OUT,"initials","index.html"), initialsPage());
 PRODUCTS.forEach(p => fs.writeFileSync(path.join(OUT,"products",p.slug+".html"), productPage(p)));
 fs.writeFileSync(path.join(OUT,".nojekyll"), "");
 fs.mkdirSync(path.join(OUT,"policies"), {recursive:true});
@@ -701,7 +772,7 @@ fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/initials/", BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);

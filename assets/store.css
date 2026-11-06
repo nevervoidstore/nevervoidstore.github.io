@@ -149,6 +149,21 @@ footer a{font-weight:700;color:var(--ink)}
 .share-menu[hidden]{display:none}
 .share-menu a,.share-menu button{display:block;text-align:left;padding:9px 12px;border-radius:8px;color:var(--ink);text-decoration:none;font:inherit;font-size:14px;background:none;border:0;cursor:pointer}
 .share-menu a:hover,.share-menu button:hover{background:#f4efe6}
+.coll-card .stage{position:relative}
+.coll-letters{position:absolute;right:12px;bottom:12px;background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:5px 11px;border-radius:99px}
+.chip-link{display:inline-flex;align-items:center;padding:8px 14px;border-radius:99px;border:1px solid var(--green);color:var(--green);font-size:14px;font-weight:600;text-decoration:none;background:#fff}
+.chip-link:hover{background:var(--green);color:#fff}
+.ini-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:20px 0 30px}
+.ini-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(32px,4.6vw,52px);line-height:1.05;margin:8px 0 14px}
+.ini-hero h1 em{color:var(--red,#a8332f)}
+.ini-price{font-size:18px;margin:14px 0 4px}.ini-price s{color:var(--muted)}.ini-price b{font-size:28px;color:#a8332f}.ini-price span{display:inline-block;margin-left:6px;background:#a8332f;color:#fff;font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;vertical-align:middle}
+.ini-pic{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden}.ini-pic img{width:100%;height:auto;display:block}
+.ini-pick{padding:10px 0 34px}.ini-pick h2,section h2{font-family:Fraunces,Georgia,serif}
+.letters{display:grid;grid-template-columns:repeat(13,1fr);gap:8px;margin-top:14px}
+.lt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:12px;font-family:Fraunces,Georgia,serif;font-size:22px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:#fff;color:var(--muted)}
+.lt.ok{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,77,54,.25)}
+.lt.ask:hover{border-color:var(--green);color:var(--green)}
+@media (max-width:760px){.ini-hero{grid-template-columns:1fr}.ini-pic{order:-1}.letters{grid-template-columns:repeat(7,1fr)}}
 .m3d{position:absolute;inset:0;z-index:2;background:#fff;border-radius:inherit;overflow:hidden}
 .m3d[hidden]{display:none}
 .m3d canvas{width:100%!important;height:100%!important;display:block}
