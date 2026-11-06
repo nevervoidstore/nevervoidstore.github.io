@@ -184,6 +184,6 @@ if __name__ == "__main__":
         finalize(render(w, view), view).save(f"{prefix}-{view}.webp", "WEBP", quality=90, method=6)
     flat = pr.copy(); flat.thumbnail((1000, 500), Image.LANCZOS)
     watermark(flat).save(f"{prefix}-flat.webp", "WEBP", quality=80, method=6)
-    tex = pr.convert("RGB").resize((1280, 572), Image.LANCZOS)          # 3D preview texture: screen quality only
-    watermark(tex, size=26, alpha=30).save(f"{prefix}-wrap.webp", "WEBP", quality=82, method=6)
+    tex = pr.convert("RGB").resize((1024, 458), Image.LANCZOS)          # 3D preview texture: no watermark, screen resolution only (~120 dpi at print size)
+    tex.save(f"{prefix}-wrap.webp", "WEBP", quality=80, method=6)
     print("ok", prefix)
