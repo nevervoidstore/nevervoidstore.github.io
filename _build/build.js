@@ -378,6 +378,59 @@ ${footer("")}
 </script>`;
 }
 
+function customMugPage() {
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp), url = `${BASE}/custom-mug/`;
+  const desc = "Design a personalised name mug: type a name, pick 4 things that describe them, see your mug instantly. Made to order, delivered across Karnataka. Perfect for team gifts.";
+  const traits = fs.readFileSync(path.join(SRC, "custommug", "traits.json"), "utf8");
+  const themes = [["classic","Christmas Classic","#c41826","#1c603a"],["navy","Navy & Gold","#162c54","#b88c3c"],["sage","Charcoal & Sage","#2b2f33","#6e8c78"],["rose","Rose","#a8445e","#c9877a"]];
+  const jsonld = [{"@context":"https://schema.org","@type":"Product","name":"Personalised Name Mug","description":desc,"image":`${BASE}/images/custom-name-mug.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
+    "offers":{"@type":"Offer","priceCurrency":"INR","price":String(price),"availability":"https://schema.org/MadeToOrder","url":url}}];
+  return `${head({title:"Personalised Name Mug: Design Your Own | Nevervoid Store", desc, url, image:`${BASE}/images/custom-name-mug.jpg`, root:"../", jsonld})}
+<body>
+${header("../","shop")}
+<main class="wrap cm">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Personalised name mug</span></nav>
+  <section class="cm-hero"><span class="eyebrow">Design your own</span><h1>A mug that’s <em>all about them</em></h1>
+    <p class="lead">Type a name, pick 4 things that describe them, and watch the mug design itself. Approve it, order it, and we print it for you.</p></section>
+  <section class="pdp cm-grid">
+    <div class="cm-preview">
+      <div class="gallery ph cm-stage"><canvas id="cm-mug" width="900" height="700" aria-label="Your mug preview"></canvas></div>
+      <div class="views cm-views"><button type="button" class="view cm-view on" data-v="r"><span>Front (name)</span></button><button type="button" class="view cm-view" data-v="l"><span>Back (monogram)</span></button></div>
+      <figure class="flat-wrap"><canvas id="cm-flat" width="1020" height="456"></canvas><figcaption>The full print, as it wraps round the mug.</figcaption></figure>
+    </div>
+    <div class="cm-form">
+      <label class="cm-step"><b>1. Their name</b><input id="cm-name" maxlength="14" autocomplete="off" placeholder="e.g. Priya" aria-describedby="cm-hint"></label>
+      <div class="cm-step"><b>2. Pick 4 things that describe them</b> <span id="cm-count" class="muted">0 of 4 chosen</span>
+        <div id="cm-traits" class="cm-chips" role="group" aria-label="Things that describe them"></div></div>
+      <div class="cm-step"><b>3. Style</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="cm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
+      <p id="cm-hint" class="cm-hint" aria-live="polite">Type a name to start.</p>
+      <div class="cm-actions"><button id="cm-approve" type="button" class="buy" disabled>Approve design</button><button id="cm-reset" type="button" class="ask">Reset</button></div>
+      <div id="cm-order" class="buybox" hidden>
+        <p class="cm-ok">✓ Design approved: <span id="cm-summary"></span></p>
+        <div class="pprice"><span class="was">${rupee(cp.price)}</span> <span class="now">${rupee(price)}</span></div>
+        <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span><input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
+        <div class="pin-msg" hidden></div>
+        <button class="buy" type="button" data-order data-rzp="custom_pet_mug" data-id="mug-name" data-name="Custom Name Mug" data-price="${price}">Order now · ${rupee(price)}</button>
+        <img id="pimg" alt="" hidden>
+        <p class="pnote">We print exactly the design you approved. 11oz white ceramic mug, made to order.</p>
+      </div>
+      <div class="cm-team"><b>Gifting a whole team?</b> Every employee can have their own name mug. <a href="../corporate.html">See team pricing →</a></div>
+    </div>
+  </section>
+</main>
+${footer("../")}
+<script>window.NV_TRAITS = ${traits};</script>
+<script defer src="/assets/custom-mug.js"></script>`;
+}
+function nameMugCard(root) {
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}custom-mug/`;
+  return `<article class="card coll-card" data-cat="christmas pets" data-type="mug">
+    <a class="stage ph" href="${href}" aria-label="Personalised name mug">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/custom-name-mug.jpg" alt="Personalised name mug" width="620" height="620" loading="lazy"><span class="coll-letters" aria-hidden="true">Design yours</span></a>
+    <div class="info"><div class="tags"><span class="tag">Personalised</span><span class="tag new">· New</span></div>
+      <h3><a href="${href}">Your Name Mug</a></h3><p>Their name and 4 things they love, designed live.</p>
+      <div class="price">${SALE.on ? `<span class="was">${rupee(cp.price)}</span> ` : ""}<span class="now">${rupee(salePrice(cp))}</span></div>
+      <a class="buy" href="${href}">Design yours</a></div></article>`;
+}
 // ---------- CSS ----------
 const extraCss = `
 .nav{display:flex;gap:8px;align-items:center}
@@ -487,6 +540,27 @@ body.co-lock{overflow:hidden}
 .ty-wa{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:8px}
 .ty-back{display:block;margin:14px 0 6px;color:var(--green);font-weight:600}
 .ty-note{font-size:13px;color:var(--muted)}
+.cm-hero{padding:14px 0 18px;max-width:720px}.cm-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 10px}.cm-hero h1 em{color:#a8332f}
+.pdp.cm-grid{align-items:start}
+.cm-stage{padding:0!important;display:flex;align-items:center;justify-content:center}.cm-stage canvas{width:100%;height:auto;display:block}
+.cm-views{grid-template-columns:1fr 1fr}.cm-views .view{justify-content:center}
+#cm-flat{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
+.cm-step{display:block;margin:0 0 20px}.cm-step>b{font-size:16px}
+#cm-name{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:14px;font:inherit;font-size:20px;border:1px solid #d8d0c2;border-radius:12px;background:#fff}
+#cm-name:focus{outline:2px solid var(--green);border-color:var(--green)}
+.cm-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin-top:10px}
+.cm-chip{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;text-align:left}
+.cm-chip svg{width:22px;height:22px;flex:none;color:var(--green)}
+.cm-chip.on{background:var(--green);border-color:var(--green);color:#fff}.cm-chip.on svg{color:#fff}
+.cm-chip.full{opacity:.5}
+.cm-themes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cm-theme input{position:absolute;opacity:0}.cm-theme span{display:flex;align-items:center;gap:6px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px;cursor:pointer}
+.cm-theme i{width:16px;height:16px;border-radius:50%;display:inline-block}.cm-theme input:checked+span{border:2px solid var(--green);padding:9px}
+.cm-hint{font-size:14px;color:var(--muted);margin:4px 0 12px}.cm-hint.warn{color:#a8332f;font-weight:600}
+.cm-actions{display:flex;gap:10px}.cm-actions .buy{flex:2}.cm-actions .ask{flex:1;margin:0}
+#cm-approve:disabled{opacity:.45;cursor:not-allowed}
+.cm-ok{background:#eef6f0;color:var(--green);border-radius:10px;padding:10px 12px;font-size:14px}
+.cm-team{margin-top:22px;padding:14px;border:1px dashed #cdbfa6;border-radius:14px;font-size:14px;background:#fffaf1}.cm-team a{color:var(--green);font-weight:700}
 .shown-on{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
 .cases-hero{padding:16px 0 22px;max-width:760px}
 .cases-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 12px}.cases-hero h1 em{color:#a8332f}
@@ -961,7 +1035,7 @@ ${header("","shop")}
       <a class="chip-link" href="initials/">🔤 Initials A–Z</a>
     </div>
     <div class="grid" id="grid">
-${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(1, 0, initialsCard("")); list.splice(3, 0, casesCard("")); return list.join("\n"); })()}
+${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(0, 0, nameMugCard("")); list.splice(2, 0, initialsCard("")); list.splice(4, 0, casesCard("")); return list.join("\n"); })()}
     </div>
   </div>
   <section class="band">
@@ -1072,6 +1146,10 @@ fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));
 fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join(SRC,"festive.js"),"utf8").replace("__SALE__", JSON.stringify(SALE)));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
+fs.mkdirSync(path.join(OUT,"custom-mug"),{recursive:true}); fs.writeFileSync(path.join(OUT,"custom-mug","index.html"), customMugPage());
+fs.copyFileSync(path.join(SRC,"custommug","custom-mug.js"), path.join(OUT,"assets","custom-mug.js"));
+fs.mkdirSync(path.join(OUT,"assets","fonts"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"custommug","fonts"))) fs.copyFileSync(path.join(SRC,"custommug","fonts",f), path.join(OUT,"assets","fonts",f));
+if (fs.existsSync(path.join(SRC,"custommug","sample.jpg"))) fs.copyFileSync(path.join(SRC,"custommug","sample.jpg"), path.join(OUT,"images","custom-name-mug.jpg"));
 fs.mkdirSync(path.join(OUT,"cases"),{recursive:true}); fs.writeFileSync(path.join(OUT,"cases","index.html"), casesPage());
 fs.mkdirSync(path.join(OUT,"initials"),{recursive:true}); fs.writeFileSync(path.join(OUT,"initials","index.html"), initialsPage());
 INITIALS().forEach(p => { const d = path.join(OUT,"initials",p.letter.toLowerCase()); fs.mkdirSync(d,{recursive:true}); fs.writeFileSync(path.join(d,"index.html"), initialsPage(p.letter)); });
@@ -1085,7 +1163,7 @@ fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);
