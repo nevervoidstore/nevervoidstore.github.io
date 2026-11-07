@@ -202,6 +202,11 @@ footer a{font-weight:700;color:var(--ink)}
 .li-inline{display:inline-flex;vertical-align:-3px;margin-left:4px}
 .foot-brand a{font-weight:600}
 .foot-policy a{font-weight:400;color:var(--muted)}
+.trustbar{background:#f3ece0;border-bottom:1px solid var(--line);font-size:13px;color:#4c5a52}
+.tb-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;padding:7px 0;text-align:center}
+.trustbar a{color:var(--green);font-weight:600;text-decoration:none}.trustbar a:hover{text-decoration:underline}
+.tb-li{display:inline-flex;vertical-align:-3px}.tb-li svg{width:15px;height:15px}
+@media (max-width:640px){.tb-wide,.tb-dot{display:none}.trustbar{font-size:12px}.tb-in{padding:6px 0;gap:2px 10px}}
 .trust-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .trust-links a{font-size:13px;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
 .checks a,.trust a{color:var(--green);font-weight:600}

@@ -133,6 +133,11 @@ footer a{font-weight:700;color:var(--ink)}
   nav a.hide-sm{display:none}
 }
 </style>
+<style>.trustbar{background:#f3ece0;border-bottom:1px solid var(--line);font-size:13px;color:#4c5a52}
+.tb-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;padding:7px 0;text-align:center}
+.trustbar a{color:var(--green);font-weight:600;text-decoration:none}.trustbar a:hover{text-decoration:underline}
+.tb-li{display:inline-flex;vertical-align:-3px}.tb-li svg{width:15px;height:15px}
+@media (max-width:640px){.tb-wide,.tb-dot{display:none}.trustbar{font-size:12px}.tb-in{padding:6px 0;gap:2px 10px}</style>
 </head>
 <body>
 
@@ -147,6 +152,13 @@ footer a{font-weight:700;color:var(--ink)}
     </nav>
   </div>
 </header>
+<div class="trustbar" role="note"><div class="wrap tb-in">
+  <span>A brand by <a href="https://nevervoid.com" rel="noopener">Nevervoid Photography</a></span>
+  <span class="tb-dot">·</span>
+  <span>Founded by <a href="https://www.linkedin.com/in/antonypratap/" rel="noopener">Antony Pratap</a> <a class="tb-li" href="https://www.linkedin.com/in/antonypratap/" rel="noopener" aria-label="Antony Pratap on LinkedIn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0A66C2"/><path fill="#fff" d="M7.1 9.6H4.6V19h2.5V9.6zM5.9 5.2a1.45 1.45 0 1 0 0 2.9 1.45 1.45 0 0 0 0-2.9zM19.4 13.6c0-2.6-1.4-4.2-3.7-4.2-1.3 0-2.1.7-2.5 1.3V9.6h-2.4V19h2.5v-4.9c0-1.3.4-2.3 1.7-2.3s1.6 1.1 1.6 2.4V19h2.5l.3-5.4z"/></svg></a></span>
+  <span class="tb-wide tb-dot">·</span><span class="tb-wide">🔒 Secure payments by Razorpay</span>
+  <span class="tb-wide tb-dot">·</span><span class="tb-wide">🚚 Delivered across Karnataka</span>
+</div></div>
 
 <main>
   <div class="wrap">

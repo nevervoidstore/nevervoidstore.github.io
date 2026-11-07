@@ -49,5 +49,11 @@ for a,b in reps:
 import re as _re
 _wa=_re.search(r'whatsapp: "([0-9]*)"', open('src/policies.js').read()).group(1)
 s=s.replace('whatsapp: "",            // e.g.', 'whatsapp: "%s",            // e.g.' % _wa)
+# same trust strip as every other page (markup and styles taken from the built homepage)
+_home=open('site/index.html').read()
+_bar=_re.search(r'<div class="trustbar".*?</div></div>', _home, _re.S).group(0).replace('href="../','href="')
+_css=_re.search(r'\.trustbar\{.*?@media \(max-width:640px\)\{[^}]*\}[^}]*\}[^}]*\}', open('site/assets/store.css').read(), _re.S)
+s=s.replace('</header>', '</header>\n'+_bar, 1)
+if _css and '.trustbar{' not in s: s=s.replace('</head>', '<style>'+_css.group(0)+'</style>\n</head>', 1)
 open('site/corporate.html','w').write(s)
 print("ok")

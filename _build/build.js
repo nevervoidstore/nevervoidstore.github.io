@@ -131,7 +131,14 @@ function header(root, active) {
       <a class="ig-icon" href="https://instagram.com/nevervoidstore" rel="noopener" aria-label="NevervoidStore on Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></a>
     </div>
   </div>
-</header>`;
+</header>
+<div class="trustbar" role="note"><div class="wrap tb-in">
+  <span>A brand by <a href="${POL.CONTACT.photographySite}" rel="noopener">Nevervoid Photography</a></span>
+  <span class="tb-dot">·</span>
+  <span>Founded by ${POL.CONTACT.linkedin ? `<a href="${POL.CONTACT.linkedin}" rel="noopener">Antony Pratap</a> <a class="tb-li" href="${POL.CONTACT.linkedin}" rel="noopener" aria-label="Antony Pratap on LinkedIn">${POL.LI_ICON}</a>` : "Antony Pratap"}</span>
+  <span class="tb-wide tb-dot">·</span><span class="tb-wide">🔒 Secure payments by Razorpay</span>
+  <span class="tb-wide tb-dot">·</span><span class="tb-wide">🚚 Delivered across Karnataka</span>
+</div></div>`;
 }
 
 function footer(root) {
@@ -460,6 +467,11 @@ const extraCss = `
 .li-inline{display:inline-flex;vertical-align:-3px;margin-left:4px}
 .foot-brand a{font-weight:600}
 .foot-policy a{font-weight:400;color:var(--muted)}
+.trustbar{background:#f3ece0;border-bottom:1px solid var(--line);font-size:13px;color:#4c5a52}
+.tb-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;padding:7px 0;text-align:center}
+.trustbar a{color:var(--green);font-weight:600;text-decoration:none}.trustbar a:hover{text-decoration:underline}
+.tb-li{display:inline-flex;vertical-align:-3px}.tb-li svg{width:15px;height:15px}
+@media (max-width:640px){.tb-wide,.tb-dot{display:none}.trustbar{font-size:12px}.tb-in{padding:6px 0;gap:2px 10px}}
 .trust-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .trust-links a{font-size:13px;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
 .checks a,.trust a{color:var(--green);font-weight:600}
