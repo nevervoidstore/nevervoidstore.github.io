@@ -146,10 +146,9 @@ const CONFIG = {
     });
   });
   document.querySelectorAll(".model").forEach(sel => sel.addEventListener("change", () => {
-    const o = sel.selectedOptions[0], img = document.getElementById("pimg");
-    if (img && o && o.dataset.img) { img.src = o.dataset.img; img.alt = img.alt.split(" — ")[0] + " — " + o.value; }
-    const cv = document.getElementById("pcanvas");
-    if (cv && o && o.dataset.slug) previewOn(cv, o.dataset.slug, o.value);
+    // one clean preview for every model (per-model cut-outs were distracting); just confirm the fit in words
+    const o = sel.selectedOptions[0], note = document.getElementById("shown-on");
+    if (note && o && o.value) note.textContent = "Shown on an iPhone 16 Pro. We’ll print it to fit your " + o.value + ".";
   }));
   // live preview: the chosen design on the chosen phone model (frame + print-area mask + design)
   const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });

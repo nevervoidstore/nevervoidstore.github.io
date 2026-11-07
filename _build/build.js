@@ -32,7 +32,7 @@ REAL.forEach(r => {
   r.models = JSON.parse(fs.readFileSync(path.join(SRC, "real", r.folder + ".json"), "utf8"));
   r.imgFor = slug => `/images/cases/${r.folder}/${slug}.webp`;
   r.art = `<img class="photo" src="${r.imgFor(r.defaultModel)}" alt="${r.name}" width="600" height="800" loading="lazy">`;
-  r.real = true;
+  r.real = true; r.shownOn = "iPhone 16 Pro";
 });
 const MUGS = require(path.join(SRC, "realmugs.js"));
 // handle-right is the default primary image; a mug can set view:"a" when its artwork faces the other side
@@ -179,7 +179,8 @@ function orderBlock(p) {
   if (p.models) {
     const brands = [...new Set(p.models.map(m => m.brand))];
     return `<label class="field">Your phone model
-        <select class="model" aria-label="Phone model"><option value="">Choose your phone</option>${brands.map(b => `<optgroup label="${b}">${p.models.filter(m=>m.brand===b).map(m=>`<option data-slug="${m.slug}"${p.imgFor ? ` data-img="${p.imgFor(m.slug)}"` : ""}>${m.label}</option>`).join("")}</optgroup>`).join("")}</select></label>
+        <select class="model" aria-label="Phone model"><option value="">Choose your phone</option>${brands.map(b => `<optgroup label="${b}">${p.models.filter(m=>m.brand===b).map(m=>`<option>${m.label}</option>`).join("")}</optgroup>`).join("")}</select></label>
+      <p class="model-help">Phone not listed? Tap <b>Ask a question</b> and tell us your model.</p>
       <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
@@ -697,6 +698,7 @@ body.co-lock{overflow:hidden}
 .tm-joined{display:block;margin-top:10px}
 @media (max-width:760px){.tm-setup,.tm-fields{grid-template-columns:1fr;gap:0 12px}.tm-grid{grid-template-columns:1fr 1fr;gap:10px}.tm-sum-top b{font-size:15px}.tm-total b{font-size:19px}.tm-fields{gap:12px}}
 .shown-on{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
+.model-help{font-size:12.5px;color:var(--muted);margin:-4px 0 2px}
 .cases-hero{padding:16px 0 22px;max-width:760px}
 .cases-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 12px}.cases-hero h1 em{color:#a8332f}
 .coll-letters{position:absolute;right:12px;bottom:12px;background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:5px 11px;border-radius:99px}
@@ -977,10 +979,9 @@ const CONFIG = {
     });
   });
   document.querySelectorAll(".model").forEach(sel => sel.addEventListener("change", () => {
-    const o = sel.selectedOptions[0], img = document.getElementById("pimg");
-    if (img && o && o.dataset.img) { img.src = o.dataset.img; img.alt = img.alt.split(" — ")[0] + " — " + o.value; }
-    const cv = document.getElementById("pcanvas");
-    if (cv && o && o.dataset.slug) previewOn(cv, o.dataset.slug, o.value);
+    // one clean preview for every model (per-model cut-outs were distracting); just confirm the fit in words
+    const o = sel.selectedOptions[0], note = document.getElementById("shown-on");
+    if (note && o && o.value) note.textContent = "Shown on an iPhone 16 Pro. We\u2019ll print it to fit your " + o.value + ".";
   }));
   // live preview: the chosen design on the chosen phone model (frame + print-area mask + design)
   const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
@@ -1073,7 +1074,7 @@ const CONFIG = {
 const org = {"@type":"Organization","@id":BASE+"/#org","name":"NevervoidStore","founder":Object.assign({"@type":"Person","name":"Antony Pratap"}, POL.CONTACT.linkedin ? {"sameAs":[POL.CONTACT.linkedin]} : {}),"parentOrganization":{"@type":"Organization","name":"Nevervoid Photography","url":POL.CONTACT.photographySite},"url":BASE+"/","logo":BASE+"/images/og-home.jpg","sameAs":["https://instagram.com/nevervoidstore"]};
 
 function galleryHtml(p) {
-  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : (p.galleryArt || p.art)}${p.code ? `<canvas id="pcanvas" class="photo" width="900" height="1200" hidden data-art="/images/cases/designs/${p.slug.replace(/-glass-phone-case$/, "")}-art.webp"></canvas>` : ""}</div>${p.shownOn ? `<p class="shown-on" id="shown-on">Shown on an ${p.shownOn}. Choose your phone below to see it on your model.</p>` : ""}${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`;
+  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : (p.galleryArt || p.art)}${p.code ? `<canvas id="pcanvas" class="photo" width="900" height="1200" hidden data-art="/images/cases/designs/${p.slug.replace(/-glass-phone-case$/, "")}-art.webp"></canvas>` : ""}</div>${p.shownOn ? `<p class="shown-on" id="shown-on">Shown on an ${p.shownOn}. We print the same design to fit your phone.</p>` : ""}${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`;
 }
 
 function productPage(p) {
