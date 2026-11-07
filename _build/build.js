@@ -207,67 +207,85 @@ function initialsCard(root) {
     </div>
   </article>`;
 }
-function initialsPage() {
-  const items = INITIALS(), url = `${BASE}/initials/`, have = Object.fromEntries(items.map(p => [p.letter, p]));
-  const lead = items[0], wa = POL.CONTACT.whatsapp;
+function initialsPage(letter) {
+  const items = INITIALS(), have = Object.fromEntries(items.map(p => [p.letter, p]));
+  const cur = (letter && have[letter]) || items[0], root = letter ? "../../" : "../";
+  const pageUrl = L => `${BASE}/initials/${L.toLowerCase()}/`;
+  const url = letter ? pageUrl(cur.letter) : `${BASE}/initials/`, wa = POL.CONTACT.whatsapp;
   const data = Object.fromEntries(items.map(p => [p.letter, { slug: p.slug, name: p.name, id: p.id, view: p.view, alt: p.alt, start: p.view === "a" ? "3.1416" : "0" }]));
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(L => have[L]
-    ? `<button type="button" class="lt ok${L === lead.letter ? " on" : ""}" data-letter="${L}" aria-pressed="${L === lead.letter}" aria-label="Letter ${L}">${L}</button>`
-    : `<button type="button" class="lt soon" disabled aria-label="Letter ${L}, coming soon" title="Coming soon">${L}</button>`).join("");
-  const desc = "Christmas mugs with a big festive initial in a Santa hat, printed on both sides. Choose your letter and order. Made to order, delivered across Karnataka.";
-  const jsonld = [
-    {"@context":"https://schema.org","@type":"CollectionPage","name":"Christmas Initial Mugs","url":url,"description":desc,
-      "mainEntity":{"@type":"ItemList","itemListElement":items.map((p,i)=>({"@type":"ListItem","position":i+1,"url":`${BASE}/products/${p.slug}.html`,"name":p.name}))}},
-    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Christmas Initial Mugs","item":url}]}];
+    ? `<a class="lt ok${L === cur.letter ? " on" : ""}" href="/initials/${L.toLowerCase()}/" data-letter="${L}" aria-current="${L === cur.letter ? "true" : "false"}" aria-label="Letter ${L}">${L}</a>`
+    : `<span class="lt soon" aria-label="Letter ${L}, coming soon" title="Coming soon">${L}</span>`).join("");
+  const desc = letter ? `A Christmas mug with a big festive letter ${cur.letter} in a Santa hat, printed on both sides. ${SALE.on ? rupee(salePrice(cur)) + " in the Christmas Sale. " : ""}Made to order, delivered across Karnataka.`
+                      : "Christmas mugs with a big festive initial in a Santa hat, printed on both sides. Choose your letter and order. Made to order, delivered across Karnataka.";
+  const title = letter ? `${cur.name} | Christmas Initial Mugs | Nevervoid Store` : "Christmas Initial Mugs A–Z | Personalised Letter Mugs | Nevervoid Store";
+  const jsonld = [{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Christmas Initial Mugs","item":`${BASE}/initials/`}].concat(letter ? [{"@type":"ListItem","position":3,"name":cur.name,"item":url}] : [])}];
   const askUrl = `https://wa.me/${wa}?text=${encodeURIComponent("Hi Antony, I'd like the Christmas initial mug with the letter ")}`;
-  return `${head({title:"Christmas Initial Mugs A–Z | Personalised Letter Mugs | Nevervoid Store", desc, url, image:`${BASE}/images/share/${lead.slug}.jpg`, root:"../", jsonld})}
+  const shareText = L => `${have[L].name} · ${SALE.on ? rupee(salePrice(have[L])) + " in the Christmas Sale" : rupee(have[L].price)} at NevervoidStore`;
+  const p = cur;
+  return `${head({title, desc, url, image:`${BASE}/images/share/${cur.slug}.jpg`, root, jsonld})}
 <body>
-${header("../","shop")}
+${header(root,"shop")}
 <main class="wrap">
-  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Christmas Initial Mugs</span></nav>
-  <section class="pdp ini">
-    ${galleryHtml(lead)}
-    <div>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="${root}index.html">Shop</a> › <a href="/initials/">Christmas Initial Mugs</a></nav>
+  <section class="pdp ini-grid">
+    <div class="ini-title">
       <div class="tags"><span class="tag">Christmas · Initial mug</span><span class="tag new">· New</span></div>
-      <h1 id="ini-name">${esc(lead.name)}</h1>
-      ${priceHtml(lead,"pprice")}${SALE.on ? `<div class="save">You save ${rupee(lead.price - salePrice(lead))} · ${SALE.label} ends 25 Dec</div>` : ""}
-      <div class="pnote">Made to order · delivering across Karnataka</div>
+      <h1 id="ini-name">${esc(cur.name)}</h1>
+      ${priceHtml(cur,"pprice")}${SALE.on ? `<div class="save">You save ${rupee(cur.price - salePrice(cur))} · ${SALE.label} ends 25 Dec</div>` : ""}
+    </div>
+    <div class="gal-col ini-gal">
+      <div class="gallery christmas ph" role="img" aria-label="${esc(p.name)} photo">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div></div>
+      <div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>Handle right</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>Handle left</span></button><button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button></div>
       <div class="ini-pick">
-        <div class="pick-head"><b>Choose a letter</b><span id="ini-chosen">Selected: ${lead.letter}</span></div>
+        <div class="pick-head"><b>Choose a letter</b><span id="ini-chosen">Showing ${cur.letter}</span></div>
         <div class="letters" role="group" aria-label="Choose a letter">${letters}</div>
         ${items.length < 26 ? `<p class="pick-note">Greyed-out letters are coming soon. Need one now? <a href="${askUrl}" target="_blank" rel="noopener">Ask on WhatsApp</a></p>` : ""}
       </div>
-      <div class="share"><button type="button" class="share-btn" data-share-url="${url}" data-share-title="Christmas Initial Mugs" data-share-text="Christmas initial mugs · ${SALE.on ? rupee(salePrice(lead)) + " in the Christmas Sale" : rupee(lead.price)} at NevervoidStore" aria-haspopup="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Share</span></button><div class="share-menu" hidden role="menu"><a role="menuitem" data-net="wa" target="_blank" rel="noopener">WhatsApp</a><a role="menuitem" data-net="fb" target="_blank" rel="noopener">Facebook</a><a role="menuitem" data-net="x" target="_blank" rel="noopener">X</a><button type="button" role="menuitem" data-net="copy">Copy link</button></div></div>
+    </div>
+    <div class="ini-buy">
+      <div class="pnote">Made to order · delivering across Karnataka</div>
+      <div class="share"><button type="button" class="share-btn" data-share-url="${pageUrl(cur.letter)}" data-share-title="${esc(cur.name)}" data-share-text="${esc(shareText(cur.letter))}" aria-haspopup="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Share</span></button><div class="share-menu" hidden role="menu"><a role="menuitem" data-net="wa" target="_blank" rel="noopener">WhatsApp</a><a role="menuitem" data-net="fb" target="_blank" rel="noopener">Facebook</a><a role="menuitem" data-net="x" target="_blank" rel="noopener">X</a><button type="button" role="menuitem" data-net="copy">Copy link</button></div></div>
       <p class="lead">A big festive initial in a Santa hat, strung with fairy lights, with a snowman, gifts and holly. Printed on both sides of an 11oz ceramic mug, so the letter faces you and whoever sits opposite.</p>
       <div class="buybox">
-      ${orderBlock(lead)}
+      ${orderBlock(cur)}
       </div>
     </div>
   </section>
+  <figure class="flat-wrap ini-flat"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>
 </main>
-${footer("../")}
+${footer(root)}
 <script>
 (function(){
-  var D = ${JSON.stringify(data)};
-  function pick(L, push){
+  var D = ${JSON.stringify(data)}, T = ${JSON.stringify(Object.fromEntries(items.map(i => [i.letter, shareText(i.letter)])))}, BASE = ${JSON.stringify(BASE)};
+  function pick(L){
     var d = D[L]; if (!d) return;
-    document.querySelectorAll(".letters .lt.ok").forEach(function(b){ var on = b.dataset.letter === L; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+    document.querySelectorAll(".letters .lt.ok").forEach(function(b){ var on = b.dataset.letter === L; b.classList.toggle("on", on); b.setAttribute("aria-current", on ? "true" : "false"); });
     document.getElementById("ini-name").textContent = d.name;
-    document.getElementById("ini-chosen").textContent = "Selected: " + L;
+    document.getElementById("ini-chosen").textContent = "Showing " + L;
+    document.title = d.name + " | Christmas Initial Mugs | Nevervoid Store";
     var img = document.getElementById("pimg"), views = document.querySelectorAll(".views .view:not(.v360)");
     var srcs = ["/images/mugs/" + d.slug + "-" + d.view + ".webp", "/images/mugs/" + d.slug + "-" + d.alt + ".webp"];
     views.forEach(function(v, i){ v.dataset.src = srcs[i]; var t = v.querySelector("img"); if (t) t.src = srcs[i]; });
     var on = document.querySelector(".views .view.on"), onIdx = Array.prototype.indexOf.call(views, on);
-    if (img) img.src = srcs[onIdx >= 0 ? onIdx : 0];
-    var flat = document.querySelector(".flat-wrap img"); if (flat) flat.src = "/images/mugs/" + d.slug + "-flat.webp";
+    if (img) { img.classList.add("swap"); img.src = srcs[onIdx >= 0 ? onIdx : 0]; img.onload = function(){ img.classList.remove("swap"); }; }
+    var flat = document.querySelector(".ini-flat img"); if (flat) flat.src = "/images/mugs/" + d.slug + "-flat.webp";
     var box = document.getElementById("m3d");
     if (box) { box.dataset.wrap = "/images/mugs/" + d.slug + "-wrap.webp"; box.dataset.start = d.start;
       if (box._m) { box._m.destroy(); box._m = null; if (!box.hidden) { var b3 = document.querySelector(".views .v360"); if (b3) b3.click(); } } }
     document.querySelectorAll(".buybox [data-order], .buybox [data-ask]").forEach(function(b){ b.dataset.name = d.name; if (b.dataset.id) b.dataset.id = d.id; });
-    if (push) history.replaceState(null, "", "?letter=" + L);
+    var sb = document.querySelector(".share-btn"), u = BASE + "/initials/" + L.toLowerCase() + "/";
+    if (sb) { sb.dataset.shareUrl = u; sb.dataset.shareTitle = d.name; sb.dataset.shareText = T[L];
+      var m = sb.nextElementSibling, e = encodeURIComponent;
+      m.querySelector('[data-net="wa"]').href = "https://wa.me/?text=" + e(T[L] + " " + u);
+      m.querySelector('[data-net="fb"]').href = "https://www.facebook.com/sharer/sharer.php?u=" + e(u);
+      m.querySelector('[data-net="x"]').href = "https://twitter.com/intent/tweet?text=" + e(T[L]) + "&url=" + e(u); }
+    history.replaceState(null, "", "/initials/" + L.toLowerCase() + "/");
+    var g = document.querySelector(".ini-gal .gallery"), r = g.getBoundingClientRect();
+    if (r.top < 70 || r.top > window.innerHeight * 0.5) window.scrollTo({ top: window.scrollY + r.top - 80, behavior: "smooth" });
   }
-  document.querySelectorAll(".letters .lt.ok").forEach(function(b){ b.addEventListener("click", function(){ pick(b.dataset.letter, true); }); });
-  var q = (location.search.match(/letter=([A-Za-z])/) || [])[1]; if (q) pick(q.toUpperCase(), false);
+  document.querySelectorAll(".letters .lt.ok").forEach(function(b){ b.addEventListener("click", function(ev){ ev.preventDefault(); pick(b.dataset.letter); }); });
+  var q = (location.search.match(/letter=([A-Za-z])/) || [])[1]; if (q) pick(q.toUpperCase());
 })();
 </script>`;
 }
@@ -360,6 +378,15 @@ const extraCss = `
 .lt.ok:hover{background:#eef4f0}
 .lt.ok.on{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,77,54,.25)}
 .lt.soon{cursor:not-allowed;opacity:.38;background:#f6f1e8}
+.pdp.ini-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);grid-template-areas:"gal title" "gal buy";grid-template-rows:auto 1fr;column-gap:44px;row-gap:0;align-items:start;padding:10px 0 26px}
+.ini-title{grid-area:title}.ini-gal{grid-area:gal}.ini-buy{grid-area:buy}
+.ini-title h1{font-family:Fraunces,Georgia,serif;font-size:clamp(28px,3.6vw,44px);line-height:1.08;margin:6px 0 10px}
+.ini-gal .ini-pick{margin:16px 0 0}
+.ini-gal .letters{display:grid;grid-template-columns:repeat(13,1fr);gap:6px;margin-top:10px}
+.ini-gal .lt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-family:Fraunces,Georgia,serif;font-size:17px;font-weight:700;text-decoration:none}
+.ini-flat{margin:6px 0 40px}
+#pimg{transition:opacity .18s}#pimg.swap{opacity:.35}
+@media (max-width:860px){.pdp.ini-grid{grid-template-columns:1fr;grid-template-areas:"title" "gal" "buy";row-gap:14px}.ini-title h1{font-size:28px;margin:4px 0 6px}.ini-title .save{margin-bottom:12px}.ini-gal .letters{grid-template-columns:repeat(9,1fr)}.ini-gal .lt{font-size:18px}.ini-gal .gal-col,.ini-gal{position:static}}
 .ini .ini-pick{margin:16px 0 4px;padding:0}
 .pick-head{display:flex;justify-content:space-between;align-items:baseline;font-size:15px}.pick-head span{color:var(--muted);font-size:14px}
 .ini .letters{grid-template-columns:repeat(9,1fr);gap:6px;margin-top:10px}
@@ -826,6 +853,7 @@ fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SR
 fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join(SRC,"festive.js"),"utf8").replace("__SALE__", JSON.stringify(SALE)));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.mkdirSync(path.join(OUT,"initials"),{recursive:true}); fs.writeFileSync(path.join(OUT,"initials","index.html"), initialsPage());
+INITIALS().forEach(p => { const d = path.join(OUT,"initials",p.letter.toLowerCase()); fs.mkdirSync(d,{recursive:true}); fs.writeFileSync(path.join(d,"index.html"), initialsPage(p.letter)); });
 PRODUCTS.forEach(p => fs.writeFileSync(path.join(OUT,"products",p.slug+".html"), productPage(p)));
 fs.writeFileSync(path.join(OUT,".nojekyll"), "");
 fs.mkdirSync(path.join(OUT,"images","cases"),{recursive:true}); fs.copyFileSync(path.join(SRC,"custom","custom-pet-case.webp"), path.join(OUT,"images","cases","custom-pet-case.webp"));
@@ -835,7 +863,7 @@ fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/initials/", BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);

@@ -167,6 +167,15 @@ footer a{font-weight:700;color:var(--ink)}
 .lt.ok:hover{background:#eef4f0}
 .lt.ok.on{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,77,54,.25)}
 .lt.soon{cursor:not-allowed;opacity:.38;background:#f6f1e8}
+.pdp.ini-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);grid-template-areas:"gal title" "gal buy";grid-template-rows:auto 1fr;column-gap:44px;row-gap:0;align-items:start;padding:10px 0 26px}
+.ini-title{grid-area:title}.ini-gal{grid-area:gal}.ini-buy{grid-area:buy}
+.ini-title h1{font-family:Fraunces,Georgia,serif;font-size:clamp(28px,3.6vw,44px);line-height:1.08;margin:6px 0 10px}
+.ini-gal .ini-pick{margin:16px 0 0}
+.ini-gal .letters{display:grid;grid-template-columns:repeat(13,1fr);gap:6px;margin-top:10px}
+.ini-gal .lt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-family:Fraunces,Georgia,serif;font-size:17px;font-weight:700;text-decoration:none}
+.ini-flat{margin:6px 0 40px}
+#pimg{transition:opacity .18s}#pimg.swap{opacity:.35}
+@media (max-width:860px){.pdp.ini-grid{grid-template-columns:1fr;grid-template-areas:"title" "gal" "buy";row-gap:14px}.ini-title h1{font-size:28px;margin:4px 0 6px}.ini-title .save{margin-bottom:12px}.ini-gal .letters{grid-template-columns:repeat(9,1fr)}.ini-gal .lt{font-size:18px}.ini-gal .gal-col,.ini-gal{position:static}}
 .ini .ini-pick{margin:16px 0 4px;padding:0}
 .pick-head{display:flex;justify-content:space-between;align-items:baseline;font-size:15px}.pick-head span{color:var(--muted);font-size:14px}
 .ini .letters{grid-template-columns:repeat(9,1fr);gap:6px;margin-top:10px}
