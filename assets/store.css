@@ -151,6 +151,7 @@ footer a{font-weight:700;color:var(--ink)}
 .share-menu a:hover,.share-menu button:hover{background:#f4efe6}
 .coll-card .stage{position:relative}
 .pdp .gallery.christmas,.pdp .gallery.pets{background:#fff}
+#pcanvas{position:absolute;inset:36px;width:calc(100% - 72px);height:calc(100% - 72px);object-fit:contain}
 .shown-on{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
 .cases-hero{padding:16px 0 22px;max-width:760px}
 .cases-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 12px}.cases-hero h1 em{color:#a8332f}

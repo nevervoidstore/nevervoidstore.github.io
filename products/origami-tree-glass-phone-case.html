@@ -27,7 +27,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f4d36'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Georgia' font-weight='700' font-size='18' fill='%23fbf6ec'%3EN%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/store.css?v=f6cb8495">
+<link rel="stylesheet" href="../assets/store.css?v=92a597dc">
 <link rel="stylesheet" href="../assets/festive.css?v=39e325ba">
 <script defer src="../assets/festive.js?v=97035389"></script>
 <script defer src="../assets/chat.js?v=143546a2"></script>
@@ -49,7 +49,7 @@
 <main class="wrap">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <a href="../cases/">Phone cases</a> › <span>Origami Tree Glass Case</span></nav>
   <section class="pdp">
-    <div class="gal-col"><div class="gallery christmas" role="img" aria-label="Origami Tree Glass Case mock-up"><span class="fx-badge big">−20%</span><img id="pimg" class="photo" src="/images/cases/designs/origami-tree.webp" alt="Origami Tree glass phone case" width="1200" height="1600"></div><p class="shown-on">Shown on an iPhone 16 Pro. Your case is made for the model you choose.</p></div>
+    <div class="gal-col"><div class="gallery christmas" role="img" aria-label="Origami Tree Glass Case mock-up"><span class="fx-badge big">−20%</span><img id="pimg" class="photo" src="/images/cases/designs/origami-tree.webp" alt="Origami Tree glass phone case" width="1200" height="1600"><canvas id="pcanvas" class="photo" width="900" height="1200" hidden data-art="/images/cases/designs/origami-tree-art.webp"></canvas></div><p class="shown-on" id="shown-on">Shown on an iPhone 16 Pro. Choose your phone below to see it on your model.</p></div>
     <div>
       <div class="tags"><span class="tag">Christmas · Glass phone case</span><span class="tag new">· New</span></div>
       <h1>Origami Tree Glass Case</h1>
@@ -59,7 +59,7 @@
       <p class="lead">A bright origami Christmas tree with a golden star on teal. A glossy glass phone case, made to order for your exact phone model.</p>
       <div class="buybox">
       <label class="field">Your phone model
-        <select class="model" aria-label="Phone model"><option value="">Choose your phone</option><optgroup label="Apple"><option>iPhone 17 Pro Max</option><option>iPhone 17 Pro</option><option>iPhone Air</option><option>iPhone 17</option><option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16 Plus</option><option>iPhone 16</option><option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15 Plus</option><option>iPhone 15</option><option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14 Plus</option><option>iPhone 14</option><option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13 mini</option><option>iPhone 13</option><option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12 mini</option><option>iPhone 12</option><option>iPhone 11 Pro Max</option><option>iPhone 11 Pro</option><option>iPhone 11</option><option>iPhone XR</option></optgroup><optgroup label="Samsung"><option>Galaxy S25</option><option>Galaxy S24</option><option>Galaxy S23</option><option>Galaxy S22 Ultra</option></optgroup><optgroup label="OnePlus"><option>OnePlus 12</option><option>OnePlus 12R</option><option>OnePlus 11</option><option>OnePlus 11R</option></optgroup></select></label>
+        <select class="model" aria-label="Phone model"><option value="">Choose your phone</option><optgroup label="Apple"><option data-slug="iphone-17-pro-max">iPhone 17 Pro Max</option><option data-slug="iphone-17-pro">iPhone 17 Pro</option><option data-slug="iphone-air">iPhone Air</option><option data-slug="iphone-17">iPhone 17</option><option data-slug="iphone-16-pro-max">iPhone 16 Pro Max</option><option data-slug="iphone-16-pro">iPhone 16 Pro</option><option data-slug="iphone-16-plus">iPhone 16 Plus</option><option data-slug="iphone-16">iPhone 16</option><option data-slug="iphone-15-pro-max">iPhone 15 Pro Max</option><option data-slug="iphone-15-pro">iPhone 15 Pro</option><option data-slug="iphone-15-plus">iPhone 15 Plus</option><option data-slug="iphone-15">iPhone 15</option><option data-slug="iphone-14-pro-max">iPhone 14 Pro Max</option><option data-slug="iphone-14-pro">iPhone 14 Pro</option><option data-slug="iphone-14-plus">iPhone 14 Plus</option><option data-slug="iphone-14">iPhone 14</option><option data-slug="iphone-13-pro-max">iPhone 13 Pro Max</option><option data-slug="iphone-13-pro">iPhone 13 Pro</option><option data-slug="iphone-13-mini">iPhone 13 mini</option><option data-slug="iphone-13">iPhone 13</option><option data-slug="iphone-12-pro-max">iPhone 12 Pro Max</option><option data-slug="iphone-12-pro">iPhone 12 Pro</option><option data-slug="iphone-12-mini">iPhone 12 mini</option><option data-slug="iphone-12">iPhone 12</option><option data-slug="iphone-11-pro-max">iPhone 11 Pro Max</option><option data-slug="iphone-11-pro">iPhone 11 Pro</option><option data-slug="iphone-11">iPhone 11</option><option data-slug="iphone-xr">iPhone XR</option></optgroup><optgroup label="Samsung"><option data-slug="galaxy-s25">Galaxy S25</option><option data-slug="galaxy-s24">Galaxy S24</option><option data-slug="galaxy-s23">Galaxy S23</option><option data-slug="galaxy-s22-ultra">Galaxy S22 Ultra</option></optgroup><optgroup label="OnePlus"><option data-slug="oneplus-12">OnePlus 12</option><option data-slug="oneplus-12r">OnePlus 12R</option><option data-slug="oneplus-11">OnePlus 11</option><option data-slug="oneplus-11r">OnePlus 11R</option></optgroup></select></label>
       <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
@@ -78,44 +78,44 @@
   </section>
   <section class="related">
     <h2>You might also like</h2>
-    <div class="grid"><article class="card" data-cat="christmas pets" data-type="case">
-    <a class="stage christmas" href="../products/knitted-christmas-puppies-glass-phone-case.html" aria-label="Knitted Christmas Puppies Glass Case"><span class="fx-badge">−20%</span><img class="photo" src="/images/cases/knitted-christmas-puppies/iphone-16-pro.webp" alt="Knitted Christmas Puppies Glass Case" width="600" height="800" loading="lazy"></a>
+    <div class="grid"><article class="card" data-cat="christmas" data-type="case">
+    <a class="stage christmas" href="../products/three-gnomes-glass-phone-case.html" aria-label="Three Gnomes Glass Case"><span class="fx-badge">−20%</span><img class="photo" src="/images/cases/designs/three-gnomes-sm.webp" alt="Three Gnomes glass phone case" width="480" height="640" loading="lazy"></a>
     <div class="info">
       <div class="tags"><span class="tag">Phone case</span><span class="tag new">· New</span></div>
-      <h3><a href="../products/knitted-christmas-puppies-glass-phone-case.html">Knitted Christmas Puppies Glass Case</a></h3>
-      <p>Cosy knitted puppies among pine, berries and poinsettias.</p>
+      <h3><a href="../products/three-gnomes-glass-phone-case.html">Three Gnomes Glass Case</a></h3>
+      <p>Three bearded gnomes guarding a pile of Christmas presents.</p>
       <div class="price"><span class="was">₹699</span> <span class="now">₹559</span></div>
-      <a class="buy" href="../products/knitted-christmas-puppies-glass-phone-case.html">View &amp; order</a>
+      <a class="buy" href="../products/three-gnomes-glass-phone-case.html">View &amp; order</a>
     </div>
   </article>
-<article class="card" data-cat="christmas" data-type="mug">
-    <a class="stage christmas ph" href="../products/christmas-initial-a-mug.html" aria-label="Christmas Initial A Mug"><span class="fx-badge">−20%</span><img class="photo" src="/images/mugs/christmas-initial-a-mug-b.webp" alt="Christmas Initial A Mug" width="620" height="620" loading="lazy"></a>
+<article class="card" data-cat="christmas" data-type="case">
+    <a class="stage christmas" href="../products/reindeer-portrait-glass-phone-case.html" aria-label="Reindeer Portrait Glass Case"><span class="fx-badge">−20%</span><img class="photo" src="/images/cases/designs/reindeer-portrait-sm.webp" alt="Reindeer Portrait glass phone case" width="480" height="640" loading="lazy"></a>
     <div class="info">
-      <div class="tags"><span class="tag">Mug</span><span class="tag new">· New</span></div>
-      <h3><a href="../products/christmas-initial-a-mug.html">Christmas Initial A Mug</a></h3>
-      <p>A glowing letter A in a Santa hat, with a snowman.</p>
-      <div class="price"><span class="was">₹449</span> <span class="now">₹359</span></div>
-      <a class="buy" href="../products/christmas-initial-a-mug.html">View &amp; order</a>
+      <div class="tags"><span class="tag">Phone case</span><span class="tag new">· New</span></div>
+      <h3><a href="../products/reindeer-portrait-glass-phone-case.html">Reindeer Portrait Glass Case</a></h3>
+      <p>A gentle reindeer portrait among baubles and snowy pine.</p>
+      <div class="price"><span class="was">₹699</span> <span class="now">₹559</span></div>
+      <a class="buy" href="../products/reindeer-portrait-glass-phone-case.html">View &amp; order</a>
     </div>
   </article>
-<article class="card" data-cat="christmas" data-type="mug">
-    <a class="stage christmas ph" href="../products/christmas-initial-b-mug.html" aria-label="Christmas Initial B Mug"><span class="fx-badge">−20%</span><img class="photo" src="/images/mugs/christmas-initial-b-mug-b.webp" alt="Christmas Initial B Mug" width="620" height="620" loading="lazy"></a>
+<article class="card" data-cat="christmas" data-type="case">
+    <a class="stage christmas" href="../products/santa-by-the-tree-glass-phone-case.html" aria-label="Santa by the Tree Glass Case"><span class="fx-badge">−20%</span><img class="photo" src="/images/cases/designs/santa-by-the-tree-sm.webp" alt="Santa by the Tree glass phone case" width="480" height="640" loading="lazy"></a>
     <div class="info">
-      <div class="tags"><span class="tag">Mug</span><span class="tag new">· New</span></div>
-      <h3><a href="../products/christmas-initial-b-mug.html">Christmas Initial B Mug</a></h3>
-      <p>A glowing letter B in a Santa hat, with a snowman.</p>
-      <div class="price"><span class="was">₹449</span> <span class="now">₹359</span></div>
-      <a class="buy" href="../products/christmas-initial-b-mug.html">View &amp; order</a>
+      <div class="tags"><span class="tag">Phone case</span><span class="tag new">· New</span></div>
+      <h3><a href="../products/santa-by-the-tree-glass-phone-case.html">Santa by the Tree Glass Case</a></h3>
+      <p>Santa with his gifts beside a glowing Christmas tree.</p>
+      <div class="price"><span class="was">₹699</span> <span class="now">₹559</span></div>
+      <a class="buy" href="../products/santa-by-the-tree-glass-phone-case.html">View &amp; order</a>
     </div>
   </article>
-<article class="card" data-cat="christmas" data-type="mug">
-    <a class="stage christmas ph" href="../products/christmas-initial-c-mug.html" aria-label="Christmas Initial C Mug"><span class="fx-badge">−20%</span><img class="photo" src="/images/mugs/christmas-initial-c-mug-b.webp" alt="Christmas Initial C Mug" width="620" height="620" loading="lazy"></a>
+<article class="card" data-cat="christmas" data-type="case">
+    <a class="stage christmas" href="../products/snowy-gnome-glass-phone-case.html" aria-label="Snowy Gnome Glass Case"><span class="fx-badge">−20%</span><img class="photo" src="/images/cases/designs/snowy-gnome-sm.webp" alt="Snowy Gnome glass phone case" width="480" height="640" loading="lazy"></a>
     <div class="info">
-      <div class="tags"><span class="tag">Mug</span><span class="tag new">· New</span></div>
-      <h3><a href="../products/christmas-initial-c-mug.html">Christmas Initial C Mug</a></h3>
-      <p>A glowing letter C in a Santa hat, with a snowman.</p>
-      <div class="price"><span class="was">₹449</span> <span class="now">₹359</span></div>
-      <a class="buy" href="../products/christmas-initial-c-mug.html">View &amp; order</a>
+      <div class="tags"><span class="tag">Phone case</span><span class="tag new">· New</span></div>
+      <h3><a href="../products/snowy-gnome-glass-phone-case.html">Snowy Gnome Glass Case</a></h3>
+      <p>A fluffy-bearded gnome with a red nose in falling snow.</p>
+      <div class="price"><span class="was">₹699</span> <span class="now">₹559</span></div>
+      <a class="buy" href="../products/snowy-gnome-glass-phone-case.html">View &amp; order</a>
     </div>
   </article></div>
   </section>
@@ -147,6 +147,6 @@
   <p>Made-to-order mugs &amp; phone cases · Delivering across Karnataka · <a href="https://instagram.com/nevervoidstore" rel="noopener">@nevervoidstore</a></p>
 </footer>
 <div class="toast" id="toast"></div>
-<script src="../assets/store.js?v=d626f1d0"></script>
+<script src="../assets/store.js?v=e666128a"></script>
 </body>
 </html>

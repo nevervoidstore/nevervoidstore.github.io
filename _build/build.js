@@ -171,7 +171,7 @@ function orderBlock(p) {
   if (p.models) {
     const brands = [...new Set(p.models.map(m => m.brand))];
     return `<label class="field">Your phone model
-        <select class="model" aria-label="Phone model"><option value="">Choose your phone</option>${brands.map(b => `<optgroup label="${b}">${p.models.filter(m=>m.brand===b).map(m=>`<option${p.imgFor ? ` data-img="${p.imgFor(m.slug)}"` : ""}>${m.label}</option>`).join("")}</optgroup>`).join("")}</select></label>
+        <select class="model" aria-label="Phone model"><option value="">Choose your phone</option>${brands.map(b => `<optgroup label="${b}">${p.models.filter(m=>m.brand===b).map(m=>`<option data-slug="${m.slug}"${p.imgFor ? ` data-img="${p.imgFor(m.slug)}"` : ""}>${m.label}</option>`).join("")}</optgroup>`).join("")}</select></label>
       <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
@@ -409,6 +409,7 @@ const extraCss = `
 .share-menu a:hover,.share-menu button:hover{background:#f4efe6}
 .coll-card .stage{position:relative}
 .pdp .gallery.christmas,.pdp .gallery.pets{background:#fff}
+#pcanvas{position:absolute;inset:36px;width:calc(100% - 72px);height:calc(100% - 72px);object-fit:contain}
 .shown-on{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
 .cases-hero{padding:16px 0 22px;max-width:760px}
 .cases-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 12px}.cases-hero h1 em{color:#a8332f}
@@ -626,7 +627,28 @@ const CONFIG = {
   document.querySelectorAll(".model").forEach(sel => sel.addEventListener("change", () => {
     const o = sel.selectedOptions[0], img = document.getElementById("pimg");
     if (img && o && o.dataset.img) { img.src = o.dataset.img; img.alt = img.alt.split(" — ")[0] + " — " + o.value; }
+    const cv = document.getElementById("pcanvas");
+    if (cv && o && o.dataset.slug) previewOn(cv, o.dataset.slug, o.value);
   }));
+  // live preview: the chosen design on the chosen phone model (frame + print-area mask + design)
+  const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+  let RECTS = null, previewSeq = 0;
+  async function previewOn(cv, slug, label) {
+    const seq = ++previewSeq, img = document.getElementById("pimg"), note = document.getElementById("shown-on");
+    try {
+      if (!RECTS) RECTS = await (await fetch("/images/cases/frames/rects.json")).json();
+      const [art, frame, mask] = await Promise.all([loadImg(cv.dataset.art), loadImg("/images/cases/frames/" + slug + "-frame.webp"), loadImg("/images/cases/frames/" + slug + "-mask.png")]);
+      if (seq !== previewSeq) return;
+      const S = cv.width / 600, ctx = cv.getContext("2d"), [x0, y0, x1, y1] = RECTS[slug];
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      const rw = (x1 - x0) * S, rh = (y1 - y0) * S, r = Math.max(rw / art.width, rh / art.height), dw = art.width * r, dh = art.height * r;
+      ctx.drawImage(art, x0 * S + (rw - dw) / 2, y0 * S + (rh - dh) / 2, dw, dh);       // cover, centred, never stretched
+      ctx.globalCompositeOperation = "destination-in"; ctx.drawImage(mask, 0, 0, cv.width, cv.height);
+      ctx.globalCompositeOperation = "source-over"; ctx.drawImage(frame, 0, 0, cv.width, cv.height);
+      cv.hidden = false; if (img) img.style.visibility = "hidden";
+      if (note) note.textContent = "Showing on " + label + ".";
+    } catch (e) { cv.hidden = true; if (img) img.style.visibility = ""; }
+  }
   // share: native share sheet on phones, otherwise a small menu
   document.querySelectorAll(".share-btn").forEach(btn => {
     const menu = btn.nextElementSibling, url = btn.dataset.shareUrl, title = btn.dataset.shareTitle, text = btn.dataset.shareText;
@@ -699,7 +721,7 @@ const CONFIG = {
 const org = {"@type":"Organization","@id":BASE+"/#org","name":"NevervoidStore","founder":Object.assign({"@type":"Person","name":"Antony Pratap"}, POL.CONTACT.linkedin ? {"sameAs":[POL.CONTACT.linkedin]} : {}),"parentOrganization":{"@type":"Organization","name":"Nevervoid Photography","url":POL.CONTACT.photographySite},"url":BASE+"/","logo":BASE+"/images/og-home.jpg","sameAs":["https://instagram.com/nevervoidstore"]};
 
 function galleryHtml(p) {
-  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : (p.galleryArt || p.art)}</div>${p.shownOn ? `<p class="shown-on">Shown on an ${p.shownOn}. Your case is made for the model you choose.</p>` : ""}${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`;
+  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : (p.galleryArt || p.art)}${p.code ? `<canvas id="pcanvas" class="photo" width="900" height="1200" hidden data-art="/images/cases/designs/${p.slug.replace(/-glass-phone-case$/, "")}-art.webp"></canvas>` : ""}</div>${p.shownOn ? `<p class="shown-on" id="shown-on">Shown on an ${p.shownOn}. Choose your phone below to see it on your model.</p>` : ""}${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`;
 }
 
 function productPage(p) {
@@ -708,7 +730,11 @@ function productPage(p) {
   const title = `${p.name} | ${catLabel(p)} ${typeLabel(p)} | Nevervoid Store`;
   const desc = `${p.desc} ${SALE.on ? SALE.label + " " + rupee(salePrice(p)) + " (was " + rupee(p.price) + ")" : rupee(p.price)}, made to order and delivered across Karnataka.`.slice(0, 158);
   const others = PRODUCTS.filter(x => x.id !== p.id);
-  const related = [...others.filter(x => x.cat === p.cat), ...others.filter(x => x.cat !== p.cat && x.type === p.type)].slice(0, 4);
+  // same type only (cases with cases, mugs with mugs), single initial letters left out, picks vary per page
+  const pool = others.filter(x => x.type === p.type && x.collection !== "initials");
+  const seed = [...p.slug].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+  const rot = arr => arr.length ? arr.map((_, i) => arr[(i + seed) % arr.length]) : arr;
+  const related = [...rot(pool.filter(x => x.cat === p.cat)), ...rot(pool.filter(x => x.cat !== p.cat))].slice(0, 4);
   const jsonld = [
     {"@context":"https://schema.org","@type":"Product","name":p.name,"description":p.long,"image":imgs,"sku":p.id,
      "brand":{"@type":"Brand","name":"Nevervoid Store"},"category":`${catLabel(p)} ${typeLabel(p)}`,
@@ -908,7 +934,7 @@ fs.mkdirSync(path.join(OUT,"initials"),{recursive:true}); fs.writeFileSync(path.
 INITIALS().forEach(p => { const d = path.join(OUT,"initials",p.letter.toLowerCase()); fs.mkdirSync(d,{recursive:true}); fs.writeFileSync(path.join(d,"index.html"), initialsPage(p.letter)); });
 PRODUCTS.forEach(p => fs.writeFileSync(path.join(OUT,"products",p.slug+".html"), productPage(p)));
 fs.writeFileSync(path.join(OUT,".nojekyll"), "");
-fs.mkdirSync(path.join(OUT,"images","cases"),{recursive:true}); fs.mkdirSync(path.join(OUT,"images","cases","designs"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"casedesigns"))) fs.copyFileSync(path.join(SRC,"casedesigns",f), path.join(OUT,"images","cases","designs",f)); fs.copyFileSync(path.join(SRC,"custom","custom-pet-case.webp"), path.join(OUT,"images","cases","custom-pet-case.webp"));
+fs.mkdirSync(path.join(OUT,"images","cases"),{recursive:true}); fs.mkdirSync(path.join(OUT,"images","cases","designs"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"casedesigns"))) fs.copyFileSync(path.join(SRC,"casedesigns",f), path.join(OUT,"images","cases","designs",f)); fs.mkdirSync(path.join(OUT,"images","cases","frames"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"caseframes"))) if (/\.(webp|png|json)$/.test(f)) fs.copyFileSync(path.join(SRC,"caseframes",f), path.join(OUT,"images","cases","frames",f)); fs.copyFileSync(path.join(SRC,"custom","custom-pet-case.webp"), path.join(OUT,"images","cases","custom-pet-case.webp"));
 fs.mkdirSync(path.join(OUT,"policies"), {recursive:true});
 PAGES.forEach(pg => fs.writeFileSync(path.join(OUT,"policies",pg.slug+".html"), policyPage(pg)));
 fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});

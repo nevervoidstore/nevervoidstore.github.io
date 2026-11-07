@@ -87,7 +87,28 @@ const CONFIG = {
   document.querySelectorAll(".model").forEach(sel => sel.addEventListener("change", () => {
     const o = sel.selectedOptions[0], img = document.getElementById("pimg");
     if (img && o && o.dataset.img) { img.src = o.dataset.img; img.alt = img.alt.split(" — ")[0] + " — " + o.value; }
+    const cv = document.getElementById("pcanvas");
+    if (cv && o && o.dataset.slug) previewOn(cv, o.dataset.slug, o.value);
   }));
+  // live preview: the chosen design on the chosen phone model (frame + print-area mask + design)
+  const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+  let RECTS = null, previewSeq = 0;
+  async function previewOn(cv, slug, label) {
+    const seq = ++previewSeq, img = document.getElementById("pimg"), note = document.getElementById("shown-on");
+    try {
+      if (!RECTS) RECTS = await (await fetch("/images/cases/frames/rects.json")).json();
+      const [art, frame, mask] = await Promise.all([loadImg(cv.dataset.art), loadImg("/images/cases/frames/" + slug + "-frame.webp"), loadImg("/images/cases/frames/" + slug + "-mask.png")]);
+      if (seq !== previewSeq) return;
+      const S = cv.width / 600, ctx = cv.getContext("2d"), [x0, y0, x1, y1] = RECTS[slug];
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      const rw = (x1 - x0) * S, rh = (y1 - y0) * S, r = Math.max(rw / art.width, rh / art.height), dw = art.width * r, dh = art.height * r;
+      ctx.drawImage(art, x0 * S + (rw - dw) / 2, y0 * S + (rh - dh) / 2, dw, dh);       // cover, centred, never stretched
+      ctx.globalCompositeOperation = "destination-in"; ctx.drawImage(mask, 0, 0, cv.width, cv.height);
+      ctx.globalCompositeOperation = "source-over"; ctx.drawImage(frame, 0, 0, cv.width, cv.height);
+      cv.hidden = false; if (img) img.style.visibility = "hidden";
+      if (note) note.textContent = "Showing on " + label + ".";
+    } catch (e) { cv.hidden = true; if (img) img.style.visibility = ""; }
+  }
   // share: native share sheet on phones, otherwise a small menu
   document.querySelectorAll(".share-btn").forEach(btn => {
     const menu = btn.nextElementSibling, url = btn.dataset.shareUrl, title = btn.dataset.shareTitle, text = btn.dataset.shareText;
