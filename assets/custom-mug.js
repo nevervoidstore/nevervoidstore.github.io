@@ -50,7 +50,7 @@
     var t = text.toUpperCase(); ctx.fillStyle = color; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     var s = fitFont(ctx, t, "NVSans, sans-serif", 600, 36, 34, 152);
     if (ctx.measureText(t).width <= 152) { ctx.fillText(t, x, y); return; }
-    if (t.indexOf(" ") < 0) { ctx.font = "600 34px NVSans, sans-serif"; ctx.fillText(t, x, y, 158); return; }
+    if (t.indexOf(" ") < 0) { fitFont(ctx, t, "NVSans, sans-serif", 600, 34, 22, 160); ctx.fillText(t, x, y); return; }
     var w = t.split(" "); var a = w.slice(0, Math.ceil(w.length / 2)).join(" "), b = w.slice(Math.ceil(w.length / 2)).join(" ");
     fitFont(ctx, a.length > b.length ? a : b, "NVSans, sans-serif", 600, 34, 28, 156); ctx.fillText(a, x, y - 20); ctx.fillText(b, x, y + 20);
   }
@@ -64,7 +64,7 @@
     var xs = [-237, -79, 79, 237], jobs = [], IY = 730;
     state.traits.forEach(function (k, i) {
       var x = FRONT + xs[i];
-      ctx.strokeStyle = th.accent; ctx.globalAlpha = 0.35; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, IY, 72, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.fillStyle = th.accent; ctx.globalAlpha = 0.10; ctx.beginPath(); ctx.arc(x, IY, 72, 0, 7); ctx.fill(); ctx.globalAlpha = 0.55; ctx.strokeStyle = th.accent; ctx.lineWidth = 3; ctx.stroke(); ctx.globalAlpha = 1;
       label(ctx, byKey[k] ? byKey[k].l : k, x, 878, th.text);
       jobs.push(icon(k, th.icon).then(function (im) { if (im) ctx.drawImage(im, x - 52, IY - 52, 104, 104); }));
     });
@@ -80,33 +80,36 @@
     ctx.fillStyle = th.line; ctx.fillRect(0, 1048, PW, 5); ctx.fillRect(0, 1064, PW, 2);
     return Promise.all(jobs);
   }
-  // 2D mug preview: the print wrapped on a cylinder (same geometry as the real 11oz mug)
+  // real-mug preview: Printrove's own mug photo with the print wrapped using the measured cylinder maps
+  var MUGS = {}, small = document.createElement("canvas"); small.width = 1020; small.height = 456;
+  function loadImg(src) { return new Promise(function (ok, no) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = no; i.src = src; }); }
+  function pixels(img) { var c = document.createElement("canvas"); c.width = img.width; c.height = img.height; var x = c.getContext("2d"); x.drawImage(img, 0, 0); return x.getImageData(0, 0, img.width, img.height).data; }
+  var mugsReady = Promise.all(["a", "b"].map(function (v) {
+    return Promise.all([loadImg("/assets/custommug/mug-" + v + ".jpg"), loadImg("/assets/custommug/map-" + v + "-s.png"), loadImg("/assets/custommug/map-" + v + "-v.png")]).then(function (r) {
+      var base = pixels(r[0]), ms = pixels(r[1]), mv = pixels(r[2]), n = 620 * 620, S = new Float32Array(n), V = new Float32Array(n), E = new Float32Array(n);
+      for (var i = 0; i < n; i++) { S[i] = (ms[i * 4] * 256 + ms[i * 4 + 1]) / 65535; V[i] = (mv[i * 4] * 256 + mv[i * 4 + 1]) / 65535; E[i] = ms[i * 4 + 2] / 255; }
+      MUGS[v] = { base: base, S: S, V: V, E: E };
+    });
+  }));
   function drawMug() {
-    var c = mug.getContext("2d"), W = mug.width, H = mug.height; c.clearRect(0, 0, W, H);
-    var right = state.view === "r", R = 190, cx = W / 2 + (right ? -50 : 50), x0 = cx - R, x1 = cx + R, y0 = 110, y1 = 590, rim = 34;
-    var centre = right ? FRONT : BACK, pxPerRad = 487.5, printTop = y0 + 14, printH = (y1 - y0) - 26;
-    // shadow
-    c.save(); c.filter = "blur(14px)"; c.fillStyle = "rgba(0,0,0,.18)"; c.beginPath(); c.ellipse(cx + (right ? 30 : -30), y1 + 8, R * 1.05, 22, 0, 0, 7); c.fill(); c.restore();
-    // handle
-    var hx = right ? x1 + 58 : x0 - 58;
-    c.save(); c.lineWidth = 40; var hg = c.createLinearGradient(hx - 90, 0, hx + 90, 0); hg.addColorStop(0, "#d9d9d9"); hg.addColorStop(0.5, "#fbfbfb"); hg.addColorStop(1, "#c9c9c9");
-    c.strokeStyle = hg; c.beginPath(); c.ellipse(hx, (y0 + y1) / 2 - 10, 78, 132, 0, 0, 7); c.stroke(); c.restore();
-    // body
-    c.save(); c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y0); c.lineTo(x1, y1); c.ellipse(cx, y1, R, 20, 0, 0, Math.PI); c.closePath(); c.clip();
-    c.fillStyle = "#fff"; c.fillRect(x0, y0 - rim, 2 * R, y1 - y0 + 60);
-    for (var i = 0; i < 2 * R; i++) {
-      var t = (i + 0.5 - R) / R, th = Math.asin(t), sx = centre + th * pxPerRad, sw = Math.max(1, pxPerRad / (R * Math.sqrt(Math.max(0.02, 1 - t * t))));
-      if (sx < 0 || sx + sw > PW) continue;
-      c.drawImage(print, sx, 0, sw, PH, x0 + i, printTop, 1.4, printH);
-    }
-    var g = c.createLinearGradient(x0, 0, x1, 0);
-    g.addColorStop(0, "rgba(0,0,0,.24)"); g.addColorStop(0.18, "rgba(0,0,0,.06)"); g.addColorStop(0.35, "rgba(255,255,255,0)"); g.addColorStop(0.42, "rgba(255,255,255,.35)");
-    g.addColorStop(0.5, "rgba(255,255,255,0)"); g.addColorStop(0.82, "rgba(0,0,0,.08)"); g.addColorStop(1, "rgba(0,0,0,.28)");
-    c.fillStyle = g; c.fillRect(x0, y0, 2 * R, y1 - y0 + 30); c.restore();
-    // rim
-    c.save(); c.beginPath(); c.ellipse(cx, y0, R, rim, 0, 0, 7); var rg = c.createLinearGradient(0, y0 - rim, 0, y0 + rim); rg.addColorStop(0, "#e9e9e9"); rg.addColorStop(1, "#bdbdbd"); c.fillStyle = rg; c.fill();
-    c.beginPath(); c.ellipse(cx, y0 + 3, R - 12, rim - 8, 0, 0, 7); var ig = c.createLinearGradient(0, y0 - rim, 0, y0 + rim); ig.addColorStop(0, "#9a9a9a"); ig.addColorStop(1, "#e6e6e6"); c.fillStyle = ig; c.fill(); c.restore();
-    var pimg = $("#pimg"); if (pimg) pimg.src = mug.toDataURL("image/jpeg", 0.82);
+    return mugsReady.then(function () {
+      var m = MUGS[state.view === "r" ? "b" : "a"], sc = small.getContext("2d");
+      sc.imageSmoothingQuality = "high"; sc.drawImage(print, 0, 0, 1020, 456);
+      var src = sc.getImageData(0, 0, 1020, 456).data, ctx = mug.getContext("2d"), out = ctx.createImageData(620, 620), o = out.data, b = m.base;
+      for (var i = 0, n = 620 * 620; i < n; i++) {
+        var p = i * 4, e = m.E[i];
+        if (e > 0) {
+          var fx = m.S[i] * 1019, fy = m.V[i] * 455, x0 = fx | 0, y0 = fy | 0, x1 = Math.min(x0 + 1, 1019), y1 = Math.min(y0 + 1, 455), ax = fx - x0, ay = fy - y0;
+          for (var ch = 0; ch < 3; ch++) {
+            var c = (src[(y0 * 1020 + x0) * 4 + ch] * (1 - ax) + src[(y0 * 1020 + x1) * 4 + ch] * ax) * (1 - ay) + (src[(y1 * 1020 + x0) * 4 + ch] * (1 - ax) + src[(y1 * 1020 + x1) * 4 + ch] * ax) * ay;
+            o[p + ch] = b[p + ch] * (1 - e) + b[p + ch] * c / 255 * e;
+          }
+        } else { o[p] = b[p]; o[p + 1] = b[p + 1]; o[p + 2] = b[p + 2]; }
+        o[p + 3] = 255;
+      }
+      ctx.putImageData(out, 0, 0);
+      var pimg = $("#pimg"); if (pimg) pimg.src = mug.toDataURL("image/jpeg", 0.85);
+    }).catch(function () {});
   }
   var pending = 0;
   function render() {
@@ -126,6 +129,41 @@
     if (i >= 0) state.traits.splice(i, 1); else if (state.traits.length < 4) state.traits.push(k); else { flash("You can pick 4. Tap one to remove it first."); return; }
     syncChips(); render();
   });
+  // their own words: match a typed trait to an icon (dictionary first, then icon names and tags), fallback sparkles
+  var INDEX = null;
+  function loadIndex() { if (!INDEX) INDEX = fetch("/assets/custommug/iconindex.json").then(function (r) { return r.json(); }); return INDEX; }
+  function findIcon(ix, text) {
+    var words = text.toLowerCase().replace(/[^a-z ]/g, " ").split(/\s+/).filter(Boolean), best = null, score = 0;
+    words.forEach(function (w) { var w2 = w.replace(/(ing|er|ers|s)$/, ""); if (!best && (ix.syn[w] || ix.syn[w2])) { best = ix.syn[w] || ix.syn[w2]; score = 9; } });
+    if (best) return best;
+    Object.keys(ix.icons).forEach(function (k) {
+      var t = " " + ix.icons[k].t + " ", sc = 0;
+      words.forEach(function (w) { if (w.length < 3) return; if (k === w) sc += 6; else if ((" " + k.replace(/-/g, " ") + " ").indexOf(" " + w + " ") >= 0) sc += 4; else if (t.indexOf(" " + w + " ") >= 0) sc += 3; else if (t.indexOf(w) >= 0) sc += 1; });
+      if (sc > score || (sc === score && sc > 0 && k.length < best.length)) { best = k; score = sc; }
+    });
+    return best || "sparkles";
+  }
+  function addCustom(label, iconName, select) {
+    return loadIndex().then(function (ix) {
+      var icn = iconName && ix.icons[iconName] ? iconName : findIcon(ix, label), k = "_" + icn + "_" + encodeURIComponent(label);
+      if (!byKey[k]) {
+        byKey[k] = { k: k, l: label, svg: ix.icons[icn].s };
+        var b = document.createElement("button"); b.type = "button"; b.className = "cm-chip custom"; b.dataset.k = k; b.setAttribute("aria-pressed", "false");
+        b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ix.icons[icn].s + "</svg><span>" + label.replace(/[<>&"]/g, "") + "</span>";
+        chips.insertBefore(b, chips.firstChild);
+      }
+      if (select && state.traits.indexOf(k) < 0) { if (state.traits.length < 4) state.traits.push(k); else flash("You can pick 4. Tap one to remove it first."); }
+      syncChips(); render(); return k;
+    });
+  }
+  var ownIn = $("#cm-own"), ownBtn = $("#cm-own-add");
+  function addOwn() {
+    var v = ownIn.value.replace(/[^A-Za-z &'-]/g, "").replace(/\s{2,}/g, " ").trim().slice(0, 18); if (!v) { ownIn.focus(); return; }
+    if (state.traits.length >= 4) { flash("You've picked 4. Tap one to remove it, then add yours."); return; }
+    v = v.replace(/\b\w/g, function (c) { return c.toUpperCase(); }); ownBtn.disabled = true; ownBtn.textContent = "Adding…";
+    addCustom(v, null, true).then(function () { ownIn.value = ""; ownBtn.disabled = false; ownBtn.textContent = "Add"; }, function () { ownBtn.disabled = false; ownBtn.textContent = "Add"; flash("Couldn't add that. Please try again."); });
+  }
+  if (ownBtn) { ownBtn.addEventListener("click", addOwn); ownIn.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addOwn(); } }); ownIn.addEventListener("focus", loadIndex, { once: true }); }
   function syncChips() { chips.querySelectorAll(".cm-chip").forEach(function (b) { var on = state.traits.indexOf(b.dataset.k) >= 0; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.classList.toggle("full", !on && state.traits.length >= 4); }); }
   function flash(t) { var h = $("#cm-hint"); h.textContent = t; h.classList.add("warn"); setTimeout(function () { h.classList.remove("warn"); }, 1600); }
   nameIn.addEventListener("input", function () {
@@ -149,7 +187,7 @@
   });
   // prefill from a design link (?d=Name~k1.k2.k3.k4~theme); ?admin=1 adds a download of the print file for Printrove
   var q = new URLSearchParams(location.search), d = q.get("d");
-  if (d) { var p = d.split("~"); state.name = decodeURIComponent(p[0] || "").slice(0, 14); nameIn.value = state.name; state.traits = (p[1] || "").split(".").filter(function (k) { return byKey[k]; }).slice(0, 4); if (THEMES[p[2]]) { state.theme = p[2]; var r = document.querySelector("[name=cm-theme][value=" + p[2] + "]"); if (r) r.checked = true; } syncChips(); }
+  if (d) { var p = d.split("~"); state.name = decodeURIComponent(p[0] || "").slice(0, 14); nameIn.value = state.name; var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4); state.traits = ent.filter(function (k) { return byKey[k]; }); ent.forEach(function (k) { if (k[0] === "_") { var bits = k.split("_"); addCustom(decodeURIComponent(bits.slice(2).join("_")), bits[1], true); } }); if (THEMES[p[2]]) { state.theme = p[2]; var r = document.querySelector("[name=cm-theme][value=" + p[2] + "]"); if (r) r.checked = true; } syncChips(); }
   if (q.get("admin") === "1") {
     var dl = document.createElement("button"); dl.type = "button"; dl.className = "buy"; dl.textContent = "Download print file (2550 × 1140)";
     dl.addEventListener("click", function () { var a = document.createElement("a"); a.download = "NevervoidStore-custom-" + (state.name || "mug").replace(/\s+/g, "-") + "-2550x1140.png"; a.href = print.toDataURL("image/png"); a.click(); });

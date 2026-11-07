@@ -95,7 +95,7 @@ const CONFIG = {
   function closeCheckout() { if (!sheet) return; sheet.classList.remove("open"); document.body.classList.remove("co-lock"); }
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeCheckout(); });
   // sticky buy bar on phones: price + Buy now, shown once the main button scrolls out of view
-  const mainBuy = document.querySelector(".buybox [data-order]");
+  const mainBuy = document.querySelector(".buybox [data-order]:not([data-nobar])");
   if (mainBuy && CONFIG.razorpayPage) {
     const bar = document.createElement("div"); bar.className = "buybar";
     const wasEl = document.querySelector(".pprice .was");

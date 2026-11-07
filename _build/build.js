@@ -394,14 +394,14 @@ ${header("../","shop")}
     <p class="lead">Type a name, pick 4 things that describe them, and watch the mug design itself. Approve it, order it, and we print it for you.</p></section>
   <section class="pdp cm-grid">
     <div class="cm-preview">
-      <div class="gallery ph cm-stage"><canvas id="cm-mug" width="900" height="700" aria-label="Your mug preview"></canvas></div>
+      <div class="gallery ph cm-stage"><canvas id="cm-mug" width="620" height="620" aria-label="Your mug preview"></canvas></div>
       <div class="views cm-views"><button type="button" class="view cm-view on" data-v="r"><span>Front (name)</span></button><button type="button" class="view cm-view" data-v="l"><span>Back (monogram)</span></button></div>
       <figure class="flat-wrap"><canvas id="cm-flat" width="1020" height="456"></canvas><figcaption>The full print, as it wraps round the mug.</figcaption></figure>
     </div>
     <div class="cm-form">
       <label class="cm-step"><b>1. Their name</b><input id="cm-name" maxlength="14" autocomplete="off" placeholder="e.g. Priya" aria-describedby="cm-hint"></label>
       <div class="cm-step"><b>2. Pick 4 things that describe them</b> <span id="cm-count" class="muted">0 of 4 chosen</span>
-        <div id="cm-traits" class="cm-chips" role="group" aria-label="Things that describe them"></div></div>
+        <div class="cm-own"><input id="cm-own" maxlength="18" autocomplete="off" placeholder="Or type your own, e.g. Yoga, Cricket, Teacher" aria-label="Type your own"><button id="cm-own-add" type="button">Add</button></div><div id="cm-traits" class="cm-chips" role="group" aria-label="Things that describe them"></div></div>
       <div class="cm-step"><b>3. Style</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="cm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
       <p id="cm-hint" class="cm-hint" aria-live="polite">Type a name to start.</p>
       <div class="cm-actions"><button id="cm-approve" type="button" class="buy" disabled>Approve design</button><button id="cm-reset" type="button" class="ask">Reset</button></div>
@@ -410,7 +410,7 @@ ${header("../","shop")}
         <div class="pprice"><span class="was">${rupee(cp.price)}</span> <span class="now">${rupee(price)}</span></div>
         <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span><input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
         <div class="pin-msg" hidden></div>
-        <button class="buy" type="button" data-order data-rzp="custom_pet_mug" data-id="mug-name" data-name="Custom Name Mug" data-price="${price}">Order now · ${rupee(price)}</button>
+        <button class="buy" type="button" data-order data-nobar data-rzp="custom_pet_mug" data-id="mug-name" data-name="Custom Name Mug" data-price="${price}">Order now · ${rupee(price)}</button>
         <img id="pimg" alt="" hidden>
         <p class="pnote">We print exactly the design you approved. 11oz white ceramic mug, made to order.</p>
       </div>
@@ -541,8 +541,10 @@ body.co-lock{overflow:hidden}
 .ty-back{display:block;margin:14px 0 6px;color:var(--green);font-weight:600}
 .ty-note{font-size:13px;color:var(--muted)}
 .cm-hero{padding:14px 0 18px;max-width:720px}.cm-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 10px}.cm-hero h1 em{color:#a8332f}
-.pdp.cm-grid{align-items:start}
-.cm-stage{padding:0!important;display:flex;align-items:center;justify-content:center}.cm-stage canvas{width:100%;height:auto;display:block}
+.pdp.cm-grid{align-items:start}.cm-grid>*{min-width:0}.cm canvas{max-width:100%}
+.cm-own{display:flex;gap:8px;margin-top:10px}.cm-own input{flex:1;min-width:0;padding:12px;font:inherit;font-size:16px;border:1px solid #d8d0c2;border-radius:12px;background:#fff}.cm-own input:focus{outline:2px solid var(--green);border-color:var(--green)}.cm-own button{padding:0 18px;border:0;border-radius:12px;background:var(--green);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.cm-chip.custom{border-style:dashed}.cm-chip.custom.on{border-style:solid}
+.cm-stage{padding:0!important;display:flex;align-items:center;justify-content:center;background:#fff}.cm-stage canvas{width:100%;height:auto;display:block}
 .cm-views{grid-template-columns:1fr 1fr}.cm-views .view{justify-content:center}
 #cm-flat{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
 .cm-step{display:block;margin:0 0 20px}.cm-step>b{font-size:16px}
@@ -791,7 +793,7 @@ const CONFIG = {
   function closeCheckout() { if (!sheet) return; sheet.classList.remove("open"); document.body.classList.remove("co-lock"); }
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeCheckout(); });
   // sticky buy bar on phones: price + Buy now, shown once the main button scrolls out of view
-  const mainBuy = document.querySelector(".buybox [data-order]");
+  const mainBuy = document.querySelector(".buybox [data-order]:not([data-nobar])");
   if (mainBuy && CONFIG.razorpayPage) {
     const bar = document.createElement("div"); bar.className = "buybar";
     const wasEl = document.querySelector(".pprice .was");
@@ -1148,6 +1150,7 @@ fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.mkdirSync(path.join(OUT,"custom-mug"),{recursive:true}); fs.writeFileSync(path.join(OUT,"custom-mug","index.html"), customMugPage());
 fs.copyFileSync(path.join(SRC,"custommug","custom-mug.js"), path.join(OUT,"assets","custom-mug.js"));
+fs.mkdirSync(path.join(OUT,"assets","custommug"),{recursive:true}); for (const f of ["mug-a.jpg","mug-b.jpg","map-a-s.png","map-a-v.png","map-b-s.png","map-b-v.png","iconindex.json"]) fs.copyFileSync(path.join(SRC,"custommug",f), path.join(OUT,"assets","custommug",f));
 fs.mkdirSync(path.join(OUT,"assets","fonts"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"custommug","fonts"))) fs.copyFileSync(path.join(SRC,"custommug","fonts",f), path.join(OUT,"assets","fonts",f));
 if (fs.existsSync(path.join(SRC,"custommug","sample.jpg"))) fs.copyFileSync(path.join(SRC,"custommug","sample.jpg"), path.join(OUT,"images","custom-name-mug.jpg"));
 fs.mkdirSync(path.join(OUT,"cases"),{recursive:true}); fs.writeFileSync(path.join(OUT,"cases","index.html"), casesPage());
