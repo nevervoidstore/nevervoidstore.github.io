@@ -8,6 +8,7 @@ const CONTACT = {
   email: "",              // e.g. "hello@nevervoidstore.com"
   phone: "",              // e.g. "+91 98765 43210"
   whatsapp: "919880000990", // digits only, e.g. "919876543210"
+  teamApi: "", // Google Apps Script web app URL (…/exec) for employee team links; empty hides the feature
   address: "",            // full business address
   grievanceOfficer: "",   // name of the person handling complaints
   instagram: "nevervoidstore",

@@ -47,6 +47,8 @@ reps=[
 for a,b in reps:
   assert a in s, a[:60]; s=s.replace(a,b,1)
 import re as _re
+s=_re.sub(r'(<p class="fine">Shipping is quoted per delivery address\.[^<]*</p>)', r'\1\n      <div class="cta-team" style="margin-top:18px;padding:16px;border:1px dashed #cdbfa6;border-radius:14px;background:#fffaf1;font-size:15px"><b>Name mugs for everyone?</b> Paste your team list and see a real preview of every person’s mug before you order. <a href="team/" style="font-weight:700">Make team mugs →</a></div>', s, count=1)
+assert 'cta-team' in s
 _wa=_re.search(r'whatsapp: "([0-9]*)"', open('src/policies.js').read()).group(1)
 s=s.replace('whatsapp: "",            // e.g.', 'whatsapp: "%s",            // e.g.' % _wa)
 # same trust strip as every other page (markup and styles taken from the built homepage)

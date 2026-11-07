@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nevervoid Store — Christmas & Pet Mugs, iPhone Cases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1c2420; --muted:#5d6862; --cream:#fbf6ec; --card:#ffffff;
+  --green:#1f4d36; --red:#b3262e; --gold:#d9a441; --line:#e6dfd0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:rgba(251,246,236,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:Fraunces,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;text-decoration:none}
+.logo span{color:var(--red)}
+.ig{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:#fff}
+
+/* hero */
+.hero{padding:48px 0 28px;text-align:center}
+.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);background:#f7e3df;padding:5px 12px;border-radius:999px}
+.hero h1{font-family:Fraunces,serif;font-weight:700;font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-.02em;margin:16px auto 12px;max-width:760px}
+.hero h1 em{font-style:italic;font-weight:500;color:var(--green)}
+.hero p{color:var(--muted);max-width:560px;margin:0 auto;font-size:17px}
+.deadline{margin-top:18px;font-size:14px;font-weight:500;color:var(--green)}
+
+/* trust */
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 34px}
+.trust div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:13.5px;color:var(--muted)}
+.trust b{display:block;color:var(--ink);font-size:14.5px;margin-bottom:2px}
+
+/* filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:26px}
+.filters button{font:inherit;font-size:14px;font-weight:500;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
+.filters button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;padding-bottom:40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.stage{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:14px}
+.stage svg{width:100%;height:100%}
+.stage.christmas{background:radial-gradient(circle at 50% 40%,#fff 0,#f1ebdf 75%)}
+.stage.pets{background:radial-gradient(circle at 50% 40%,#fff 0,#e9efe4 75%)}
+.info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1;border-top:1px solid var(--line)}
+.tags{display:flex;gap:6px}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tag.new{color:var(--red)}
+.info h3{font-family:Fraunces,serif;font-size:19px;font-weight:500;line-height:1.2}
+.info p{font-size:13.5px;color:var(--muted);flex:1}
+.price{font-weight:700;font-size:17px}
+select{font:inherit;font-size:13.5px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;width:100%}
+.buy{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:14.5px;padding:11px;border-radius:12px;background:var(--green);color:#fff;margin-top:4px;border:0;cursor:pointer;font-family:inherit}
+.buy:hover{background:#173b29}
+.ask{display:block;text-align:center;font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;background:none;border:0;cursor:pointer;font-family:inherit}
+
+/* how + faq */
+section.band{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:44px 0}
+h2{font-family:Fraunces,serif;font-weight:700;font-size:30px;letter-spacing:-.01em;margin-bottom:18px;text-align:center}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.steps>div{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--cream)}
+.steps .n{font-family:Fraunces,serif;font-size:28px;color:var(--red);font-weight:700}
+.steps b{display:block;margin:4px 0}
+.steps span{font-size:14px;color:var(--muted)}
+.faq{max-width:720px;margin:0 auto;padding:44px 20px}
+details{border-bottom:1px solid var(--line);padding:14px 0}
+summary{font-weight:700;cursor:pointer;list-style:none}
+summary::after{content:"+";float:right;color:var(--muted)}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);font-size:14.5px;margin-top:8px}
+footer{text-align:center;padding:28px 20px 40px;font-size:13px;color:var(--muted)}
+footer a{font-weight:700;color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:760px){
+  #igTop{display:none}
+  .trust{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr 1fr;gap:12px}
+  .info{padding:12px}
+  .info h3{font-size:16px}
+  .info p{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top">NevervoidStore</a>
+    <div style="display:flex;gap:8px;align-items:center"><a class="ig" href="corporate.html" style="background:var(--green);color:#fff;border-color:var(--green)">Corporate gifting</a>
+    <a class="ig" id="igTop" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+      @nevervoidstore
+    </a></div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Christmas Drop 2026</span>
+      <h1>Mugs & iPhone cases, <em>made to order</em> for you</h1>
+      <p>Cosy Christmas designs and cute pet prints. Or send us a photo of your pet and we'll turn it into a custom portrait for your mug or case.</p>
+      <div class="deadline" id="deadline"></div>
+    </section>
+
+    <div class="trust">
+      <div id="payTrust"><b>Easy ordering</b>Order by DM. We confirm every detail before you pay</div>
+      <div><b>Made to order</b>Printed fresh when you order</div>
+      <div><b>Ships across India</b><span id="shipText"></span></div>
+      <div><b>Damage-free promise</b>Arrived broken? We replace it</div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">All</button>
+      <button data-f="christmas">🎄 Christmas</button>
+      <button data-f="pets">🐾 Pets</button>
+      <button data-f="mug">Mugs</button>
+      <button data-f="case">iPhone cases</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>How ordering works</h2>
+      <div class="steps">
+        <div><div class="n">1</div><b>Pick your design</b><span>Choose a mug or case. For cases, choose your iPhone model.</span></div>
+        <div><div class="n">2</div><b>Pay securely</b><span>Checkout via Razorpay with UPI or card. You get an instant receipt.</span></div>
+        <div><div class="n">3</div><b>We print & ship</b><span>Your order is made fresh and shipped with tracking. Updates come by DM.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="faq">
+    <h2>Questions</h2>
+    <details><summary>How do custom pet orders work?</summary><p>Order the custom mug or case, then DM us a clear, well-lit photo of your pet on Instagram (@nevervoidstore). We create a custom portrait in your chosen style (watercolour, cartoon, minimal line art and more), touch it up, and send you a preview to approve before printing. Free changes until you're happy.</p></details>
+    <details><summary>When will my order arrive?</summary><p id="faqShip"></p></details>
+    <details><summary>Is my payment safe?</summary><p>Payments go through Razorpay's secure checkout, never to a personal account. You'll get an automatic payment receipt by SMS or email.</p></details>
+    <details><summary>What if it arrives damaged?</summary><p>Send us a photo or unboxing video within 48 hours of delivery and we'll ship a free replacement.</p></details>
+  </div>
+</main>
+
+<footer>
+  Made with love by <a id="igFoot" href="#">@nevervoidstore</a> · Questions? DM us anytime.
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   EDIT THESE SETTINGS
+   ------------------------------------------------------------
+   payLinks: paste your Razorpay Payment Link for each product id.
+             Leave blank ("") and the button switches to "Order via DM".
+   whatsapp: your number with country code, digits only, e.g. "919876543210".
+             Leave blank to send people to Instagram DM instead.
+   ============================================================ */
+const CONFIG = {
+  instagram: "nevervoidstore",
+  whatsapp: "",
+  shipping: "Dispatched in 3–5 days, delivered in about 5–8 days",
+  deadline: "🎁 Order by 12 December for delivery before Christmas",
+  payLinks: {
+    "mug-sleigh": "", "mug-tree": "", "mug-cocoa": "", "mug-ginger": "",
+    "mug-dogmom": "", "mug-cat": "", "mug-paws": "", "mug-custom": "",
+    "case-plaid": "", "case-pines": "", "case-cats": "", "case-paws": "", "case-custom": ""
+  }
+};
+
+const IPHONES = ["iPhone 17 Pro Max","iPhone 17 Pro","iPhone 17","iPhone Air","iPhone 16 Pro Max","iPhone 16 Pro","iPhone 16","iPhone 15 Pro Max","iPhone 15 Pro","iPhone 15","iPhone 14 Pro","iPhone 14","iPhone 13"];
+
+/* ---------- mock-up drawing ---------- */
+let _id = 0; const uid = p => p + (++_id);
+const F = 'font-family="Fraunces, serif"';
+const S = 'font-family="DM Sans, sans-serif"';
+
+function snow(x,y,r,c="#9fb7c9"){
+  let s=''; for(const a of [0,60,120]){const t=a*Math.PI/180,dx=Math.cos(t)*r,dy=Math.sin(t)*r;
+    s+=`<line x1="${x-dx}" y1="${y-dy}" x2="${x+dx}" y2="${y+dy}" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/>`;}
+  return s;
+}
+function paw(x,y,s,c,rot=0){
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" fill="${c}">
+    <ellipse cx="0" cy="6" rx="9" ry="7.5"/><ellipse cx="-10" cy="-5" rx="3.6" ry="4.6"/><ellipse cx="-3.6" cy="-11" rx="3.6" ry="4.6"/>
+    <ellipse cx="3.6" cy="-11" rx="3.6" ry="4.6"/><ellipse cx="10" cy="-5" rx="3.6" ry="4.6"/></g>`;
+}
+function catHead(x,y,s,c,eye="#fff"){
+  return `<g transform="translate(${x} ${y}) scale(${s})"><polygon points="-14,-6 -12,-22 -2,-12" fill="${c}"/><polygon points="14,-6 12,-22 2,-12" fill="${c}"/>
+    <ellipse cx="0" cy="0" rx="16" ry="14" fill="${c}"/><circle cx="-6" cy="-1" r="2.2" fill="${eye}"/><circle cx="6" cy="-1" r="2.2" fill="${eye}"/></g>`;
+}
+
+function mug(design, body="#fbf8f2"){
+  const c=uid('mc'), g=uid('mg');
+  return `<svg viewBox="0 0 240 210" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><clipPath id="${c}"><rect x="40" y="30" width="140" height="150" rx="12"/></clipPath>
+  <linearGradient id="${g}" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".22" stop-color="#fff" stop-opacity=".35"/>
+  <stop offset=".4" stop-color="#fff" stop-opacity="0"/><stop offset=".82" stop-color="#000" stop-opacity=".06"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient></defs>
+  <ellipse cx="118" cy="190" rx="92" ry="9" fill="#000" opacity=".13"/>
+  <path d="M176 62 C224 56 228 146 176 142" fill="none" stroke="#000" stroke-opacity=".18" stroke-width="20" stroke-linecap="round"/>
+  <path d="M176 62 C224 56 228 146 176 142" fill="none" stroke="${body}" stroke-width="15" stroke-linecap="round"/>
+  <rect x="40" y="30" width="140" height="150" rx="12" fill="${body}"/>
+  <g clip-path="url(#${c})">${design}</g>
+  <rect x="40" y="30" width="140" height="150" rx="12" fill="url(#${g})"/>
+  <ellipse cx="110" cy="32" rx="70" ry="5" fill="#000" opacity=".1"/>
+  </svg>`;
+}
+
+function phone(design){
+  const c=uid('pc'), g=uid('pg');
+  return `<svg viewBox="0 0 170 290" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><clipPath id="${c}"><rect x="25" y="12" width="120" height="262" rx="24"/></clipPath>
+  <linearGradient id="${g}" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".14"/></linearGradient></defs>
+  <rect x="31" y="20" width="120" height="262" rx="24" fill="#000" opacity=".14"/>
+  <g clip-path="url(#${c})">${design}</g>
+  <rect x="25" y="12" width="120" height="262" rx="24" fill="url(#${g})"/>
+  <rect x="25" y="12" width="120" height="262" rx="24" fill="none" stroke="#000" stroke-opacity=".18" stroke-width="2"/>
+  <rect x="34" y="21" width="54" height="54" rx="15" fill="#1d1d1f" opacity=".94"/>
+  <circle cx="49" cy="36" r="9" fill="#2a2a2e" stroke="#58585e" stroke-width="2"/>
+  <circle cx="49" cy="60" r="9" fill="#2a2a2e" stroke="#58585e" stroke-width="2"/>
+  <circle cx="73" cy="48" r="9" fill="#2a2a2e" stroke="#58585e" stroke-width="2"/>
+  <circle cx="76" cy="30" r="3" fill="#e9e3d6"/>
+  </svg>`;
+}
+
+/* ---------- designs ---------- */
+const D = {
+  sleigh: () => `
+    ${snow(68,58,7)}${snow(152,64,6)}${snow(82,160,5)}${snow(146,152,7)}${snow(110,50,4)}
+    <text x="110" y="110" text-anchor="middle" ${F} font-weight="700" font-size="38" fill="#b3262e">Sleigh</text>
+    <text x="110" y="137" text-anchor="middle" ${F} font-style="italic" font-size="21" fill="#1f4d36">all day</text>`,
+  tree: () => `
+    <polygon points="110,54 90,84 130,84" fill="#2f6b4a"/><polygon points="110,70 84,106 136,106" fill="#24573c"/>
+    <polygon points="110,88 78,128 142,128" fill="#1f4d36"/><rect x="104" y="128" width="12" height="10" fill="#7a5230"/>
+    <polygon points="110,42 113,50 121,50 115,55 117,63 110,58 103,63 105,55 99,50 107,50" fill="#d9a441"/>
+    <circle cx="100" cy="82" r="3.5" fill="#b3262e"/><circle cx="121" cy="100" r="3.5" fill="#d9a441"/><circle cx="96" cy="118" r="3.5" fill="#d9a441"/><circle cx="126" cy="120" r="3.5" fill="#b3262e"/>
+    <text x="110" y="162" text-anchor="middle" ${F} font-style="italic" font-size="16" fill="#1f4d36">Merry &amp; Bright</text>`,
+  cocoa: () => `
+    <circle cx="110" cy="104" r="50" fill="#fbf6ec"/><circle cx="110" cy="104" r="44" fill="none" stroke="#b3262e" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <text x="110" y="86" text-anchor="middle" ${S} font-weight="700" font-size="9" letter-spacing="1.2" fill="#1f4d36">HOT COCOA</text>
+    <text x="110" y="114" text-anchor="middle" ${F} font-style="italic" font-weight="500" font-size="28" fill="#b3262e">Club</text>
+    <text x="110" y="132" text-anchor="middle" ${S} font-size="8.5" letter-spacing="2" fill="#1f4d36">EST. 2026</text>
+    ${snow(62,52,5,"#fbf6ec")}${snow(160,160,6,"#fbf6ec")}${snow(160,54,4,"#fbf6ec")}${snow(60,160,4,"#fbf6ec")}`,
+  ginger: () => `
+    <g fill="#b06a33"><circle cx="110" cy="64" r="16"/><rect x="93" y="78" width="34" height="42" rx="15"/></g>
+    <g stroke="#b06a33" stroke-width="12" stroke-linecap="round"><line x1="96" y1="90" x2="78" y2="104"/><line x1="124" y1="90" x2="142" y2="104"/>
+    <line x1="102" y1="114" x2="94" y2="138"/><line x1="118" y1="114" x2="126" y2="138"/></g>
+    <circle cx="104" cy="61" r="2.2" fill="#3b2414"/><circle cx="116" cy="61" r="2.2" fill="#3b2414"/>
+    <path d="M103 69 Q110 75 117 69" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="110" cy="90" r="2.6" fill="#fff"/><circle cx="110" cy="101" r="2.6" fill="#b3262e"/><circle cx="110" cy="112" r="2.6" fill="#fff"/>
+    <text x="110" y="166" text-anchor="middle" ${F} font-weight="700" font-size="20" fill="#b3262e">Oh Snap!</text>`,
+  dogmom: () => `
+    <ellipse cx="85" cy="80" rx="10" ry="22" fill="#7a5230" transform="rotate(22 85 80)"/>
+    <ellipse cx="135" cy="80" rx="10" ry="22" fill="#7a5230" transform="rotate(-22 135 80)"/>
+    <circle cx="110" cy="84" r="27" fill="#c99a6b"/><ellipse cx="110" cy="98" rx="14" ry="10" fill="#f3e3cf"/>
+    <ellipse cx="110" cy="92" rx="5.5" ry="4" fill="#2b1d12"/><circle cx="100" cy="79" r="3" fill="#2b1d12"/><circle cx="120" cy="79" r="3" fill="#2b1d12"/>
+    <path d="M110 96 v5 M104 103 Q110 108 116 103" stroke="#2b1d12" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <text x="110" y="146" text-anchor="middle" ${F} font-weight="700" font-size="25" fill="#1c2420">Dog Mom</text>
+    <text x="110" y="164" text-anchor="middle" ${S} font-size="7.5" letter-spacing=".6" fill="#5d6862">FUELLED BY COFFEE &amp; FUR</text>`,
+  cat: () => `
+    <polygon points="88,78 90,52 104,66" fill="#f3ead8"/><polygon points="132,78 130,52 116,66" fill="#f3ead8"/>
+    <ellipse cx="110" cy="84" rx="26" ry="23" fill="#f3ead8"/>
+    <path d="M98 82 q4 -4 8 0 M114 82 q4 -4 8 0" stroke="#2b2b2b" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <polygon points="106,90 114,90 110,95" fill="#e58f8f"/>
+    <g stroke="#2b2b2b" stroke-width="1.2"><line x1="92" y1="92" x2="76" y2="89"/><line x1="92" y1="96" x2="76" y2="98"/><line x1="128" y1="92" x2="144" y2="89"/><line x1="128" y1="96" x2="144" y2="98"/></g>
+    <text x="110" y="140" text-anchor="middle" ${F} font-weight="700" font-size="22" fill="#f3ead8">Purrsonal</text>
+    <text x="110" y="163" text-anchor="middle" ${F} font-style="italic" font-size="20" fill="#e9b8a8">Space</text>`,
+  paws: () => `
+    ${paw(70,60,.8,"#e07a5f",-20)}${paw(98,82,.7,"#e07a5f",10)}${paw(132,58,.75,"#e07a5f",25)}${paw(152,92,.6,"#e07a5f",-10)}${paw(70,110,.6,"#e07a5f",15)}
+    <text x="110" y="146" text-anchor="middle" ${F} font-weight="700" font-size="22" fill="#1f4d36">Paws</text>
+    <text x="110" y="168" text-anchor="middle" ${F} font-style="italic" font-size="17" fill="#1f4d36">&amp; Coffee</text>`,
+  custom: () => `
+    <rect x="70" y="46" width="80" height="84" rx="14" fill="#f4efe4" stroke="#1f4d36" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <ellipse cx="96" cy="78" rx="7" ry="15" fill="#c99a6b" transform="rotate(20 96 78)"/><ellipse cx="124" cy="78" rx="7" ry="15" fill="#c99a6b" transform="rotate(-20 124 78)"/>
+    <circle cx="110" cy="88" r="20" fill="#d8b58c"/><ellipse cx="110" cy="98" rx="10" ry="7" fill="#f3e3cf"/>
+    <ellipse cx="110" cy="94" rx="4" ry="3" fill="#2b1d12"/><circle cx="103" cy="84" r="2.2" fill="#2b1d12"/><circle cx="117" cy="84" r="2.2" fill="#2b1d12"/>
+    <text x="110" y="152" text-anchor="middle" ${F} font-style="italic" font-size="18" fill="#1f4d36">Your pet here</text>
+    <text x="110" y="168" text-anchor="middle" ${S} font-size="7.5" letter-spacing="1" fill="#5d6862">SEND US A PHOTO</text>`,
+
+  /* cases (canvas 25..145 x, 12..274 y) */
+  plaid: () => {
+    let s=`<rect width="170" height="290" fill="#b3262e"/>`;
+    for(const x of [20,68,116]) s+=`<rect x="${x}" y="0" width="26" height="290" fill="#1f4d36" opacity=".55"/>`;
+    for(let y=10;y<290;y+=48) s+=`<rect x="0" y="${y}" width="170" height="26" fill="#1f4d36" opacity=".45"/>`;
+    for(const x of [33,81,129]) s+=`<rect x="${x}" y="0" width="2" height="290" fill="#fff" opacity=".35"/>`;
+    for(let y=22;y<290;y+=48) s+=`<rect x="0" y="${y}" width="170" height="2" fill="#d9a441" opacity=".6"/>`;
+    return s;
+  },
+  pines: () => {
+    let s=`<rect width="170" height="290" fill="#14254a"/><circle cx="118" cy="104" r="16" fill="#f3ead8"/><circle cx="125" cy="99" r="14" fill="#14254a"/>`;
+    const dots=[[40,95],[60,130],[100,90],[135,140],[50,170],[90,150],[120,180],[70,110],[110,125],[40,210],[140,210],[80,190]];
+    for(const [x,y] of dots) s+=`<circle cx="${x}" cy="${y}" r="1.8" fill="#fff" opacity=".85"/>`;
+    const trees=[[40,250,26],[70,258,34],[102,252,28],[132,260,36]];
+    for(const [x,y,h] of trees) s+=`<polygon points="${x},${y-h*1.6} ${x-h*.5},${y} ${x+h*.5},${y}" fill="#2f6b4a"/><polygon points="${x},${y-h*1.6} ${x-h*.28},${y-h*.7} ${x+h*.28},${y-h*.7}" fill="#3e8a5f"/>`;
+    s+=`<ellipse cx="85" cy="282" rx="90" ry="22" fill="#f3f1ea"/>`;
+    return s;
+  },
+  cats: () => {
+    let s=`<rect width="170" height="290" fill="#f6d9d3"/>`; let i=0;
+    for(let y=40;y<290;y+=46){ for(let x=(Math.floor(y/46)%2?40:62);x<160;x+=44){
+      s+=catHead(x,y,.9,i++%3===0?"#e07a5f":"#2b2b2b", "#f6d9d3"); } }
+    return s;
+  },
+  pawcase: () => {
+    let s=`<rect width="170" height="290" fill="#bcd0ad"/>`; let i=0;
+    for(let y=34;y<290;y+=42){ for(let x=(Math.floor(y/42)%2?42:64);x<160;x+=44){
+      s+=paw(x,y,.75,i++%2?"#1f4d36":"#fbf6ec",(i*37)%50-25); } }
+    return s;
+  },
+  customcase: () => `
+    <rect width="170" height="290" fill="#fbe7c8"/>
+    <rect x="40" y="104" width="90" height="104" rx="18" fill="#fff8ec" stroke="#1f4d36" stroke-width="1.6" stroke-dasharray="5 4"/>
+    ${catHead(85,150,1.6,"#2b2b2b","#fbe7c8")}
+    <text x="85" y="236" text-anchor="middle" ${F} font-style="italic" font-size="17" fill="#1f4d36">Your pet</text>
+    <text x="85" y="252" text-anchor="middle" ${S} font-size="8.5" letter-spacing="1.5" fill="#5d6862">+ THEIR NAME</text>`
+};
+
+/* ---------- catalogue ---------- */
+const PRODUCTS = [
+  {id:"mug-sleigh", type:"mug", cat:"christmas", name:"Sleigh All Day Mug", price:449, desc:"11oz ceramic mug. Bold red type with drifting snowflakes.", art:mug(D.sleigh()), isNew:true},
+  {id:"mug-tree", type:"mug", cat:"christmas", name:"Merry & Bright Mug", price:449, desc:"A little Christmas tree on a cream mug. Perfect for gifting.", art:mug(D.tree(),"#f3ead8")},
+  {id:"mug-cocoa", type:"mug", cat:"christmas", name:"Hot Cocoa Club Mug", price:449, desc:"Festive red mug with a vintage-style badge.", art:mug(D.cocoa(),"#b3262e")},
+  {id:"mug-ginger", type:"mug", cat:"christmas", name:"Oh Snap! Gingerbread Mug", price:449, desc:"A cheeky gingerbread friend for cookie-dunking season.", art:mug(D.ginger())},
+  {id:"mug-dogmom", type:"mug", cat:"pets", name:"Dog Mom Mug", price:449, desc:"For the human who's fuelled by coffee and fur.", art:mug(D.dogmom())},
+  {id:"mug-cat", type:"mug", cat:"pets", name:"Purrsonal Space Mug", price:449, desc:"Black mug with a calm, judgemental cat.", art:mug(D.cat(),"#2b2b2b")},
+  {id:"mug-paws", type:"mug", cat:"pets", name:"Paws & Coffee Mug", price:449, desc:"Muddy-paw prints, morning coffee. Sounds about right.", art:mug(D.paws())},
+  {id:"mug-custom", type:"mug", cat:"pets", name:"Custom Pet Portrait Mug", price:649, desc:"Your pet as a custom portrait in the style you pick. Preview sent before printing.", art:mug(D.custom()), isNew:true},
+  {id:"case-plaid", type:"case", cat:"christmas", name:"Holiday Plaid Case", price:599, desc:"Classic red-and-green tartan. Slim, protective, glossy finish.", art:phone(D.plaid())},
+  {id:"case-pines", type:"case", cat:"christmas", name:"Snowy Pines Case", price:599, desc:"A quiet winter night under the moon.", art:phone(D.pines()), isNew:true},
+  {id:"case-cats", type:"case", cat:"pets", name:"Cat Crowd Case", price:599, desc:"A whole crowd of cats on blush pink.", art:phone(D.cats())},
+  {id:"case-paws", type:"case", cat:"pets", name:"Paw Party Case", price:599, desc:"Scattered paw prints on soft sage.", art:phone(D.pawcase())},
+  {id:"case-custom", type:"case", cat:"pets", name:"Custom Pet Case", price:799, desc:"Your pet and their name on your case. Preview sent before printing.", art:phone(D.customcase()), isNew:true}
+];
+
+const rupee = n => "₹" + n.toLocaleString("en-IN");
+const igUrl = "https://instagram.com/" + CONFIG.instagram;
+const dmUrl = "https://ig.me/m/" + CONFIG.instagram;
+
+function orderText(p, model){
+  return `Hi Nevervoid! I'd like to order: ${p.name} (${rupee(p.price)})${model ? " for " + model : ""}.`;
+}
+function contactUrl(text){
+  return CONFIG.whatsapp ? `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}` : dmUrl;
+}
+
+function render(filter="all"){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  PRODUCTS.filter(p => filter==="all" || p.cat===filter || p.type===filter).forEach(p => {
+    const pay = CONFIG.payLinks[p.id];
+    const el = document.createElement("article");
+    el.className = "card";
+    el.innerHTML = `
+      <div class="stage ${p.cat}">${p.art}</div>
+      <div class="info">
+        <div class="tags"><span class="tag">${p.type==="mug"?"Mug":"iPhone case"}</span>${p.isNew?'<span class="tag new">· New</span>':''}</div>
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <div class="price">${rupee(p.price)}</div>
+        ${p.type==="case" ? `<select aria-label="iPhone model"><option value="">Choose your iPhone</option>${IPHONES.map(m=>`<option>${m}</option>`).join("")}</select>` : ""}
+        <a class="buy" href="${pay || "#"}" target="_blank" rel="noopener">${pay ? "Pay securely · " + rupee(p.price) : "Order via DM"}</a>
+        <button class="ask" type="button">Ask a question</button>
+      </div>`;
+    const sel = el.querySelector("select");
+    const buy = el.querySelector(".buy");
+    buy.addEventListener("click", e => {
+      const model = sel ? sel.value : "";
+      if (sel && !model){ e.preventDefault(); toast("Please choose your iPhone model first"); sel.focus(); return; }
+      if (pay){
+        if (model) copy(orderText(p, model), "Opening checkout. Please DM us your model: " + model);
+        return; // follow link
+      }
+      e.preventDefault();
+      sendMsg(orderText(p, model));
+    });
+    el.querySelector(".ask").addEventListener("click", () => sendMsg(`Hi Nevervoid! I have a question about the ${p.name}.`));
+    grid.appendChild(el);
+  });
+}
+
+function sendMsg(text){
+  if (CONFIG.whatsapp){ location.href = contactUrl(text); return; }
+  copy(text, "Order details copied. Paste them in your Instagram DM");
+  setTimeout(() => { location.href = dmUrl; }, 900);
+}
+function copy(text, msg){
+  try { navigator.clipboard.writeText(text).then(()=>toast(msg), ()=>toast(msg)); } catch(e){ toast(msg); }
+}
+let tt;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(tt); tt = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+document.getElementById("filters").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#filters button").forEach(x => x.classList.toggle("on", x===b));
+  render(b.dataset.f);
+});
+document.getElementById("igTop").href = igUrl;
+document.getElementById("igFoot").href = igUrl;
+document.getElementById("deadline").textContent = CONFIG.deadline;
+document.getElementById("shipText").textContent = CONFIG.shipping;
+document.getElementById("faqShip").textContent = CONFIG.shipping + ". You'll get tracking details once it ships.";
+if (Object.values(CONFIG.payLinks).some(Boolean)) {
+  document.getElementById("payTrust").innerHTML = "<b>Secure checkout</b>UPI, cards & netbanking via Razorpay";
+}
+render();
+</script>
+</body>
+</html>

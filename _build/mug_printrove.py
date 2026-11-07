@@ -11,7 +11,8 @@ from PIL import Image
 import cv2
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TPL = {"a": os.path.join(HERE, "mugtpl", "front.png"), "b": os.path.join(HERE, "mugtpl", "back.png")}
+_TD = os.path.join(HERE, os.environ.get("MUGTPL", "mugtpl"))
+TPL = {"a": os.path.join(_TD, "front.png"), "b": os.path.join(_TD, "back.png")}
 GEO = {"a": dict(x0=254, x1=613, flip=False), "b": dict(x0=162, x1=522, flip=True)}
 PRINT_TOP, PRINT_H = 185.4, 430.6
 RIM_DY = 12.0

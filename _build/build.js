@@ -81,6 +81,7 @@ const typeLabel = p => p.type === "mug" ? "Mug" : "Glass phone case";
 const catLabel = p => p.cat === "christmas" ? "Christmas" : "Pet";
 
 const POL = require(path.join(SRC, "policies.js"));
+const TEAM_API = process.env.TEAM_API || POL.CONTACT.teamApi || "";
 // ---------- shared pieces ----------
 const fonts = `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">`;
@@ -378,20 +379,22 @@ ${footer("")}
 </script>`;
 }
 
-function customMugPage() {
+function customMugPage(join) {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp), url = `${BASE}/custom-mug/`;
   const desc = "Design a personalised name mug: type a name, pick 4 things that describe them, see your mug instantly. Made to order, delivered across Karnataka. Perfect for team gifts.";
   const traits = fs.readFileSync(path.join(SRC, "custommug", "traits.json"), "utf8");
   const themes = [["classic","Christmas Classic","#c41826","#1c603a"],["navy","Navy & Gold","#162c54","#b88c3c"],["sage","Charcoal & Sage","#2b2f33","#6e8c78"],["rose","Rose","#a8445e","#c9877a"]];
   const jsonld = [{"@context":"https://schema.org","@type":"Product","name":"Personalised Name Mug","description":desc,"image":`${BASE}/images/custom-name-mug.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
     "offers":{"@type":"Offer","priceCurrency":"INR","price":String(price),"availability":"https://schema.org/MadeToOrder","url":url}}];
-  return `${head({title:"Personalised Name Mug: Design Your Own | Nevervoid Store", desc, url, image:`${BASE}/images/custom-name-mug.jpg`, root:"../", jsonld})}
+  return `${join ? head({title:"Design your team mug | Nevervoid Store", desc:"Design your own name mug for your team gift.", url:`${BASE}/team/join/`, image:`${BASE}/images/custom-name-mug.jpg`, root:"../../"}) + '\n<meta name="robots" content="noindex">' : head({title:"Personalised Name Mug: Design Your Own | Nevervoid Store", desc, url, image:`${BASE}/images/custom-name-mug.jpg`, root:"../", jsonld})}
 <body>
-${header("../","shop")}
+${header(join ? "../../" : "../","shop")}
 <main class="wrap cm">
-  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Personalised name mug</span></nav>
+  ${join ? `<section class="cm-hero"><span class="eyebrow">Team gift</span><h1>Design your mug for <em id="cm-join-co">your team</em></h1>
+    <p class="lead">Type your name, pick 4 things that describe you (or write a short message) and submit. That’s it: your organiser takes care of the rest, and you don’t pay anything.</p>
+    <p id="cm-join-back" class="cm-ok" hidden>You’ve already sent a design. Change anything and submit again to update it.</p></section>` : `<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Personalised name mug</span></nav>
   <section class="cm-hero"><span class="eyebrow">Design your own</span><h1>A mug that’s <em>all about them</em></h1>
-    <p class="lead">Type a name, pick 4 things that describe them, and watch the mug design itself. Approve it, order it, and we print it for you.</p></section>
+    <p class="lead">Type a name, pick 4 things that describe them, and watch the mug design itself. Approve it, order it, and we print it for you.</p></section>`}
   <section class="pdp cm-grid">
     <div class="cm-preview">
       <div class="gallery ph cm-stage"><canvas id="cm-mug" width="620" height="620" aria-label="Your mug preview"></canvas></div>
@@ -399,17 +402,18 @@ ${header("../","shop")}
       <figure class="flat-wrap"><canvas id="cm-flat" width="1020" height="456"></canvas><figcaption>The full print, as it wraps round the mug.</figcaption></figure>
     </div>
     <div class="cm-form">
-      <label class="cm-step"><b>1. Their name</b><input id="cm-name" maxlength="14" autocomplete="off" placeholder="e.g. Priya" aria-describedby="cm-hint"></label>
+      <label class="cm-step"><b>1. ${join ? "Your" : "Their"} name</b><input id="cm-name" maxlength="14" autocomplete="off" placeholder="e.g. Priya" aria-describedby="cm-hint"></label>
       <div class="cm-step"><b>2. What goes under the name?</b>
         <div class="cm-modes" role="tablist"><button type="button" class="cm-mode on" data-m="traits" role="tab" aria-selected="true">4 things they love</button><button type="button" class="cm-mode" data-m="msg" role="tab" aria-selected="false">A short message</button></div></div>
       <div class="cm-step" id="cm-pane-msg" hidden><label for="cm-msg"><b>Your message</b> <span id="cm-msg-count" class="muted">0/120</span></label>
         <textarea id="cm-msg" rows="3" maxlength="120" placeholder="e.g. To the best manager. Thank you for an amazing 2026!"></textarea>
         <p class="muted cm-small">Up to 120 characters. Letters, numbers and simple punctuation.</p></div>
-      <div class="cm-step" id="cm-pane-traits"><b>Pick 4 things that describe them</b> <span id="cm-count" class="muted">0 of 4 chosen</span>
+      <div class="cm-step" id="cm-pane-traits"><b>Pick 4 things that describe ${join ? "you" : "them"}</b> <span id="cm-count" class="muted">0 of 4 chosen</span>
         <div class="cm-own"><input id="cm-own" maxlength="18" autocomplete="off" placeholder="Or type your own (1–2 words), e.g. Yoga" aria-label="Type your own"><button id="cm-own-add" type="button">Add</button></div><div id="cm-traits" class="cm-chips" role="group" aria-label="Things that describe them"></div></div>
-      <div class="cm-step"><b>3. Style</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="cm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
+      <div class="cm-step"${join ? " hidden" : ""}><b>3. Style</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="cm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
       <p id="cm-hint" class="cm-hint" aria-live="polite">Type a name to start.</p>
       <div class="cm-actions"><button id="cm-approve" type="button" class="buy" disabled>Approve design</button><button id="cm-reset" type="button" class="ask">Reset</button></div>
+      ${join ? `<div id="cm-joined" class="cm-ok tm-joined" hidden><span id="cm-joined-msg"></span> <button id="cm-again" type="button" class="linkbtn">Change my design</button></div>` : ""}
       <div id="cm-order" class="buybox" hidden>
         <p class="cm-ok">✓ Design approved: <span id="cm-summary"></span></p>
         <div class="pprice"><span class="was">${rupee(cp.price)}</span> <span class="now">${rupee(price)}</span></div>
@@ -419,13 +423,103 @@ ${header("../","shop")}
         <img id="pimg" alt="" hidden>
         <p class="pnote">We print exactly the design you approved. 11oz white ceramic mug, made to order.</p>
       </div>
-      <div class="cm-team"><b>Gifting a whole team?</b> Every employee can have their own name mug. <a href="../corporate.html">See team pricing →</a></div>
+      ${join ? "" : `<div class="cm-team"><b>Gifting a whole team?</b> Paste your team list and see every person's mug at once, from ₹319 a mug. <a href="../team/">Make team mugs →</a></div>`}
     </div>
   </section>
 </main>
 ${footer("../")}
-<script>window.NV_TRAITS = ${traits};</script>
+<script>window.NV_TRAITS = ${traits};${join ? ` window.NV_JOIN = {api:${JSON.stringify(TEAM_API)}, t:new URLSearchParams(location.search).get("t")};` : ""}</script>
+<script defer src="/assets/mugdesign.js"></script>
 <script defer src="/assets/custom-mug.js"></script>`;
+}
+function teamPage() {
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), url = `${BASE}/team/`;
+  const desc = "Name mugs for your whole team: paste or upload your list, see a real preview of every person's mug, and get one quote. From ₹319 a mug, delivered across Karnataka.";
+  const traits = fs.readFileSync(path.join(SRC, "custommug", "traits.json"), "utf8");
+  const themes = [["classic","Christmas Classic","#c41826","#1c603a"],["navy","Navy & Gold","#162c54","#b88c3c"],["sage","Charcoal & Sage","#2b2f33","#6e8c78"],["rose","Rose","#a8445e","#c9877a"]];
+  const cfg = {tiers:[[25,379],[50,349],[100,319]], small: salePrice(cp), wa: POL.CONTACT.whatsapp, api: TEAM_API};
+  return `${head({title:"Team Name Mugs: Every Employee's Own Mug | Nevervoid Store", desc, url, image:`${BASE}/images/custom-name-mug.jpg`, root:"../"})}
+<body>
+${header("../","shop")}
+<main class="wrap cm tm">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <a href="../corporate.html">Corporate gifting</a> › <span>Team name mugs</span></nav>
+  <section class="cm-hero"><span class="eyebrow">For teams</span><h1>Every person gets <em>their own mug</em></h1>
+    <p class="lead">Paste your team list or upload a spreadsheet. You'll see a real preview of every single mug, then send it all to us in one tap for a quote. No checkout per person.</p></section>
+  ${TEAM_API ? `<section class="tm-collect" id="tm-collect">
+    <div id="tm-c-intro"><b>Rather let everyone design their own?</b> Get one link to share with your team. Each person designs their own mug, you see them all here, and you pay once.
+      <button id="tm-c-start" type="button" class="linkbtn">Get a team link →</button></div>
+    <div id="tm-c-form" hidden>
+      <div class="tm-fields"><label class="field">Company<input id="tm-c-co" autocomplete="organization" placeholder="e.g. Acme Labs"></label><label class="field">Your name<input id="tm-c-who" autocomplete="name" placeholder="e.g. Kavya"></label>
+      <label class="field">Your WhatsApp number<input id="tm-c-ph" inputmode="tel" autocomplete="tel" placeholder="e.g. 98765 43210"></label>
+      <div class="field"><span>Style</span><span class="muted" style="font-weight:400">Everyone's mug uses the style you pick in step 1 below.</span></div></div>
+      <p id="tm-c-hint" class="cm-hint" aria-live="polite"></p>
+      <button id="tm-c-create" type="button" class="buy">Create team link</button></div>
+    <div id="tm-c-live" hidden>
+      <p class="tm-c-head"><b id="tm-c-title">Your team link</b> <span id="tm-c-count" class="tm-own-tag"></span> <span id="tm-c-state" class="muted"></span></p>
+      <label class="field">Share this with your team<div class="tm-c-row"><input id="tm-c-join" readonly><button type="button" class="ask" data-copy="#tm-c-join">Copy</button><a id="tm-c-wa" class="ask" target="_blank" rel="noopener">WhatsApp</a></div></label>
+      <label class="field">Your private page to see everyone's mugs (bookmark it, don't share it)<div class="tm-c-row"><input id="tm-c-dash" readonly><button type="button" class="ask" data-copy="#tm-c-dash">Copy</button></div></label>
+      <div class="tm-more"><button id="tm-c-refresh" type="button" class="linkbtn">Refresh the list</button><button id="tm-c-toggle" type="button" class="linkbtn">Stop collecting</button></div>
+      <p id="tm-c-msg" class="cm-hint" aria-live="polite"></p></div>
+  </section>` : ""}
+  <div id="tm-shared" class="cm-ok tm-shared" hidden>✓ This is a saved team order. Every mug below is exactly what we'll print.</div>
+  <section class="tm-setup">
+    <div class="tm-col">
+      <div class="cm-step"><b>1. Style for the whole team</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="tm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
+      <div class="cm-step"><b>2. Under every name</b>
+        <div class="cm-modes" role="tablist"><button type="button" class="cm-mode tm-mode on" data-m="traits" role="tab" aria-selected="true">4 things</button><button type="button" class="cm-mode tm-mode" data-m="msg" role="tab" aria-selected="false">A message</button></div>
+        <p class="muted cm-small">This goes on everyone's mug. Anyone can have their own instead (see the list).</p></div>
+      <div class="cm-step" id="tm-pane-traits"><b>The team's 4 things</b> <span id="tm-count" class="muted">0 of 4 chosen</span>
+        <div class="cm-own"><input id="tm-own" maxlength="18" autocomplete="off" placeholder="Or type your own, e.g. Team player" aria-label="Type your own"><button id="tm-own-add" type="button">Add</button></div>
+        <p id="tm-def-hint" class="cm-hint" aria-live="polite"></p>
+        <div id="tm-traits" class="cm-chips tm-chips" role="group" aria-label="The team's 4 things"></div></div>
+      <div class="cm-step" id="tm-pane-msg" hidden><label for="tm-msg"><b>The team's message</b> <span id="tm-msg-count" class="muted">0/120</span></label>
+        <textarea id="tm-msg" rows="3" maxlength="120" placeholder="e.g. Thank you for an amazing 2026!"></textarea></div>
+    </div>
+    <div class="tm-col">
+      <div class="cm-step"><label for="tm-list"><b>3. Your team, one person per line</b></label>
+        <textarea id="tm-list" rows="9" spellcheck="false" placeholder="Priya
+Rahul, Cricket, Coffee lover, Music lover, Traveller
+Anita: Thank you for an amazing year!"></textarea>
+        <div class="tm-howto"><span><b>Priya</b> gets the team's 4 things</span><span><b>Rahul, Cricket, …</b> gets his own 4</span><span><b>Anita: message</b> gets her own message</span></div>
+        <div class="tm-files"><label class="ask tm-up">Upload Excel or CSV<input id="tm-file" type="file" accept=".xlsx,.csv,text/csv" hidden></label><a class="tm-tpl" href="/assets/team-template.xlsx" download>Download the Excel template</a></div>
+        <p class="muted cm-small">You can also copy the columns straight from Excel or Google Sheets and paste them here.</p>
+        <p id="tm-list-hint" class="cm-hint" aria-live="polite"></p></div>
+    </div>
+  </section>
+  <section class="tm-results">
+    <div id="tm-empty" class="tm-empty">Your mugs will appear here as you type names.</div>
+    <div id="tm-sum" class="tm-sum" hidden>
+      <div class="tm-sum-top"><div><b id="tm-n"></b> · <span id="tm-each"></span><small id="tm-tier"></small></div><div class="tm-total"><span>Estimated total</span><b id="tm-total"></b><small>plus delivery</small></div></div>
+      <p id="tm-bad" class="tm-badmsg" hidden></p>
+      <p id="tm-progress" class="muted cm-small" aria-live="polite"></p>
+    </div>
+    <div id="tm-grid" class="tm-grid" aria-live="polite"></div>
+  </section>
+  <section class="tm-send-box" id="tm-quote">
+    <h2>4. Get your quote</h2>
+    <p class="muted">We reply on WhatsApp with the final price and one payment link for the whole order. Nothing is printed until you approve.</p>
+    <div class="tm-fields">
+      <label class="field">Company<input id="tm-co" autocomplete="organization" placeholder="e.g. Acme Labs"></label>
+      <label class="field">Your name<input id="tm-who" autocomplete="name" placeholder="e.g. Kavya"></label>
+      <div class="field tm-ship"><span>Delivery</span><label><input type="radio" name="tm-ship" value="office" checked> To one office</label><label><input type="radio" name="tm-ship" value="homes"> To each person's home</label></div>
+      <label class="field">Office pincode <span class="hint">(Karnataka)</span><input id="tm-pin" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
+      <label class="field">Needed by <span class="hint">(optional)</span><input id="tm-when" type="date"></label>
+    </div>
+    <p id="tm-send-hint" class="cm-hint" aria-live="polite"></p>
+    <div class="cm-actions"><button id="tm-send" type="button" class="buy" disabled>Send for a quote on WhatsApp</button></div>
+    <div class="tm-more"><button id="tm-copy" type="button" class="linkbtn">Copy a link to these mugs</button><button id="tm-csv" type="button" class="linkbtn">Download the list</button></div>
+    <div id="tm-admin" class="tm-admin" hidden><b>Owner tools</b><button id="tm-zip" type="button" class="buy">Download all print files (.zip)</button><p class="muted cm-small">2550 × 1140 PNG per person, numbered, with list.csv. Upload each to Printrove.</p></div>
+  </section>
+  <section class="tm-faq">
+    <details><summary>How does payment work?</summary><p>We confirm the price on WhatsApp and send one payment link for the whole order. Teams of 25 or more pay team prices: ₹379 a mug for 25–49, ₹349 for 50–99 and ₹319 for 100+.</p></details>
+    <details><summary>Can I change names after sending?</summary><p>Yes. Edit the list here and send again, or just tell us on WhatsApp. We print only after you approve the final list.</p></details>
+    <details><summary>Fewer than 25 people?</summary><p>You can still use this page. Under 25 mugs we charge our regular price of ${rupee(salePrice(cp))} a mug, or each person can <a href="../custom-mug/">design their own</a>.</p></details>
+  </section>
+</main>
+${footer("../")}
+<script>window.NV_TRAITS = ${traits}; window.NV_TEAM = ${JSON.stringify(cfg)};</script>
+<script defer src="/assets/mugdesign.js"></script>
+<script defer src="/assets/team.js"></script>`;
 }
 function nameMugCard(root) {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}custom-mug/`;
@@ -569,6 +663,39 @@ body.co-lock{overflow:hidden}
 #cm-approve:disabled{opacity:.45;cursor:not-allowed}
 .cm-ok{background:#eef6f0;color:var(--green);border-radius:10px;padding:10px 12px;font-size:14px}
 .cm-team{margin-top:22px;padding:14px;border:1px dashed #cdbfa6;border-radius:14px;font-size:14px;background:#fffaf1}.cm-team a{color:var(--green);font-weight:700}
+.tm-setup{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}.tm-setup>*{min-width:0}
+.tm-chips{max-height:260px;overflow:auto;padding:2px}
+#tm-list,#tm-msg{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:12px;font:inherit;font-size:15px;line-height:1.6;border:1px solid #d8d0c2;border-radius:12px;background:#fff;resize:vertical}#tm-list:focus,#tm-msg:focus{outline:2px solid var(--green);border-color:transparent}
+.tm-howto{display:grid;gap:4px;margin:10px 0;font-size:13px;color:var(--muted)}.tm-howto b{color:var(--ink);font-weight:600}
+.tm-files{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.tm-up{cursor:pointer;margin:0}.tm-tpl{color:var(--green);font-weight:700;font-size:14px}
+.cm-hint.good{color:var(--green);font-weight:600}
+.tm-shared{margin:0 0 18px}
+.tm-results{margin:26px 0;border-top:1px solid var(--line);padding-top:22px}
+.tm-empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed #d8d0c2;border-radius:16px;background:#fff}
+.tm-sum{position:sticky;top:8px;z-index:5;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:16px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+.tm-sum-top{display:flex;justify-content:space-between;gap:12px;align-items:center}.tm-sum-top small{display:block;color:var(--green);font-size:13px;margin-top:2px}
+.tm-total{text-align:right}.tm-total span,.tm-total small{display:block;font-size:12px;color:var(--muted)!important;margin:0}.tm-total b{font-size:22px}
+.tm-badmsg{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:#fbeeee;color:#7a1d23;font-size:13.5px}
+.tm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.tm-card{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}.tm-card.bad{border-color:#d9898d;box-shadow:0 0 0 2px #f6d9da}
+.tm-img{position:relative;display:block;border:0;padding:0;background:#f4f1ec;cursor:pointer;aspect-ratio:1}.tm-img img{width:100%;height:100%;object-fit:cover;display:block}.tm-img img[src=""]{visibility:hidden}
+.tm-turn{position:absolute;right:8px;bottom:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:15px;color:var(--ink)}
+.tm-card figcaption{padding:10px 12px 12px;display:grid;gap:3px;font-size:13px}.tm-card figcaption b{font-size:14px}.tm-card figcaption>span{color:var(--muted);line-height:1.4}
+.tm-own-tag{font-style:normal;font-size:11px;background:#eef6f0;color:var(--green);padding:1px 6px;border-radius:6px}
+.tm-err{color:#a8332f!important;font-weight:600}
+.tm-dl1{margin-top:6px;font:inherit;font-size:12.5px;padding:6px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.tm-send-box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin:10px 0 26px}.tm-send-box h2{margin:0 0 4px;font-family:Fraunces,Georgia,serif}
+.tm-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}.tm-fields input:not([type=radio]){font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--cream);font-weight:400}
+.tm-ship{align-content:start}.tm-ship label{font-weight:400;display:flex;gap:8px;align-items:center}
+.tm-more{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px}.linkbtn{background:none;border:0;padding:0;font:inherit;font-size:14px;color:var(--green);font-weight:700;text-decoration:underline;cursor:pointer}
+.cm [hidden]{display:none!important}.tm-admin{margin-top:18px;padding:14px;border:1px dashed #cdbfa6;border-radius:14px;display:grid;gap:8px}
+.tm-faq{max-width:760px;margin-bottom:30px}
+.tm-collect{margin:0 0 22px;padding:16px;border:1px dashed #cdbfa6;border-radius:16px;background:#fffaf1;font-size:14.5px;display:grid;gap:10px}.tm-collect .linkbtn{margin-left:4px}
+.tm-c-row{display:flex;gap:8px;margin-top:2px}.tm-c-row input{flex:1;min-width:0;font:inherit;font-size:14px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:400}.tm-c-row .ask{margin:0;white-space:nowrap}
+.tm-c-row .ask,.tm-up{display:inline-flex;align-items:center;justify-content:center;margin:0;padding:8px 14px;border:1px solid #cdbfa6;border-radius:10px;background:#fff;font:inherit;font-weight:700;font-size:14px;color:var(--ink);text-decoration:none;cursor:pointer}
+.tm-c-head{margin:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.tm-locked .cm-theme{opacity:.55;pointer-events:none}.tm-locked .cm-theme input:checked+span{opacity:1}
+.tm-joined{display:block;margin-top:10px}
+@media (max-width:760px){.tm-setup,.tm-fields{grid-template-columns:1fr;gap:0 12px}.tm-grid{grid-template-columns:1fr 1fr;gap:10px}.tm-sum-top b{font-size:15px}.tm-total b{font-size:19px}.tm-fields{gap:12px}}
 .shown-on{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
 .cases-hero{padding:16px 0 22px;max-width:760px}
 .cases-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 12px}.cases-hero h1 em{color:#a8332f}
@@ -1156,6 +1283,11 @@ fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.mkdirSync(path.join(OUT,"custom-mug"),{recursive:true}); fs.writeFileSync(path.join(OUT,"custom-mug","index.html"), customMugPage());
 fs.copyFileSync(path.join(SRC,"custommug","custom-mug.js"), path.join(OUT,"assets","custom-mug.js"));
+fs.copyFileSync(path.join(SRC,"custommug","mugdesign.js"), path.join(OUT,"assets","mugdesign.js"));
+fs.copyFileSync(path.join(SRC,"custommug","team.js"), path.join(OUT,"assets","team.js"));
+fs.copyFileSync(path.join(SRC,"custommug","team-template.xlsx"), path.join(OUT,"assets","team-template.xlsx"));
+fs.mkdirSync(path.join(OUT,"team"),{recursive:true}); fs.writeFileSync(path.join(OUT,"team","index.html"), teamPage());
+if (TEAM_API) { fs.mkdirSync(path.join(OUT,"team","join"),{recursive:true}); fs.writeFileSync(path.join(OUT,"team","join","index.html"), customMugPage(true)); }
 fs.mkdirSync(path.join(OUT,"assets","custommug"),{recursive:true}); for (const f of ["mug-a.jpg","mug-b.jpg","map-a-s.png","map-a-v.png","map-b-s.png","map-b-v.png","iconindex.json"]) fs.copyFileSync(path.join(SRC,"custommug",f), path.join(OUT,"assets","custommug",f));
 fs.mkdirSync(path.join(OUT,"assets","fonts"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"custommug","fonts"))) fs.copyFileSync(path.join(SRC,"custommug","fonts",f), path.join(OUT,"assets","fonts",f));
 if (fs.existsSync(path.join(SRC,"custommug","sample.jpg"))) fs.copyFileSync(path.join(SRC,"custommug","sample.jpg"), path.join(OUT,"images","custom-name-mug.jpg"));
@@ -1172,7 +1304,7 @@ fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/team/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);
