@@ -43,6 +43,16 @@ MUGS.forEach(m => { m.view = m.view || "b"; m.alt = m.view === "a" ? "b" : "a"; 
 }); });
 REAL.forEach(r => { r.photoSrc = path.join(SRC, "real", r.folder, r.defaultModel + ".webp"); });
 PRODUCTS.unshift(...REAL, ...MUGS);
+// Christmas glass case collection (Printrove library designs), shown on an iPhone 16 Pro frame
+const CASES = require(path.join(SRC, "cases.js"));
+CASES.forEach(c => PRODUCTS.push({
+  id: "case-" + c.slug, slug: c.slug + "-glass-phone-case", type: "case", cat: c.cats[0], cats: c.cats, collection: "cases", isNew: true,
+  name: c.name + " Glass Case", price: 699, code: c.code, orderName: `${c.name} Glass Case (design ${c.code})`, shownOn: "iPhone 16 Pro",
+  desc: c.desc, long: `${c.desc} A glossy glass phone case, made to order for your exact phone model.`,
+  photoSrc: path.join(SRC, "casedesigns", c.slug + ".webp"),
+  art: `<img class="photo" src="/images/cases/designs/${c.slug}-sm.webp" alt="${c.name} glass phone case" width="480" height="640" loading="lazy">`,
+  galleryArt: `<img id="pimg" class="photo" src="/images/cases/designs/${c.slug}.webp" alt="${c.name} glass phone case" width="1200" height="1600">` }));
+PRODUCTS.filter(p => p.id === "case-knitted-puppies").forEach(p => { p.collection = "cases"; });
 // placeholder (drawn) designs are hidden until real artwork replaces them
 const HIDDEN = new Set(["mug-sleigh","mug-tree","mug-cocoa","mug-ginger","mug-dogmom","mug-cat","mug-paws","case-plaid","case-pines","case-cats","case-paws"]);
 for (let i = PRODUCTS.length - 1; i >= 0; i--) if (HIDDEN.has(PRODUCTS[i].id)) PRODUCTS.splice(i, 1);
@@ -165,7 +175,7 @@ function orderBlock(p) {
       <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
-      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>
+      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.orderName || p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>
       <button class="ask" type="button" data-ask data-name="${esc(p.name)}">Ask a question</button>`;
   }
   return `${p.type==="case" ? `<label class="field">Your iPhone model
@@ -173,7 +183,7 @@ function orderBlock(p) {
       <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
-      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>
+      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.orderName || p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>
       <button class="ask" type="button" data-ask data-name="${esc(p.name)}">Ask a question</button>`;
 }
 
@@ -192,6 +202,43 @@ function card(p, root) {
 }
 
 const INITIALS = () => PRODUCTS.filter(p => p.collection === "initials").sort((a, b) => a.letter.localeCompare(b.letter));
+function casesCard(root) {
+  const items = PRODUCTS.filter(p => p.collection === "cases"); if (!items.length) return "";
+  const lead = items.find(p => p.slug.startsWith("jolly-santa")) || items[0], href = `${root}cases/`;
+  const from = Math.min(...items.map(salePrice)), was = Math.min(...items.map(p => p.price));
+  return `<article class="card coll-card" data-cat="christmas" data-type="case">
+    <a class="stage christmas" href="${href}" aria-label="Christmas Phone Cases">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}${lead.art}<span class="coll-letters" aria-hidden="true">${items.length} designs</span></a>
+    <div class="info">
+      <div class="tags"><span class="tag">Collection</span><span class="tag new">· New</span></div>
+      <h3><a href="${href}">Christmas Phone Cases</a></h3>
+      <p>${items.length} festive glass cases, made for your exact phone.</p>
+      <div class="price">${SALE.on ? `<span class="was">${rupee(was)}</span> ` : ""}<span class="now">From ${rupee(from)}</span></div>
+      <a class="buy" href="${href}">See all designs</a>
+    </div>
+  </article>`;
+}
+function casesPage() {
+  const items = PRODUCTS.filter(p => p.collection === "cases"), url = `${BASE}/cases/`;
+  const desc = `${items.length} Christmas glass phone cases: Santa, gnomes, reindeer, snow globes, trees and patterns. Made to order for your exact iPhone, Galaxy or OnePlus model. Delivered across Karnataka.`;
+  const jsonld = [{"@context":"https://schema.org","@type":"CollectionPage","name":"Christmas Phone Cases","url":url,"description":desc,
+    "mainEntity":{"@type":"ItemList","itemListElement":items.map((p,i)=>({"@type":"ListItem","position":i+1,"url":`${BASE}/products/${p.slug}.html`,"name":p.name}))}},
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Christmas Phone Cases","item":url}]}];
+  const lead = items.find(p => p.slug.startsWith("jolly-santa")) || items[0];
+  return `${head({title:"Christmas Phone Cases | Glass Cases for iPhone, Galaxy & OnePlus | Nevervoid Store", desc, url, image:`${BASE}/images/share/${lead.slug}.jpg`, root:"../", jsonld})}
+<body>
+${header("../","shop")}
+<main class="wrap">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Christmas Phone Cases</span></nav>
+  <section class="cases-hero">
+    <span class="eyebrow">Christmas phone cases</span>
+    <h1>${items.length} festive glass cases, <em>made for your phone</em></h1>
+    <p class="lead">Glossy glass cases, printed to order for your exact model: iPhone 11 to iPhone 17, Galaxy S22 to S25 and OnePlus 11 and 12. Pick a design, choose your phone, and we'll make it.</p>
+    <div class="ini-price">${SALE.on ? `<s>${rupee(lead.price)}</s> ` : ""}<b>${rupee(salePrice(lead))}</b>${SALE.on ? ` <span>${SALE.label} · ${SALE.pct}% off</span>` : ""}</div>
+  </section>
+  <div class="grid">${items.map(p => card(p, "../")).join("\n")}</div>
+</main>
+${footer("../")}`;
+}
 function initialsCard(root) {
   const items = INITIALS(); if (!items.length) return "";
   const lead = items[0], href = `${root}initials/`;
@@ -361,6 +408,10 @@ const extraCss = `
 .share-menu a,.share-menu button{display:block;text-align:left;padding:9px 12px;border-radius:8px;color:var(--ink);text-decoration:none;font:inherit;font-size:14px;background:none;border:0;cursor:pointer}
 .share-menu a:hover,.share-menu button:hover{background:#f4efe6}
 .coll-card .stage{position:relative}
+.pdp .gallery.christmas,.pdp .gallery.pets{background:#fff}
+.shown-on{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
+.cases-hero{padding:16px 0 22px;max-width:760px}
+.cases-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 12px}.cases-hero h1 em{color:#a8332f}
 .coll-letters{position:absolute;right:12px;bottom:12px;background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:5px 11px;border-radius:99px}
 .chip-link{display:inline-flex;align-items:center;padding:8px 14px;border-radius:99px;border:1px solid var(--green);color:var(--green);font-size:14px;font-weight:600;text-decoration:none;background:#fff}
 .chip-link:hover{background:var(--green);color:#fff}
@@ -648,7 +699,7 @@ const CONFIG = {
 const org = {"@type":"Organization","@id":BASE+"/#org","name":"NevervoidStore","founder":Object.assign({"@type":"Person","name":"Antony Pratap"}, POL.CONTACT.linkedin ? {"sameAs":[POL.CONTACT.linkedin]} : {}),"parentOrganization":{"@type":"Organization","name":"Nevervoid Photography","url":POL.CONTACT.photographySite},"url":BASE+"/","logo":BASE+"/images/og-home.jpg","sameAs":["https://instagram.com/nevervoidstore"]};
 
 function galleryHtml(p) {
-  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : p.art}</div>${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`;
+  return `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : (p.galleryArt || p.art)}</div>${p.shownOn ? `<p class="shown-on">Shown on an ${p.shownOn}. Your case is made for the model you choose.</p>` : ""}${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`;
 }
 
 function productPage(p) {
@@ -676,7 +727,7 @@ function productPage(p) {
 <body>
 ${header("../","")}
 <main class="wrap">
-  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › ${p.collection === "initials" ? `<a href="../initials/">Initials</a>` : `<a href="../index.html#${p.cat}">${catLabel(p)} gifts</a>`} › <span>${esc(p.name)}</span></nav>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › ${p.collection === "initials" ? `<a href="../initials/">Initials</a>` : p.collection === "cases" ? `<a href="../cases/">Phone cases</a>` : `<a href="../index.html#${p.cat}">${catLabel(p)} gifts</a>`} › <span>${esc(p.name)}</span></nav>
   <section class="pdp">
     ${galleryHtml(p)}
     <div>
@@ -741,7 +792,7 @@ ${header("","shop")}
       <a class="chip-link" href="initials/">🔤 Initials A–Z</a>
     </div>
     <div class="grid" id="grid">
-${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(1, 0, initialsCard("")); return list.join("\n"); })()}
+${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(1, 0, initialsCard("")); list.splice(3, 0, casesCard("")); return list.join("\n"); })()}
     </div>
   </div>
   <section class="band">
@@ -852,18 +903,19 @@ fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));
 fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join(SRC,"festive.js"),"utf8").replace("__SALE__", JSON.stringify(SALE)));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
+fs.mkdirSync(path.join(OUT,"cases"),{recursive:true}); fs.writeFileSync(path.join(OUT,"cases","index.html"), casesPage());
 fs.mkdirSync(path.join(OUT,"initials"),{recursive:true}); fs.writeFileSync(path.join(OUT,"initials","index.html"), initialsPage());
 INITIALS().forEach(p => { const d = path.join(OUT,"initials",p.letter.toLowerCase()); fs.mkdirSync(d,{recursive:true}); fs.writeFileSync(path.join(d,"index.html"), initialsPage(p.letter)); });
 PRODUCTS.forEach(p => fs.writeFileSync(path.join(OUT,"products",p.slug+".html"), productPage(p)));
 fs.writeFileSync(path.join(OUT,".nojekyll"), "");
-fs.mkdirSync(path.join(OUT,"images","cases"),{recursive:true}); fs.copyFileSync(path.join(SRC,"custom","custom-pet-case.webp"), path.join(OUT,"images","cases","custom-pet-case.webp"));
+fs.mkdirSync(path.join(OUT,"images","cases"),{recursive:true}); fs.mkdirSync(path.join(OUT,"images","cases","designs"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"casedesigns"))) fs.copyFileSync(path.join(SRC,"casedesigns",f), path.join(OUT,"images","cases","designs",f)); fs.copyFileSync(path.join(SRC,"custom","custom-pet-case.webp"), path.join(OUT,"images","cases","custom-pet-case.webp"));
 fs.mkdirSync(path.join(OUT,"policies"), {recursive:true});
 PAGES.forEach(pg => fs.writeFileSync(path.join(OUT,"policies",pg.slug+".html"), policyPage(pg)));
 fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);
