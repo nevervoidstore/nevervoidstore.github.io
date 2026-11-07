@@ -10,7 +10,8 @@
     sage:    { label: "Charcoal & Sage",   name: "#2b2f33", accent: "#6e8c78", line: "#6e8c78", icon: "#2b2f33", text: "#55605a" },
     rose:    { label: "Rose",              name: "#a8445e", accent: "#c9877a", line: "#c9a24a", icon: "#a8445e", text: "#5e4a50" }
   };
-  var state = { name: "", traits: [], theme: "classic", view: "r", approved: false };
+  var state = { name: "", traits: [], theme: "classic", view: "r", approved: false, mode: "traits", msg: "" };
+  var BAD = /\b(fuck|fck|shit|bitch|bastard|asshole|dick|cunt|slut|whore|porn|sex|nude|rape|nigg|chutiya|chutia|madarchod|bhenchod|behenchod|bhosdi|gaand|gandu|lund|randi|harami|kutta|kamina)\w*/i;
   var $ = function (s) { return document.querySelector(s); };
   var print = document.createElement("canvas"); print.width = PW; print.height = PH;
   var mug = $("#cm-mug"), nameIn = $("#cm-name"), chips = $("#cm-traits");
@@ -37,6 +38,7 @@
     while (s > min && ctx.measureText(text).width > maxw) { s -= 4; ctx.font = weight + " " + s + "px " + family; }
     return s;
   }
+  function wrap(ctx, text, maxw) { var words = text.split(/\s+/), lines = [], cur = ""; words.forEach(function (w) { var t = cur ? cur + " " + w : w; if (ctx.measureText(t).width > maxw && cur) { lines.push(cur); cur = w; } else cur = t; }); if (cur) lines.push(cur); return lines; }
   function flourish(ctx, cx, y, w, color) {
     ctx.fillStyle = color;
     [-1, 1].forEach(function (dir) {
@@ -59,16 +61,30 @@
     ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, PW, PH);
     // front: name, flourish, four icons with labels
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = th.name;
-    fitFont(ctx, name, "NVPlayfair, Georgia, serif", 900, 200, 90, 610); ctx.fillText(name, FRONT, 500);
-    flourish(ctx, FRONT, 585, 230, th.line);
-    var xs = [-237, -79, 79, 237], jobs = [], IY = 730;
-    state.traits.forEach(function (k, i) {
-      var x = FRONT + xs[i];
-      ctx.fillStyle = th.accent; ctx.globalAlpha = 0.10; ctx.beginPath(); ctx.arc(x, IY, 72, 0, 7); ctx.fill(); ctx.globalAlpha = 0.55; ctx.strokeStyle = th.accent; ctx.lineWidth = 3; ctx.stroke(); ctx.globalAlpha = 1;
-      label(ctx, byKey[k] ? byKey[k].l : k, x, 878, th.text);
-      jobs.push(icon(k, th.icon).then(function (im) { if (im) ctx.drawImage(im, x - 52, IY - 52, 104, 104); }));
-    });
-    for (var i = state.traits.length; i < 4; i++) { var x = FRONT + xs[i]; ctx.setLineDash([10, 10]); ctx.strokeStyle = "#cfc8bb"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, IY, 72, 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+    fitFont(ctx, name, "NVPlayfair, Georgia, serif", 900, 180, 90, 610); ctx.fillText(name, FRONT, 420);
+    flourish(ctx, FRONT, 495, 230, th.line);
+    var jobs = [];
+    if (state.mode === "msg") {
+      var text = state.msg.trim() || "Your message here", lines, size;
+      for (size = 66; size >= 40; size -= 2) { ctx.font = "400 " + size + "px NVScript, cursive"; lines = wrap(ctx, text, 600); if (lines.length * size * 1.45 <= 400) break; }
+      ctx.fillStyle = state.msg.trim() ? th.accent : "#c9c2b6"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      var lh = size * 1.45, top = 640 + (400 - lines.length * lh) / 2 - 40;
+      lines.forEach(function (ln, i) { ctx.fillText(ln, FRONT, top + lh * (i + 0.5)); });
+    } else {
+      // centred list: icon in a soft circle, word beside it; every word the same readable size
+      var items = state.traits.slice(), ROW = 100, FS = 46; ctx.font = "600 " + FS + "px NVSans, sans-serif";
+      var maxw = 0; items.forEach(function (k) { maxw = Math.max(maxw, ctx.measureText(byKey[k] ? byKey[k].l : k).width); });
+      if (!items.length) maxw = 260;
+      var blockW = Math.min(610, 84 + 26 + maxw), left = FRONT - blockW / 2, y0 = 585;
+      for (var i = 0; i < 4; i++) {
+        var y = y0 + i * ROW, k = items[i], cxI = left + 42;
+        if (k) {
+          ctx.fillStyle = th.accent; ctx.globalAlpha = 0.12; ctx.beginPath(); ctx.arc(cxI, y, 42, 0, 7); ctx.fill(); ctx.globalAlpha = 0.6; ctx.strokeStyle = th.accent; ctx.lineWidth = 2.5; ctx.stroke(); ctx.globalAlpha = 1;
+          ctx.fillStyle = th.text; ctx.textAlign = "left"; ctx.textBaseline = "middle"; fitFont(ctx, byKey[k].l, "NVSans, sans-serif", 600, FS, 30, blockW - 110); ctx.fillText(byKey[k].l, left + 110, y + 2);
+          (function (kk, cx, cy) { jobs.push(icon(kk, th.icon).then(function (im) { if (im) ctx.drawImage(im, cx - 29, cy - 29, 58, 58); })); })(k, cxI, y);
+        } else { ctx.setLineDash([8, 8]); ctx.strokeStyle = "#d6cfc2"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(cxI, y, 38, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = "#e7e1d6"; ctx.fillRect(left + 102, y - 8, Math.max(120, maxw * 0.7), 16); }
+      }
+    }
     // back: monogram seal + "made for"
     var ini = (state.name.trim()[0] || "N").toUpperCase();
     ctx.strokeStyle = th.line; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(BACK, 545, 235, 0, 7); ctx.stroke();
@@ -116,8 +132,8 @@
     var seq = ++pending;
     fontsReady.then(drawPrint).then(function () { if (seq === pending) { drawMug(); var flat = $("#cm-flat"); if (flat) { var fc = flat.getContext("2d"); fc.drawImage(print, 0, 0, flat.width, flat.height); } } });
     var n = state.traits.length; $("#cm-count").textContent = n + " of 4 chosen";
-    var ok = state.name.trim().length > 0 && n === 4; $("#cm-approve").disabled = !ok;
-    $("#cm-hint").textContent = !state.name.trim() ? "Type a name to start." : n < 4 ? "Pick " + (4 - n) + " more thing" + (4 - n === 1 ? "" : "s") + " that describe them." : "Looks good? Approve the design to order.";
+    var mlen = state.msg.trim().length, ok = state.name.trim().length > 0 && (state.mode === "msg" ? mlen >= 3 : n === 4); $("#cm-approve").disabled = !ok;
+    $("#cm-hint").textContent = !state.name.trim() ? "Type a name to start." : state.mode === "msg" ? (mlen < 3 ? "Write a short message for the mug." : "Looks good? Approve the design to order.") : n < 4 ? "Pick " + (4 - n) + " more thing" + (4 - n === 1 ? "" : "s") + " that describe them." : "Looks good? Approve the design to order.";
     if (state.approved) unapprove();
   }
   // chips
@@ -158,7 +174,11 @@
   }
   var ownIn = $("#cm-own"), ownBtn = $("#cm-own-add");
   function addOwn() {
-    var v = ownIn.value.replace(/[^A-Za-z &'-]/g, "").replace(/\s{2,}/g, " ").trim().slice(0, 18); if (!v) { ownIn.focus(); return; }
+    var raw = ownIn.value.trim(), v = raw.replace(/[^A-Za-z &'-]/g, "").replace(/\s{2,}/g, " ").trim();
+    if (!v) { ownIn.focus(); return; }
+    if (v.split(" ").length > 2 || v.length > 16 || /[.!?,]/.test(raw)) { flash("Keep it to 1–2 words, e.g. Yoga or Chai lover."); ownIn.focus(); return; }
+    if (v.length < 3) { flash("That's a bit short. Try a word like Yoga or Cricket."); return; }
+    if (BAD.test(v)) { flash("Let's keep it friendly. Please try another word."); ownIn.value = ""; return; }
     if (state.traits.length >= 4) { flash("You've picked 4. Tap one to remove it, then add yours."); return; }
     v = v.replace(/\b\w/g, function (c) { return c.toUpperCase(); }); ownBtn.disabled = true; ownBtn.textContent = "Adding…";
     addCustom(v, null, true).then(function () { ownIn.value = ""; ownBtn.disabled = false; ownBtn.textContent = "Add"; }, function () { ownBtn.disabled = false; ownBtn.textContent = "Add"; flash("Couldn't add that. Please try again."); });
@@ -169,25 +189,38 @@
   nameIn.addEventListener("input", function () {
     var v = nameIn.value.replace(/[^A-Za-zÀ-ɏ .'-]/g, "").replace(/\s{2,}/g, " ").slice(0, 14);
     if (v !== nameIn.value) nameIn.value = v;
+    if (BAD.test(v)) { nameIn.value = ""; state.name = ""; flash("Please use a real name."); render(); return; }
     state.name = v.trim() ? v.trim().replace(/\b\w/g, function (c) { return c.toUpperCase(); }) : ""; render();
+  });
+  document.querySelectorAll(".cm-mode").forEach(function (b) { b.addEventListener("click", function () {
+    state.mode = b.dataset.m; document.querySelectorAll(".cm-mode").forEach(function (x) { var on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); });
+    $("#cm-pane-traits").hidden = state.mode !== "traits"; $("#cm-pane-msg").hidden = state.mode !== "msg"; render(); }); });
+  var msgIn = $("#cm-msg");
+  if (msgIn) msgIn.addEventListener("input", function () {
+    var v = msgIn.value.replace(/[^A-Za-z0-9 \n.,!?'&:\-❤]/g, "").replace(/\n{2,}/g, "\n").slice(0, 120);
+    if (v.split("\n").length > 5) v = v.split("\n").slice(0, 5).join("\n");
+    if (v !== msgIn.value) msgIn.value = v;
+    $("#cm-msg-count").textContent = v.length + "/120";
+    if (BAD.test(v)) { state.msg = ""; flash("Let's keep it friendly. Please rephrase."); } else state.msg = v.replace(/\n/g, " ");
+    render();
   });
   document.querySelectorAll("[name=cm-theme]").forEach(function (r) { r.addEventListener("change", function () { state.theme = r.value; render(); }); });
   document.querySelectorAll(".cm-view").forEach(function (b) { b.addEventListener("click", function () { state.view = b.dataset.v; document.querySelectorAll(".cm-view").forEach(function (x) { x.classList.toggle("on", x === b); }); drawMug(); }); });
   $("#cm-reset").addEventListener("click", function () {
     state.name = ""; state.traits = []; nameIn.value = ""; syncChips(); unapprove(); render(); nameIn.focus(); window.scrollTo({ top: $(".cm").offsetTop - 70, behavior: "smooth" });
   });
-  function spec() { return encodeURIComponent(state.name) + "~" + state.traits.join(".") + "~" + state.theme; }
+  function spec() { return encodeURIComponent(state.name) + "~" + (state.mode === "msg" ? "m:" + encodeURIComponent(state.msg.trim()) : state.traits.join(".")) + "~" + state.theme; }
   function unapprove() { state.approved = false; $("#cm-order").hidden = true; $("#cm-approve").hidden = false; }
   $("#cm-approve").addEventListener("click", function () {
     state.approved = true; $("#cm-approve").hidden = true; var box = $("#cm-order"); box.hidden = false;
-    var btn = box.querySelector("[data-order]"), labels = state.traits.map(function (k) { return byKey[k].l; }).join(", ");
+    var btn = box.querySelector("[data-order]"), labels = state.mode === "msg" ? "Message: \u201c" + state.msg.trim() + "\u201d" : state.traits.map(function (k) { return byKey[k].l; }).join(", ");
     btn.dataset.name = "Custom Name Mug: " + state.name + " | " + labels + " | " + THEMES[state.theme].label + " | design nevervoidstore.com/custom-mug/?d=" + spec();
     $("#cm-summary").textContent = state.name + " · " + labels + " · " + THEMES[state.theme].label;
     drawMug(); box.scrollIntoView({ behavior: "smooth", block: "center" });
   });
   // prefill from a design link (?d=Name~k1.k2.k3.k4~theme); ?admin=1 adds a download of the print file for Printrove
   var q = new URLSearchParams(location.search), d = q.get("d");
-  if (d) { var p = d.split("~"); state.name = decodeURIComponent(p[0] || "").slice(0, 14); nameIn.value = state.name; var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4); state.traits = ent.filter(function (k) { return byKey[k]; }); ent.forEach(function (k) { if (k[0] === "_") { var bits = k.split("_"); addCustom(decodeURIComponent(bits.slice(2).join("_")), bits[1], true); } }); if (THEMES[p[2]]) { state.theme = p[2]; var r = document.querySelector("[name=cm-theme][value=" + p[2] + "]"); if (r) r.checked = true; } syncChips(); }
+  if (d) { var p = d.split("~"); state.name = decodeURIComponent(p[0] || "").slice(0, 14); nameIn.value = state.name; if ((p[1] || "").indexOf("m:") === 0) { state.mode = "msg"; state.msg = decodeURIComponent(p[1].slice(2)).slice(0, 120); if (msgIn) msgIn.value = state.msg; var mb = document.querySelector('.cm-mode[data-m="msg"]'); if (mb) mb.click(); } else { var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4); state.traits = ent.filter(function (k) { return byKey[k]; }); ent.forEach(function (k) { if (k[0] === "_") { var bits = k.split("_"); addCustom(decodeURIComponent(bits.slice(2).join("_")), bits[1], true); } }); } if (THEMES[p[2]]) { state.theme = p[2]; var r = document.querySelector("[name=cm-theme][value=" + p[2] + "]"); if (r) r.checked = true; } syncChips(); }
   if (q.get("admin") === "1") {
     var dl = document.createElement("button"); dl.type = "button"; dl.className = "buy"; dl.textContent = "Download print file (2550 × 1140)";
     dl.addEventListener("click", function () { var a = document.createElement("a"); a.download = "NevervoidStore-custom-" + (state.name || "mug").replace(/\s+/g, "-") + "-2550x1140.png"; a.href = print.toDataURL("image/png"); a.click(); });

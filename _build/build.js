@@ -400,8 +400,13 @@ ${header("../","shop")}
     </div>
     <div class="cm-form">
       <label class="cm-step"><b>1. Their name</b><input id="cm-name" maxlength="14" autocomplete="off" placeholder="e.g. Priya" aria-describedby="cm-hint"></label>
-      <div class="cm-step"><b>2. Pick 4 things that describe them</b> <span id="cm-count" class="muted">0 of 4 chosen</span>
-        <div class="cm-own"><input id="cm-own" maxlength="18" autocomplete="off" placeholder="Or type your own, e.g. Yoga, Cricket, Teacher" aria-label="Type your own"><button id="cm-own-add" type="button">Add</button></div><div id="cm-traits" class="cm-chips" role="group" aria-label="Things that describe them"></div></div>
+      <div class="cm-step"><b>2. What goes under the name?</b>
+        <div class="cm-modes" role="tablist"><button type="button" class="cm-mode on" data-m="traits" role="tab" aria-selected="true">4 things they love</button><button type="button" class="cm-mode" data-m="msg" role="tab" aria-selected="false">A short message</button></div></div>
+      <div class="cm-step" id="cm-pane-msg" hidden><label for="cm-msg"><b>Your message</b> <span id="cm-msg-count" class="muted">0/120</span></label>
+        <textarea id="cm-msg" rows="3" maxlength="120" placeholder="e.g. To the best manager. Thank you for an amazing 2026!"></textarea>
+        <p class="muted cm-small">Up to 120 characters. Letters, numbers and simple punctuation.</p></div>
+      <div class="cm-step" id="cm-pane-traits"><b>Pick 4 things that describe them</b> <span id="cm-count" class="muted">0 of 4 chosen</span>
+        <div class="cm-own"><input id="cm-own" maxlength="18" autocomplete="off" placeholder="Or type your own (1–2 words), e.g. Yoga" aria-label="Type your own"><button id="cm-own-add" type="button">Add</button></div><div id="cm-traits" class="cm-chips" role="group" aria-label="Things that describe them"></div></div>
       <div class="cm-step"><b>3. Style</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="cm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
       <p id="cm-hint" class="cm-hint" aria-live="polite">Type a name to start.</p>
       <div class="cm-actions"><button id="cm-approve" type="button" class="buy" disabled>Approve design</button><button id="cm-reset" type="button" class="ask">Reset</button></div>
@@ -543,7 +548,8 @@ body.co-lock{overflow:hidden}
 .cm-hero{padding:14px 0 18px;max-width:720px}.cm-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 10px}.cm-hero h1 em{color:#a8332f}
 .pdp.cm-grid{align-items:start}.cm-grid>*{min-width:0}.cm canvas{max-width:100%}
 .cm-own{display:flex;gap:8px;margin-top:10px}.cm-own input{flex:1;min-width:0;padding:12px;font:inherit;font-size:16px;border:1px solid #d8d0c2;border-radius:12px;background:#fff}.cm-own input:focus{outline:2px solid var(--green);border-color:var(--green)}.cm-own button{padding:0 18px;border:0;border-radius:12px;background:var(--green);color:#fff;font:inherit;font-weight:700;cursor:pointer}
-.cm-chip.custom{border-style:dashed}.cm-chip.custom.on{border-style:solid}
+.cm-chip.custom{border-style:dashed}.cm-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.cm-mode{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;color:var(--ink)}.cm-mode.on{background:var(--green);color:#fff;border-color:var(--green)}
+#cm-msg{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:12px;font:inherit;font-size:16px;border:1px solid #d8d0c2;border-radius:12px;background:#fff;resize:vertical}#cm-msg:focus{outline:2px solid var(--green);border-color:var(--green)}.cm-small{font-size:12px;margin:6px 0 0}.cm-chip.custom.on{border-style:solid}
 .cm-stage{padding:0!important;display:flex;align-items:center;justify-content:center;background:#fff}.cm-stage canvas{width:100%;height:auto;display:block}
 .cm-views{grid-template-columns:1fr 1fr}.cm-views .view{justify-content:center}
 #cm-flat{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
