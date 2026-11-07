@@ -44,6 +44,66 @@ const CONFIG = {
     else showPinMsg(box, el.value);
   }));
 
+  // ---------- on-site checkout sheet: collect delivery details, show the summary, then hand over to Razorpay to pay ----------
+  const esc2 = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  let sheet = null;
+  function openCheckout(btn, model, pin) {
+    const img = document.getElementById("pimg"), cv = document.getElementById("pcanvas");
+    const pic = cv && !cv.hidden ? cv.toDataURL("image/jpeg", 0.8) : (img ? img.currentSrc || img.src : "");
+    const name = btn.dataset.name.replace(/ (design [^)]*)$/, ""), price = +btn.dataset.price;
+    const wasEl = document.querySelector(".pprice .was, .price .was"), was = wasEl ? wasEl.textContent : "";
+    let saved = {}; try { saved = JSON.parse(localStorage.getItem("nv_addr") || "{}"); } catch (e) {}
+    if (!sheet) { sheet = document.createElement("div"); sheet.className = "co-wrap"; document.body.appendChild(sheet); }
+    sheet.innerHTML =
+      '<div class="co-back" data-close></div><div class="co" role="dialog" aria-modal="true" aria-labelledby="co-t">' +
+      '<button class="co-x" type="button" data-close aria-label="Close">×</button>' +
+      '<h2 id="co-t">Checkout</h2>' +
+      '<div class="co-sum">' + (pic ? '<img src="' + esc2(pic) + '" alt="">' : "") + '<div><b>' + esc2(name) + '</b>' + (model ? '<span>' + esc2(model) + '</span>' : "") +
+      '<div class="co-price">' + (was ? '<s>' + esc2(was) + '</s> ' : "") + '<b>' + rupee(price) + '</b></div><span class="co-free">Made to order · delivered in about 5–7 days</span></div></div>' +
+      '<form class="co-form" novalidate>' +
+      '<label>Full name<input name="n" autocomplete="name" required value="' + esc2(saved.n || "") + '"></label>' +
+      '<label>Mobile number<input name="p" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10-digit mobile" required value="' + esc2(saved.p || "") + '"></label>' +
+      '<label>House / flat, street, area<textarea name="a" rows="2" autocomplete="street-address" required>' + esc2(saved.a || "") + '</textarea></label>' +
+      '<div class="co-row"><label>City<input name="c" autocomplete="address-level2" required value="' + esc2(saved.c || "") + '"></label>' +
+      '<label>Pincode<input name="z" inputmode="numeric" maxlength="6" autocomplete="postal-code" required value="' + esc2(pin || saved.z || "") + '"></label></div>' +
+      '<div class="co-err" hidden></div>' +
+      '<button class="buy co-pay" type="submit">🔒 Continue to secure payment · ' + rupee(price) + '</button>' +
+      '<div class="co-ways"><span>UPI</span><span>GPay</span><span>PhonePe</span><span>Cards</span><span>Netbanking</span></div>' +
+      '<p class="co-note">You’ll pay on Razorpay’s secure page. Your details are already filled in. Replacement if anything arrives damaged.</p>' +
+      '</form></div>';
+    requestAnimationFrame(() => sheet.classList.add("open")); document.body.classList.add("co-lock");
+    sheet.querySelectorAll("[data-close]").forEach(x => x.addEventListener("click", closeCheckout));
+    const form = sheet.querySelector("form"), err = sheet.querySelector(".co-err");
+    (form.n.value ? form.a : form.n).focus({ preventScroll: true });
+    form.addEventListener("submit", ev => {
+      ev.preventDefault();
+      const v = { n: form.n.value.trim(), p: form.p.value.replace(/\D/g, ""), a: form.a.value.trim().replace(/\s+/g, " "), c: form.c.value.trim(), z: form.z.value.trim() };
+      const bad = !v.n ? [form.n, "Please enter your name"] : !/^[6-9]\d{9}$/.test(v.p) ? [form.p, "Please enter a valid 10-digit mobile number"] :
+        v.a.length < 8 ? [form.a, "Please enter your full delivery address"] : !v.c ? [form.c, "Please enter your city"] :
+        !isKA(v.z) ? [form.z, "We deliver within Karnataka only for now (pincodes starting 56–59)"] : null;
+      if (bad) { err.hidden = false; err.textContent = bad[1]; bad[0].focus(); return; }
+      try { localStorage.setItem("nv_addr", JSON.stringify(v)); localStorage.setItem("nv_last", JSON.stringify({ name, model, price, pic: pic && pic.length < 200000 ? pic : "", at: Date.now() })); } catch (e) {}
+      const f = CONFIG.rzpFields, q = new URLSearchParams();
+      q.set(btn.dataset.rzp, "1");
+      q.set(f.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p);
+      if (model) q.set(f.model, model);
+      q.set(f.pincode, v.z); q.set("phone", v.p); q.set("full_name", v.n); q.set("name", v.n); q.set("address", v.a); q.set("city", v.c);
+      form.querySelector(".co-pay").textContent = "Opening secure payment…";
+      location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
+    });
+  }
+  function closeCheckout() { if (!sheet) return; sheet.classList.remove("open"); document.body.classList.remove("co-lock"); }
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeCheckout(); });
+  // sticky buy bar on phones: price + Buy now, shown once the main button scrolls out of view
+  const mainBuy = document.querySelector(".buybox [data-order]");
+  if (mainBuy && CONFIG.razorpayPage) {
+    const bar = document.createElement("div"); bar.className = "buybar";
+    const wasEl = document.querySelector(".pprice .was");
+    bar.innerHTML = '<div class="bb-p">' + (wasEl ? '<s>' + esc2(wasEl.textContent) + '</s>' : "") + '<b>' + rupee(+mainBuy.dataset.price) + '</b><span>🔒 Secure checkout</span></div><button type="button" class="buy">Buy now</button>';
+    document.body.appendChild(bar); document.body.classList.add("has-buybar");
+    bar.querySelector("button").addEventListener("click", () => { mainBuy.closest(".buybox").scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => mainBuy.click(), 450); });
+    new IntersectionObserver(es => bar.classList.toggle("show", !es[0].isIntersecting && es[0].boundingClientRect.top > 0)).observe(mainBuy);
+  }
   document.querySelectorAll("[data-order]").forEach(btn => {
     const pay = CONFIG.payLinks[btn.dataset.id];
     if (pay) btn.textContent = "Pay securely · " + rupee(btn.dataset.price);
@@ -73,7 +133,8 @@ const CONFIG = {
       if (pinEl && !isKA(pin)){ showPinMsg(box, pin); return; }
       const text = "Hi Antony! I'd like to order: " + btn.dataset.name + " (" + rupee(btn.dataset.price) + ")" + (model ? " for " + model : "") + ". Delivery pincode: " + pin + ".";
       if (pay){ if (model) copy(text, "Opening checkout. Please DM us your model: " + model); location.href = pay; return; }
-      if (CONFIG.razorpayPage && btn.dataset.rzp){
+      if (CONFIG.razorpayPage && btn.dataset.rzp){ openCheckout(btn, model, pin); return; }
+      if (false){
         const f = CONFIG.rzpFields, q = new URLSearchParams();
         q.set(btn.dataset.rzp, "1"); q.set(f.product, btn.dataset.name);
         if (model) q.set(f.model, model);

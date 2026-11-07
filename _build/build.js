@@ -344,6 +344,40 @@ ${footer(root)}
 </script>`;
 }
 
+function thankYouPage() {
+  const wa = POL.CONTACT.whatsapp;
+  return `${head({title:"Thank you for your order | Nevervoid Store", desc:"Your NevervoidStore order is confirmed.", url:`${BASE}/thank-you.html`, image:`${BASE}/images/og-home.jpg`})}
+<meta name="robots" content="noindex">
+<body>
+${header("","shop")}
+<main class="wrap ty">
+  <div class="ty-card">
+    <div class="ty-tick" aria-hidden="true">✓</div>
+    <h1>Thank you! Your order is in.</h1>
+    <p class="lead">We've received your payment. Razorpay has sent the receipt to your phone and email.</p>
+    <div id="ty-sum" class="co-sum" hidden></div>
+    <ol class="ty-steps">
+      <li><b>Today:</b> we check your design and details. If anything needs confirming, we'll WhatsApp you.</li>
+      <li><b>1–2 days:</b> your item is printed to order.</li>
+      <li><b>About 5–7 days:</b> delivered to your door, with tracking shared on WhatsApp.</li>
+    </ol>
+    <a class="buy ty-wa" id="ty-wa" href="https://wa.me/${wa}" target="_blank" rel="noopener">Message us on WhatsApp</a>
+    <a class="ty-back" href="/">Continue shopping</a>
+    <p class="ty-note">Anything arrives damaged? Send a photo within 48 hours and we'll replace it free. <a href="/policies/returns.html">Replacement policy</a></p>
+  </div>
+</main>
+${footer("")}
+<script>
+(function(){ try {
+  var o = JSON.parse(localStorage.getItem("nv_last") || "null"); if (!o || Date.now() - o.at > 3 * 864e5) return;
+  var el = document.getElementById("ty-sum"), e = function(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
+  el.innerHTML = (o.pic ? '<img src="' + e(o.pic) + '" alt="">' : "") + "<div><b>" + e(o.name) + "</b>" + (o.model ? "<span>" + e(o.model) + "</span>" : "") + '<div class="co-price"><b>₹' + Number(o.price).toLocaleString("en-IN") + "</b></div></div>";
+  el.hidden = false;
+  document.getElementById("ty-wa").href = "https://wa.me/${wa}?text=" + encodeURIComponent("Hi Antony! I just paid for " + o.name + (o.model ? " (" + o.model + ")" : "") + ". Please confirm my order.");
+} catch (x) {} })();
+</script>`;
+}
+
 // ---------- CSS ----------
 const extraCss = `
 .nav{display:flex;gap:8px;align-items:center}
@@ -417,6 +451,42 @@ const extraCss = `
 .coll-card .stage{position:relative}
 .pdp .gallery.christmas,.pdp .gallery.pets{background:#fff}
 #pcanvas{position:absolute;inset:36px;width:calc(100% - 72px);height:calc(100% - 72px);object-fit:contain}
+.co-wrap{position:fixed;inset:0;z-index:200;pointer-events:none}
+.co-wrap.open{pointer-events:auto}
+.co-back{position:absolute;inset:0;background:rgba(20,28,24,.45);opacity:0;transition:opacity .25s}
+.co-wrap.open .co-back{opacity:1}
+.co{position:absolute;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:22px 20px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.18);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.co-wrap.open .co{transform:translate(-50%,0)}
+@media (min-width:700px){.co{top:50%;bottom:auto;border-radius:22px;transform:translate(-50%,-40%);opacity:0;transition:transform .25s,opacity .25s}.co-wrap.open .co{transform:translate(-50%,-50%);opacity:1}}
+.co h2{font-family:Fraunces,Georgia,serif;font-size:24px;margin:0 0 14px}
+.co-x{position:absolute;right:14px;top:12px;width:36px;height:36px;border-radius:50%;border:0;background:#f3efe7;font-size:22px;cursor:pointer}
+.co-sum{display:flex;gap:14px;align-items:center;background:#faf6ef;border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:16px}
+.co-sum img{width:76px;height:76px;object-fit:contain;background:#fff;border-radius:10px;flex:none}
+.co-sum b{display:block;font-size:15px}.co-sum span{display:block;font-size:13px;color:var(--muted)}
+.co-price{margin:4px 0 2px}.co-price s{color:var(--muted);font-size:13px}.co-price b{display:inline;color:#a8332f;font-size:18px}
+.co-form label{display:block;font-size:13px;font-weight:600;margin:0 0 10px;color:var(--ink)}
+.co-form input,.co-form textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:12px;border:1px solid #d8d0c2;border-radius:12px;font:inherit;font-size:16px;background:#fff}
+.co-form input:focus,.co-form textarea:focus{outline:2px solid var(--green);border-color:var(--green)}
+.co-row{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
+.co-err{background:#fdecea;color:#a8332f;border-radius:10px;padding:9px 12px;font-size:14px;margin:4px 0 10px}
+.co-pay{width:100%;margin-top:4px;font-size:16px;padding:15px}
+.co-ways{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:12px 0 6px}
+.co-ways span{font-size:11px;font-weight:700;letter-spacing:.03em;color:#4c5a52;border:1px solid var(--line);border-radius:6px;padding:3px 7px;background:#fff}
+.co-note{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 0}
+body.co-lock{overflow:hidden}
+.buybar{position:fixed;left:0;right:0;bottom:0;z-index:80;display:none;align-items:center;gap:12px;background:#fff;border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.08);transform:translateY(110%);transition:transform .25s}
+.buybar.show{transform:none}
+.bb-p{display:flex;flex-direction:column;line-height:1.15}.bb-p s{font-size:12px;color:var(--muted)}.bb-p b{font-size:20px;color:#a8332f}.bb-p span{font-size:11px;color:var(--muted)}
+.buybar .buy{flex:1;margin:0;padding:14px;font-size:16px}
+@media (max-width:860px){.buybar{display:flex}body.has-buybar .wa-wrap{bottom:86px}}
+.ty{padding:30px 0 60px}.ty-card{max-width:560px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px 24px;text-align:center}
+.ty-tick{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:var(--green);color:#fff;font-size:34px;line-height:64px}
+.ty h1{font-family:Fraunces,Georgia,serif;font-size:clamp(26px,4vw,34px);margin:0 0 8px}
+.ty .co-sum{text-align:left;margin:18px 0}
+.ty-steps{text-align:left;margin:18px 0;padding-left:20px;line-height:1.5}.ty-steps li{margin:8px 0}
+.ty-wa{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:8px}
+.ty-back{display:block;margin:14px 0 6px;color:var(--green);font-weight:600}
+.ty-note{font-size:13px;color:var(--muted)}
 .shown-on{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
 .cases-hero{padding:16px 0 22px;max-width:760px}
 .cases-hero h1{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,48px);line-height:1.06;margin:8px 0 12px}.cases-hero h1 em{color:#a8332f}
@@ -596,6 +666,66 @@ const CONFIG = {
     else showPinMsg(box, el.value);
   }));
 
+  // ---------- on-site checkout sheet: collect delivery details, show the summary, then hand over to Razorpay to pay ----------
+  const esc2 = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  let sheet = null;
+  function openCheckout(btn, model, pin) {
+    const img = document.getElementById("pimg"), cv = document.getElementById("pcanvas");
+    const pic = cv && !cv.hidden ? cv.toDataURL("image/jpeg", 0.8) : (img ? img.currentSrc || img.src : "");
+    const name = btn.dataset.name.replace(/ \(design [^)]*\)$/, ""), price = +btn.dataset.price;
+    const wasEl = document.querySelector(".pprice .was, .price .was"), was = wasEl ? wasEl.textContent : "";
+    let saved = {}; try { saved = JSON.parse(localStorage.getItem("nv_addr") || "{}"); } catch (e) {}
+    if (!sheet) { sheet = document.createElement("div"); sheet.className = "co-wrap"; document.body.appendChild(sheet); }
+    sheet.innerHTML =
+      '<div class="co-back" data-close></div><div class="co" role="dialog" aria-modal="true" aria-labelledby="co-t">' +
+      '<button class="co-x" type="button" data-close aria-label="Close">×</button>' +
+      '<h2 id="co-t">Checkout</h2>' +
+      '<div class="co-sum">' + (pic ? '<img src="' + esc2(pic) + '" alt="">' : "") + '<div><b>' + esc2(name) + '</b>' + (model ? '<span>' + esc2(model) + '</span>' : "") +
+      '<div class="co-price">' + (was ? '<s>' + esc2(was) + '</s> ' : "") + '<b>' + rupee(price) + '</b></div><span class="co-free">Made to order · delivered in about 5–7 days</span></div></div>' +
+      '<form class="co-form" novalidate>' +
+      '<label>Full name<input name="n" autocomplete="name" required value="' + esc2(saved.n || "") + '"></label>' +
+      '<label>Mobile number<input name="p" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10-digit mobile" required value="' + esc2(saved.p || "") + '"></label>' +
+      '<label>House / flat, street, area<textarea name="a" rows="2" autocomplete="street-address" required>' + esc2(saved.a || "") + '</textarea></label>' +
+      '<div class="co-row"><label>City<input name="c" autocomplete="address-level2" required value="' + esc2(saved.c || "") + '"></label>' +
+      '<label>Pincode<input name="z" inputmode="numeric" maxlength="6" autocomplete="postal-code" required value="' + esc2(pin || saved.z || "") + '"></label></div>' +
+      '<div class="co-err" hidden></div>' +
+      '<button class="buy co-pay" type="submit">🔒 Continue to secure payment · ' + rupee(price) + '</button>' +
+      '<div class="co-ways"><span>UPI</span><span>GPay</span><span>PhonePe</span><span>Cards</span><span>Netbanking</span></div>' +
+      '<p class="co-note">You’ll pay on Razorpay’s secure page. Your details are already filled in. Replacement if anything arrives damaged.</p>' +
+      '</form></div>';
+    requestAnimationFrame(() => sheet.classList.add("open")); document.body.classList.add("co-lock");
+    sheet.querySelectorAll("[data-close]").forEach(x => x.addEventListener("click", closeCheckout));
+    const form = sheet.querySelector("form"), err = sheet.querySelector(".co-err");
+    (form.n.value ? form.a : form.n).focus({ preventScroll: true });
+    form.addEventListener("submit", ev => {
+      ev.preventDefault();
+      const v = { n: form.n.value.trim(), p: form.p.value.replace(/\\D/g, ""), a: form.a.value.trim().replace(/\\s+/g, " "), c: form.c.value.trim(), z: form.z.value.trim() };
+      const bad = !v.n ? [form.n, "Please enter your name"] : !/^[6-9]\\d{9}$/.test(v.p) ? [form.p, "Please enter a valid 10-digit mobile number"] :
+        v.a.length < 8 ? [form.a, "Please enter your full delivery address"] : !v.c ? [form.c, "Please enter your city"] :
+        !isKA(v.z) ? [form.z, "We deliver within Karnataka only for now (pincodes starting 56–59)"] : null;
+      if (bad) { err.hidden = false; err.textContent = bad[1]; bad[0].focus(); return; }
+      try { localStorage.setItem("nv_addr", JSON.stringify(v)); localStorage.setItem("nv_last", JSON.stringify({ name, model, price, pic: pic && pic.length < 200000 ? pic : "", at: Date.now() })); } catch (e) {}
+      const f = CONFIG.rzpFields, q = new URLSearchParams();
+      q.set(btn.dataset.rzp, "1");
+      q.set(f.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p);
+      if (model) q.set(f.model, model);
+      q.set(f.pincode, v.z); q.set("phone", v.p); q.set("full_name", v.n); q.set("name", v.n); q.set("address", v.a); q.set("city", v.c);
+      form.querySelector(".co-pay").textContent = "Opening secure payment…";
+      location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
+    });
+  }
+  function closeCheckout() { if (!sheet) return; sheet.classList.remove("open"); document.body.classList.remove("co-lock"); }
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeCheckout(); });
+  // sticky buy bar on phones: price + Buy now, shown once the main button scrolls out of view
+  const mainBuy = document.querySelector(".buybox [data-order]");
+  if (mainBuy && CONFIG.razorpayPage) {
+    const bar = document.createElement("div"); bar.className = "buybar";
+    const wasEl = document.querySelector(".pprice .was");
+    bar.innerHTML = '<div class="bb-p">' + (wasEl ? '<s>' + esc2(wasEl.textContent) + '</s>' : "") + '<b>' + rupee(+mainBuy.dataset.price) + '</b><span>🔒 Secure checkout</span></div><button type="button" class="buy">Buy now</button>';
+    document.body.appendChild(bar); document.body.classList.add("has-buybar");
+    bar.querySelector("button").addEventListener("click", () => { mainBuy.closest(".buybox").scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => mainBuy.click(), 450); });
+    new IntersectionObserver(es => bar.classList.toggle("show", !es[0].isIntersecting && es[0].boundingClientRect.top > 0)).observe(mainBuy);
+  }
   document.querySelectorAll("[data-order]").forEach(btn => {
     const pay = CONFIG.payLinks[btn.dataset.id];
     if (pay) btn.textContent = "Pay securely · " + rupee(btn.dataset.price);
@@ -625,7 +755,8 @@ const CONFIG = {
       if (pinEl && !isKA(pin)){ showPinMsg(box, pin); return; }
       const text = "Hi Antony! I'd like to order: " + btn.dataset.name + " (" + rupee(btn.dataset.price) + ")" + (model ? " for " + model : "") + ". Delivery pincode: " + pin + ".";
       if (pay){ if (model) copy(text, "Opening checkout. Please DM us your model: " + model); location.href = pay; return; }
-      if (CONFIG.razorpayPage && btn.dataset.rzp){
+      if (CONFIG.razorpayPage && btn.dataset.rzp){ openCheckout(btn, model, pin); return; }
+      if (false){
         const f = CONFIG.rzpFields, q = new URLSearchParams();
         q.set(btn.dataset.rzp, "1"); q.set(f.product, btn.dataset.name);
         if (model) q.set(f.model, model);
@@ -947,6 +1078,7 @@ INITIALS().forEach(p => { const d = path.join(OUT,"initials",p.letter.toLowerCas
 PRODUCTS.forEach(p => fs.writeFileSync(path.join(OUT,"products",p.slug+".html"), productPage(p)));
 fs.writeFileSync(path.join(OUT,".nojekyll"), "");
 fs.mkdirSync(path.join(OUT,"images","cases"),{recursive:true}); fs.mkdirSync(path.join(OUT,"images","cases","designs"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"casedesigns"))) fs.copyFileSync(path.join(SRC,"casedesigns",f), path.join(OUT,"images","cases","designs",f)); fs.mkdirSync(path.join(OUT,"images","cases","frames"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"caseframes"))) if (/\.(webp|png|json)$/.test(f)) fs.copyFileSync(path.join(SRC,"caseframes",f), path.join(OUT,"images","cases","frames",f)); fs.copyFileSync(path.join(SRC,"custom","custom-pet-case.webp"), path.join(OUT,"images","cases","custom-pet-case.webp"));
+fs.writeFileSync(path.join(OUT,"thank-you.html"), thankYouPage());
 fs.mkdirSync(path.join(OUT,"policies"), {recursive:true});
 PAGES.forEach(pg => fs.writeFileSync(path.join(OUT,"policies",pg.slug+".html"), policyPage(pg)));
 fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
