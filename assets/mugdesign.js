@@ -76,7 +76,10 @@
     ctx.textAlign = "center";
     ctx.strokeStyle = th.line; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(BACK, 545, 235, 0, 7); ctx.stroke();
     ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(BACK, 545, 213, 0, 7); ctx.stroke();
-    ctx.fillStyle = th.name; ctx.textBaseline = "middle"; ctx.font = "900 300px NVPlayfair, Georgia, serif"; ctx.fillText(ini, BACK, 558);
+    // centre the letter on its ink, not its font box: Playfair capitals sit low on "middle"
+    ctx.fillStyle = th.name; ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; ctx.font = "900 280px NVPlayfair, Georgia, serif";
+    var mi = ctx.measureText(ini), inkW = mi.actualBoundingBoxLeft + mi.actualBoundingBoxRight, inkH = mi.actualBoundingBoxAscent + mi.actualBoundingBoxDescent;
+    ctx.fillText(ini, BACK - inkW / 2 + mi.actualBoundingBoxLeft, 545 + inkH / 2 - mi.actualBoundingBoxDescent); ctx.textAlign = "center";
     [-1, 1].forEach(function (dd) { ctx.save(); ctx.translate(BACK + dd * 235, 545); ctx.rotate(Math.PI / 4); ctx.fillStyle = th.line; ctx.fillRect(-11, -11, 22, 22); ctx.restore(); });
     ctx.fillStyle = th.accent; ctx.textBaseline = "alphabetic"; fitFont(ctx, "made for " + name, "NVScript, cursive", 400, 70, 40, 600); ctx.fillText("made for " + name, BACK, 920);
     ctx.fillStyle = th.line; ctx.fillRect(0, 1048, PW, 5); ctx.fillRect(0, 1064, PW, 2);
