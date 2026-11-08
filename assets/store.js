@@ -24,11 +24,14 @@ const CONFIG = {
   function toast(m){ const t=document.getElementById("toast"); if(!t) return; t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),2600); }
   function copy(text, msg){ try{ navigator.clipboard.writeText(text).then(()=>toast(msg),()=>toast(msg)); }catch(e){ toast(msg); } }
   function send(text){
+    window.nvTrack("Lead", { content_name: "WhatsApp question" });
     if (CONFIG.whatsapp){ location.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(text); return; }
     copy(text, "Order details copied. Paste them in your Instagram DM");
     setTimeout(()=>{ location.href = dmUrl; }, 900);
   }
   window.nvToast = toast;
+  // product view for ads reporting
+  (function(){ const b = document.querySelector(".buybox [data-order]"); if (b && b.dataset.id) window.nvTrack("ViewContent", { content_ids: [b.dataset.id], content_type: "product", content_name: b.dataset.name, value: +b.dataset.price || 0, currency: "INR" }); })();
   const isKA = p => /^5[6-9]\d{4}$/.test(p);
   function showPinMsg(box, pin){
     const m = box.querySelector(".pin-msg"); if (!m) return;
@@ -89,6 +92,7 @@ const CONFIG = {
       if (model) q.set(f.model, model);
       q.set(f.pincode, v.z); q.set("phone", v.p); q.set("full_name", v.n); q.set("name", v.n); q.set("address", v.a); q.set("city", v.c);
       form.querySelector(".co-pay").textContent = "Opening secure payment…";
+      window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
       location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
     });
   }

@@ -118,6 +118,7 @@ ${fonts}
 <script defer src="${root}assets/festive.js"></script>
 <script defer src="${root}assets/chat.js"></script>
 ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join("\n")}
+${metaHead()}
 </head>`;
 }
 
@@ -346,6 +347,11 @@ ${footer(root)}
 </script>`;
 }
 
+// Meta Pixel: loads only when an ID is configured; window.nvTrack is always defined so pages can call it safely
+function metaHead() {
+  const id = String(POL.CONTACT.metaPixel || "").replace(/\D/g, ""), dv = POL.CONTACT.metaDomainVerify || "";
+  return (dv ? `<meta name="facebook-domain-verification" content="${esc(dv)}">\n` : "") + (id ? `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${id}');fbq('track','PageView');window.nvTrack=function(e,p){try{fbq('track',e,p||{})}catch(x){}};</script>` : `<script>window.nvTrack=function(){};</script>`);
+}
 function thankYouPage() {
   const wa = POL.CONTACT.whatsapp;
   return `${head({title:"Thank you for your order | Nevervoid Store", desc:"Your NevervoidStore order is confirmed.", url:`${BASE}/thank-you.html`, image:`${BASE}/images/og-home.jpg`})}
@@ -372,6 +378,7 @@ ${footer("")}
 <script>
 (function(){ try {
   var o = JSON.parse(localStorage.getItem("nv_last") || "null"); if (!o || Date.now() - o.at > 3 * 864e5) return;
+  if (!o.tracked) { window.nvTrack("Purchase", { value: Number(o.price) || 0, currency: "INR", content_name: o.name }); o.tracked = 1; localStorage.setItem("nv_last", JSON.stringify(o)); }
   var el = document.getElementById("ty-sum"), e = function(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
   el.innerHTML = (o.pic ? '<img src="' + e(o.pic) + '" alt="">' : "") + "<div><b>" + e(o.name) + "</b>" + (o.model ? "<span>" + e(o.model) + "</span>" : "") + '<div class="co-price"><b>₹' + Number(o.price).toLocaleString("en-IN") + "</b></div></div>";
   el.hidden = false;
@@ -857,11 +864,14 @@ const CONFIG = {
   function toast(m){ const t=document.getElementById("toast"); if(!t) return; t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),2600); }
   function copy(text, msg){ try{ navigator.clipboard.writeText(text).then(()=>toast(msg),()=>toast(msg)); }catch(e){ toast(msg); } }
   function send(text){
+    window.nvTrack("Lead", { content_name: "WhatsApp question" });
     if (CONFIG.whatsapp){ location.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(text); return; }
     copy(text, "Order details copied. Paste them in your Instagram DM");
     setTimeout(()=>{ location.href = dmUrl; }, 900);
   }
   window.nvToast = toast;
+  // product view for ads reporting
+  (function(){ const b = document.querySelector(".buybox [data-order]"); if (b && b.dataset.id) window.nvTrack("ViewContent", { content_ids: [b.dataset.id], content_type: "product", content_name: b.dataset.name, value: +b.dataset.price || 0, currency: "INR" }); })();
   const isKA = p => /^5[6-9]\\d{4}$/.test(p);
   function showPinMsg(box, pin){
     const m = box.querySelector(".pin-msg"); if (!m) return;
@@ -922,6 +932,7 @@ const CONFIG = {
       if (model) q.set(f.model, model);
       q.set(f.pincode, v.z); q.set("phone", v.p); q.set("full_name", v.n); q.set("name", v.n); q.set("address", v.a); q.set("city", v.c);
       form.querySelector(".co-pay").textContent = "Opening secure payment…";
+      window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
       location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
     });
   }

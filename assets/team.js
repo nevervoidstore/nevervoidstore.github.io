@@ -208,6 +208,7 @@
         "Style: " + M.THEMES[st.theme].label + "\nUnder each name: " + (st.mode === "msg" ? "message “" + st.msg.trim() + "”" : "4 things: " + st.traits.map(function (k) { return byKey[k].l; }).join(", ")) + (own ? " (" + own + " people have their own)" : "") + "\n" +
         "Delivery: " + (ship === "office" ? "one office, pincode " + pin : "to each person's home (I'll share addresses)") + (when ? "\nNeeded by: " + when : "") + "\n\nAll " + n + " designs: " + url;
       var wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(txt);
+      if (window.nvTrack) window.nvTrack("Lead", { content_name: "Team mug quote", value: each * n, currency: "INR", num_items: n });
       if (win) win.location.href = wa; else location.href = wa;
     });
   });

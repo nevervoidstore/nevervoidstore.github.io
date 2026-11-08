@@ -8,6 +8,8 @@ const CONTACT = {
   email: "",              // e.g. "hello@nevervoidstore.com"
   phone: "",              // e.g. "+91 98765 43210"
   whatsapp: "919880000990", // digits only, e.g. "919876543210"
+  metaPixel: "", // Meta dataset (Pixel) ID, digits only; empty = no Meta tracking
+  metaDomainVerify: "", // content of the facebook-domain-verification meta tag
   teamApi: "", // Google Apps Script web app URL (…/exec) for employee team links; empty hides the feature
   address: "",            // full business address
   grievanceOfficer: "",   // name of the person handling complaints
@@ -86,6 +88,8 @@ const PAGES = [
 <li><strong>Messages:</strong> anything you send us on WhatsApp, Instagram or email.</li>
 </ul>
 <p>We don't store your card or UPI details. Payments are handled by Razorpay, our payment partner.</p>
+<h2>Cookies and ads</h2>
+<p>We use the Meta Pixel to understand which of our Facebook and Instagram ads lead people to our site and to orders. It records pages viewed and actions such as starting checkout, and Meta may use cookies to do this. It does not receive your address or payment details. You can manage ad settings in your Facebook or Instagram account.</p>
 <h2>How we use it</h2>
 <ul>
 <li>To make, ship and support your order.</li>
