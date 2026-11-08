@@ -410,7 +410,10 @@ ${header(join ? "../../" : "../","shop")}
       <figure class="flat-wrap"><canvas id="cm-flat" width="1020" height="456"></canvas><figcaption>The full print, as it wraps round the mug.</figcaption></figure>
     </div>
     <div class="cm-form">
-      <label class="cm-step"><b>1. ${join ? "Your" : "Their"} name</b><input id="cm-name" maxlength="14" autocomplete="off" placeholder="e.g. Priya" aria-describedby="cm-hint"></label>
+      <label class="cm-step"><b>1. ${join ? "Your" : "Their"} name</b><input id="cm-name" maxlength="14" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="e.g. Priya" aria-describedby="cm-name-note cm-name-warn">
+        <span id="cm-name-note" class="cm-note">Letters only, 2 to 14 characters (spaces, . ' and - are fine). First names or nicknames look best, and we print it exactly as shown.</span>
+        <span id="cm-name-warn" class="cm-warn" aria-live="polite" hidden></span></label>
+      <div class="cm-step"${join ? " hidden" : ""}><b>Name style</b><div id="cm-fonts" class="cm-fonts" role="radiogroup" aria-label="Name style"></div></div>
       <div class="cm-step"><b>2. What goes under the name?</b>
         <div class="cm-modes" role="tablist"><button type="button" class="cm-mode on" data-m="traits" role="tab" aria-selected="true">4 things they love</button><button type="button" class="cm-mode" data-m="msg" role="tab" aria-selected="false">A short message</button></div></div>
       <div class="cm-step" id="cm-pane-msg" hidden><label for="cm-msg"><b>Your message</b> <span id="cm-msg-count" class="muted">0/120</span></label>
@@ -473,6 +476,7 @@ ${header("../","shop")}
   <section class="tm-setup">
     <div class="tm-col">
       <div class="cm-step"><b>1. Style for the whole team</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="tm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
+      <div class="cm-step"><b>Name style</b><div id="tm-fonts" class="cm-fonts" role="radiogroup" aria-label="Name style"></div></div>
       <div class="cm-step"><b>2. Under every name</b>
         <div class="cm-modes" role="tablist"><button type="button" class="cm-mode tm-mode on" data-m="traits" role="tab" aria-selected="true">4 things</button><button type="button" class="cm-mode tm-mode" data-m="msg" role="tab" aria-selected="false">A message</button></div>
         <p class="muted cm-small">This goes on everyone's mug. Anyone can have their own instead (see the list).</p></div>
@@ -658,6 +662,12 @@ body.co-lock{overflow:hidden}
 .cm-step{display:block;margin:0 0 20px}.cm-step[hidden]{display:none!important}.cm-step>b{font-size:16px}
 #cm-name{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:14px;font:inherit;font-size:20px;border:1px solid #d8d0c2;border-radius:12px;background:#fff}
 #cm-name:focus{outline:2px solid var(--green);border-color:var(--green)}
+.cm-note{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:400}
+.cm-warn{display:block;margin-top:6px;padding:7px 10px;border-radius:9px;background:#fff6e5;color:#7a5200;font-size:13px;font-weight:600}.cm-warn.bad{background:#fbeeee;color:#a8332f}
+.cm-fonts{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;margin-top:10px}
+.cm-font{display:grid;gap:2px;justify-items:center;padding:10px 6px 8px;border:1px solid #d8d0c2;border-radius:12px;background:#fff;cursor:pointer;color:var(--ink);min-width:0}
+.cm-font.on{border-color:var(--green);box-shadow:0 0 0 2px var(--green) inset;background:#f2f8f4}
+.cm-font-name{font-size:24px;line-height:1.25;padding:0 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cm-font small{font-size:11.5px;color:var(--muted);font-family:inherit}
 .cm-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin-top:10px}
 .cm-chip{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;text-align:left}
 .cm-chip svg{width:22px;height:22px;flex:none;color:var(--green)}
@@ -690,7 +700,7 @@ body.co-lock{overflow:hidden}
 .tm-turn{position:absolute;right:8px;bottom:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:15px;color:var(--ink)}
 .tm-card figcaption{padding:10px 12px 12px;display:grid;gap:3px;font-size:13px}.tm-card figcaption b{font-size:14px}.tm-card figcaption>span{color:var(--muted);line-height:1.4}
 .tm-own-tag{font-style:normal;font-size:11px;background:#eef6f0;color:var(--green);padding:1px 6px;border-radius:6px}
-.tm-err{color:#a8332f!important;font-weight:600}
+.tm-err{color:#a8332f!important;font-weight:600}.tm-note{color:#7a5200!important;font-size:12px}
 .tm-dl1{margin-top:6px;font:inherit;font-size:12.5px;padding:6px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
 .tm-send-box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin:10px 0 26px}.tm-send-box h2{margin:0 0 4px;font-family:Fraunces,Georgia,serif}
 .tm-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}.tm-fields input:not([type=radio]){font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--cream);font-weight:400}

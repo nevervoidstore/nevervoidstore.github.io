@@ -14,7 +14,18 @@
   var BAD = /\b(fuck|fck|shit|bitch|bastard|asshole|dick|cunt|slut|whore|porn|sex|nude|rape|nigg|chutiya|chutia|madarchod|bhenchod|behenchod|bhosdi|gaand|gandu|lund|randi|harami|kutta|kamina)\w*/i;
 
   var FONTS = [["NVPlayfair", "playfair-display-latin-900-normal.woff2", "900"], ["NVPlayfairB", "playfair-display-latin-700-normal.woff2", "700"],
-               ["NVScript", "pacifico-latin-400-normal.woff2", "400"], ["NVSans", "dm-sans-latin-600-normal.woff2", "600"]];
+               ["NVScript", "pacifico-latin-400-normal.woff2", "400"], ["NVSans", "dm-sans-latin-600-normal.woff2", "600"],
+               ["NVDancing", "dancing-script-latin-700-normal.woff2", "700"], ["NVModern", "montserrat-latin-800-normal.woff2", "800"],
+               ["NVHand", "caveat-latin-700-normal.woff2", "700"], ["NVFestive", "mountains-of-christmas-latin-700-normal.woff2", "700"]];
+  // name styles: max = starting size; the name is then shrunk until its ink fits the name box on the mug
+  var NAME_FONTS = {
+    classic: { label: "Classic", family: "NVPlayfair, Georgia, serif", weight: 900, max: 180 },
+    script:  { label: "Script", family: "NVDancing, cursive", weight: 700, max: 200 },
+    modern:  { label: "Modern", family: "NVModern, Arial, sans-serif", weight: 800, max: 165 },
+    hand:    { label: "Handwritten", family: "NVHand, cursive", weight: 700, max: 220 },
+    festive: { label: "Festive", family: "NVFestive, Georgia, serif", weight: 700, max: 190 }
+  };
+  var NAME_BOX = { w: 610, h: 200, cy: 352, min: 96 }; // ink box above the flourish (y 495), face-on zone
   var fontsReady = Promise.all(FONTS.map(function (f) {
     try { var ff = new FontFace(f[0], "url(/assets/fonts/" + f[1] + ")", { weight: f[2] }); return ff.load().then(function (x) { document.fonts.add(x); }); }
     catch (e) { return Promise.resolve(); }
@@ -49,7 +60,8 @@
     var th = THEMES[d.theme] || THEMES.classic, ctx = print.getContext("2d"), name = d.name || "Your Name", traits = d.traits || [], msg = d.msg || "";
     ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, PW, PH);
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = th.name;
-    fitFont(ctx, name, "NVPlayfair, Georgia, serif", 900, 180, 90, 610); ctx.fillText(name, FRONT, 420);
+    var nf = NAME_FONTS[d.font] || NAME_FONTS.classic, fit = fitName(ctx, name, nf);
+    ctx.textAlign = "left"; ctx.fillText(name, FRONT - fit.w / 2 + fit.left, NAME_BOX.cy + fit.h / 2 - fit.desc); ctx.textAlign = "center";
     flourish(ctx, FRONT, 495, 230, th.line);
     var jobs = [];
     if (d.mode === "msg") {
@@ -77,7 +89,8 @@
     ctx.strokeStyle = th.line; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(BACK, 545, 235, 0, 7); ctx.stroke();
     ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(BACK, 545, 213, 0, 7); ctx.stroke();
     // centre the letter on its ink, not its font box: Playfair capitals sit low on "middle"
-    ctx.fillStyle = th.name; ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; ctx.font = "900 280px NVPlayfair, Georgia, serif";
+    ctx.fillStyle = th.name; ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+    for (var ms = 280; ms > 120; ms -= 10) { ctx.font = nf.weight + " " + ms + "px " + nf.family; var mt = ctx.measureText(ini); if (mt.actualBoundingBoxLeft + mt.actualBoundingBoxRight <= 290 && mt.actualBoundingBoxAscent + mt.actualBoundingBoxDescent <= 250) break; }
     var mi = ctx.measureText(ini), inkW = mi.actualBoundingBoxLeft + mi.actualBoundingBoxRight, inkH = mi.actualBoundingBoxAscent + mi.actualBoundingBoxDescent;
     ctx.fillText(ini, BACK - inkW / 2 + mi.actualBoundingBoxLeft, 545 + inkH / 2 - mi.actualBoundingBoxDescent); ctx.textAlign = "center";
     [-1, 1].forEach(function (dd) { ctx.save(); ctx.translate(BACK + dd * 235, 545); ctx.rotate(Math.PI / 4); ctx.fillStyle = th.line; ctx.fillRect(-11, -11, 22, 22); ctx.restore(); });
@@ -85,6 +98,18 @@
     ctx.fillStyle = th.line; ctx.fillRect(0, 1048, PW, 5); ctx.fillRect(0, 1064, PW, 2);
     return Promise.all(jobs);
   }
+  // largest size at which the name's actual ink fits the name box; reports how much it had to shrink
+  function fitName(ctx, name, nf) {
+    var size = nf.max, m;
+    ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; // measure with the same alignment we draw with
+    for (; size >= 60; size -= 4) {
+      ctx.font = nf.weight + " " + size + "px " + nf.family; m = ctx.measureText(name);
+      if (m.actualBoundingBoxLeft + m.actualBoundingBoxRight <= NAME_BOX.w && m.actualBoundingBoxAscent + m.actualBoundingBoxDescent <= NAME_BOX.h) break;
+    }
+    return { size: size, left: m.actualBoundingBoxLeft, w: m.actualBoundingBoxLeft + m.actualBoundingBoxRight, h: m.actualBoundingBoxAscent + m.actualBoundingBoxDescent, desc: m.actualBoundingBoxDescent, small: size < NAME_BOX.min };
+  }
+  // for pages: does this name print at a comfortable size in this style?
+  function nameFit(name, font) { var c = document.createElement("canvas").getContext("2d"); return fitName(c, name || "Name", NAME_FONTS[font] || NAME_FONTS.classic); }
   function newPrint() { var c = document.createElement("canvas"); c.width = PW; c.height = PH; return c; }
   function render(print, d) { return fontsReady.then(function () { return drawPrint(print, d); }); }
 
@@ -156,8 +181,13 @@
 
   // validation shared by every page
   function titleCase(s) { return s.replace(/\b\w/g, function (c) { return c.toUpperCase(); }); }
-  function cleanName(v) { return v.replace(/[^A-Za-zÀ-ɏ .'-]/g, "").replace(/\s{2,}/g, " "); }
-  function nameError(v) { var t = v.trim(); if (!t) return "Name is missing"; if (t.length > 14) return "Name is over 14 letters"; if (/[^A-Za-zÀ-ɏ .'-]/.test(t)) return "Name has symbols or numbers"; if (BAD.test(t)) return "Please use a real name"; return ""; }
+  function cleanName(v) { return v.replace(/[^A-Za-z .'-]/g, "").replace(/\s{2,}/g, " ").replace(/^[ .'-]+/, ""); }
+  function nameError(v) {
+    var t = v.trim(), letters = t.replace(/[^A-Za-z]/g, "").length;
+    if (!t) return "Name is missing"; if (t.length > 14) return "Name is over 14 characters"; if (/[^A-Za-z .'-]/.test(t)) return "Name can only have letters, spaces, . ' and -";
+    if (letters < 2) return "Name needs at least 2 letters"; if (/([.'-])\1|[.'-]{2,}/.test(t) || t.split(" ").length > 3) return "That doesn't look like a name"; if (/(.)\1\1/i.test(t)) return "That doesn't look like a name";
+    if (BAD.test(t)) return "Please use a real name"; return "";
+  }
   function wordError(raw) {
     var v = raw.replace(/[^A-Za-z &'-]/g, "").replace(/\s{2,}/g, " ").trim();
     if (!v) return "Empty word"; if (/[.!?,]/.test(raw) || v.split(" ").length > 2 || v.length > 16) return "“" + raw.trim() + "” is too long (1–2 words)";
@@ -167,10 +197,10 @@
   function msgError(v) { var t = v.trim(); if (t.length < 3) return "Message is too short"; if (t.length > 120) return "Message is over 120 characters"; if (BAD.test(t)) return "Let's keep it friendly"; return ""; }
 
   // design link codec: Name~k1.k2.k3.k4~theme  or  Name~m:message~theme
-  function encode(d) { return encodeURIComponent(d.name) + "~" + (d.mode === "msg" ? "m:" + encodeURIComponent((d.msg || "").trim()) : (d.traits || []).join(".")) + "~" + d.theme; }
+  function encode(d) { return encodeURIComponent(d.name) + "~" + (d.mode === "msg" ? "m:" + encodeURIComponent((d.msg || "").trim()) : (d.traits || []).join(".")) + "~" + d.theme + (d.font && d.font !== "classic" && NAME_FONTS[d.font] ? "~" + d.font : ""); }
   // resolves to a design with any custom traits registered
   function decode(s) {
-    var p = String(s || "").split("~"), d = { name: decodeURIComponent(p[0] || "").slice(0, 14), mode: "traits", traits: [], msg: "", theme: THEMES[p[2]] ? p[2] : "classic" };
+    var p = String(s || "").split("~"), d = { name: decodeURIComponent(p[0] || "").slice(0, 14), mode: "traits", traits: [], msg: "", theme: THEMES[p[2]] ? p[2] : "classic", font: NAME_FONTS[p[3]] ? p[3] : "classic" };
     if ((p[1] || "").indexOf("m:") === 0) { d.mode = "msg"; d.msg = decodeURIComponent(p[1].slice(2)).slice(0, 120); return Promise.resolve(d); }
     var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4);
     return Promise.all(ent.map(function (k) {
@@ -201,7 +231,7 @@
   function canvasPNG(c) { return new Promise(function (ok) { c.toBlob(function (b) { b.arrayBuffer().then(function (ab) { ok(new Uint8Array(ab)); }); }, "image/png"); }); }
   function fileName(d, i) { return (i != null ? String(i + 1).padStart(3, "0") + "-" : "") + (d.name || "mug").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-2550x1140.png"; }
 
-  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
+  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, NAME_FONTS: NAME_FONTS, nameFit: nameFit, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
     newPrint: newPrint, render: render, wrapMug: wrapMug, loadIndex: loadIndex, addCustom: addCustom, traitFor: traitFor,
     titleCase: titleCase, cleanName: cleanName, nameError: nameError, wordError: wordError, cleanMsg: cleanMsg, msgError: msgError,
     encode: encode, decode: decode, labels: labels, zip: zip, canvasPNG: canvasPNG, fileName: fileName };
