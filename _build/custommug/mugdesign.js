@@ -128,6 +128,9 @@
     snowglobe: { label: "Snowy cottage", img: true },
     santa:     { label: "Jolly Santa", img: true },
     gnomes:    { label: "Christmas gnomes", img: true },
+    script:    { label: "Handwritten", type: true },
+    bold:      { label: "Bold letters", type: true },
+    badge:     { label: "Gold badge", type: true },
     balloons:  { label: "Balloons" },
     confetti:  { label: "Confetti" },
     florals:   { label: "Flowers" },
@@ -204,10 +207,48 @@
     ctx.font = "700 " + box.min + "px NVDancing, cursive"; var ln = wrapLines(ctx, text, box.w); return { size: box.min, lines: ln, lh: box.min * 1.22, small: true };
   }
   var WISH_BOX = { w: 600, h: 520, max: 120, min: 54, ok: 72, cy: 470 };
+  // typographic designs: the occasion's title set beautifully, gold details
+  function sparkle(ctx, x, y, r, col) { ctx.fillStyle = col; star(ctx, x, y, r, 4, 0.28); ctx.fill(); }
+  function drawType(ctx, key, cx, cy, bw, bh, o) {
+    var words = o.title.split(" "), ink = o.ink, acc = o.accent, gold = o.gold;
+    ctx.save(); ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+    if (key === "script") {
+      var lines = words.length > 1 ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")] : words;
+      var size = bh * 0.36; ctx.font = "700 " + size + "px NVDancing, cursive";
+      lines.forEach(function (l) { while (ctx.measureText(l).width > bw * 0.98 && size > 60) { size -= 4; ctx.font = "700 " + size + "px NVDancing, cursive"; } });
+      var lh = size * 0.95, y0 = cy - (lines.length - 1) * lh / 2 + size * 0.28;
+      lines.forEach(function (l, i) { ctx.fillStyle = i ? acc : ink; ctx.fillText(l, cx + (i ? bw * 0.06 : -bw * 0.04), y0 + i * lh); });
+      flourish(ctx, cx, y0 + (lines.length - 1) * lh + size * 0.42, bw * 0.3, gold);
+      flourish(ctx, cx, y0 - size * 0.95, bw * 0.18, gold);
+      [[-0.42, -0.36, 22], [0.4, -0.3, 16], [0.44, 0.3, 24], [-0.38, 0.34, 14], [0.1, -0.44, 12]].forEach(function (p) { sparkle(ctx, cx + p[0] * bw, cy + p[1] * bh, p[2], gold); });
+    } else if (key === "bold") {
+      var up = words.map(function (w) { return w.toUpperCase(); }), wmax = bw * 0.86, y = 0, rows = [];
+      up.forEach(function (w) { var sz = 300; ctx.font = "800 " + sz + "px NVModern, sans-serif"; var mw = ctx.measureText(w).width; sz = Math.min(sz * wmax / mw, bh * (up.length > 2 ? 0.2 : 0.27)); rows.push({ w: w, sz: sz }); });
+      var total = rows.reduce(function (a, r) { return a + r.sz * 0.9; }, 0) + (rows.length - 1) * 14, yy = cy - total / 2;
+      ctx.fillStyle = gold; ctx.fillRect(cx - wmax / 2, yy - 34, wmax, 5); 
+      rows.forEach(function (r, i) { yy += r.sz * 0.9; ctx.font = "800 " + r.sz + "px NVModern, sans-serif"; ctx.fillStyle = i % 2 ? acc : ink; ctx.fillText(r.w, cx, yy - r.sz * 0.04); yy += 14; });
+      ctx.fillStyle = gold; ctx.fillRect(cx - wmax / 2, yy + 14, wmax, 5);
+      ctx.fillStyle = ink; ctx.font = "700 " + Math.round(bh * 0.085) + "px NVDancing, cursive"; ctx.fillText("with love", cx, yy + 14 + bh * 0.11);
+      sparkle(ctx, cx - wmax / 2 - 4, cy - total / 2 - 70, 18, gold); sparkle(ctx, cx + wmax / 2 + 4, yy + 80, 22, gold);
+    } else if (key === "badge") {
+      var R = Math.min(bw, bh) * 0.46;
+      ctx.strokeStyle = gold; ctx.lineWidth = 9; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
+      ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, R - 22, 0, 7); ctx.stroke();
+      ctx.fillStyle = ink; ctx.globalAlpha = 0.07; ctx.beginPath(); ctx.arc(cx, cy, R - 22, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
+      var ls = words.length > 1 ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")] : words, sz2 = R * 0.72;
+      ctx.font = "700 " + sz2 + "px NVDancing, cursive"; ls.forEach(function (l) { while (ctx.measureText(l).width > R * 1.62 && sz2 > 50) { sz2 -= 4; ctx.font = "700 " + sz2 + "px NVDancing, cursive"; } });
+      var lh2 = sz2 * 0.98, yb = cy - (ls.length - 1) * lh2 / 2 + sz2 * 0.3;
+      ls.forEach(function (l, i) { ctx.fillStyle = i ? acc : ink; ctx.fillText(l, cx, yb + i * lh2); });
+      [-1, 1].forEach(function (sd) { sparkle(ctx, cx, cy + sd * R, 26, gold); ctx.fillStyle = "#fff"; star(ctx, cx, cy + sd * R, 9, 4, 0.3); ctx.fill(); sparkle(ctx, cx + sd * R, cy, 16, gold); });
+      sparkle(ctx, cx + R * 0.95, cy - R * 0.95, 20, gold); sparkle(ctx, cx - R * 0.98, cy + R * 0.9, 14, gold);
+    }
+    ctx.restore();
+  }
   // the artwork side, also used for the small design cards
   function drawArtSide(ctx, d, cx, cy, bw, bh) {
     var o = occ(d), key = WISH_ART[d.art] ? d.art : (o.arts || ["reindeer"])[0];
     if (WISH_ART[key].img) return wishArt(key).then(function (im) { if (!im) return; var r = Math.min(bw / im.width, bh / im.height), w = im.width * r, h = im.height * r; ctx.drawImage(im, cx - w / 2, cy - h / 2, w, h); });
+    if (WISH_ART[key].type) { drawType(ctx, key, cx, cy, bw, bh, o); return Promise.resolve(); }
     var mh = bh * 0.7; drawMotif(ctx, key, cx, cy - bh * 0.12, bw, mh, o);
     if (o.title) { ctx.fillStyle = o.ink; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; fitFont(ctx, o.title, "NVDancing, cursive", 700, bh * 0.15, bh * 0.08, bw * 0.95); ctx.fillText(o.title, cx, cy + bh * 0.42); }
     return Promise.resolve();

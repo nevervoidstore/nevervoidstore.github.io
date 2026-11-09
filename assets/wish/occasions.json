@@ -1,72 +1,254 @@
 {
-  "birthday": {
-    "label": "Birthday", "title": "Happy Birthday", "ink": "#b8336a", "accent": "#2a6f97", "gold": "#d4a537",
-    "arts": ["balloons", "confetti", "florals"],
-    "def": "Happy Birthday, my favourite person",
-    "wishes": ["Happy Birthday, my favourite person", "Happy Birthday, Amma. Love you always", "Another year more awesome. Happy Birthday!", "Cheers to you and many more coffees together"],
-    "seo": { "slug": "birthday", "h1": "Birthday wish mug", "title": "Personalised Birthday Mug with Your Own Wish", "desc": "Write your own birthday wish and name, pick a design and we print it on a mug. Made to order in Bengaluru, delivered across Karnataka." }
-  },
-  "anniversary": {
-    "label": "Anniversary", "title": "Happy Anniversary", "ink": "#9b1d3a", "accent": "#7a5c3e", "gold": "#c9a24a",
-    "arts": ["hearts", "florals", "laurel"],
-    "def": "Happy Anniversary, my love",
-    "wishes": ["Happy Anniversary, my love", "Every year with you is my favourite", "To many more years of us", "Happy Anniversary, Amma and Appa"],
-    "seo": { "slug": "anniversary", "h1": "Anniversary wish mug", "title": "Personalised Anniversary Mug with Your Own Message", "desc": "An anniversary mug with your own words and names. Pick a design, see it live, delivered across Karnataka." }
-  },
-  "love": {
-    "label": "For my love", "title": "Love You", "ink": "#b3202a", "accent": "#8a2f4a", "gold": "#d4a537",
-    "arts": ["hearts", "florals", "confetti"],
-    "def": "You are my favourite hello",
-    "wishes": ["You are my favourite hello", "Love you more than coffee", "My person, always", "Every day with you is a good day"],
-    "seo": { "slug": "love", "h1": "Love wish mug for him or her", "title": "Personalised Love Mug for Boyfriend, Girlfriend, Husband or Wife", "desc": "A mug with your own love note and name. For him or for her, made to order in Bengaluru and delivered across Karnataka." }
-  },
-  "mom": {
-    "label": "For Mom", "title": "Best Mom Ever", "ink": "#a8445e", "accent": "#5f7f5a", "gold": "#c9a24a",
-    "arts": ["florals", "hearts", "laurel"],
-    "def": "To the best Amma in the world",
-    "wishes": ["To the best Amma in the world", "Thank you for every cup of love, Mom", "Mom, you make everything better", "World's best mom, officially"],
-    "seo": { "slug": "mom", "h1": "Mug for Mom with your own wish", "title": "Personalised Mug for Mom with Your Own Message", "desc": "Write a note for Mom, add your name, pick a design and we print it on a mug. Delivered across Karnataka." }
-  },
-  "dad": {
-    "label": "For Dad", "title": "Best Dad Ever", "ink": "#1f3b5c", "accent": "#a4772e", "gold": "#c9a24a",
-    "arts": ["stars", "laurel", "confetti"],
-    "def": "To the best Appa in the world",
-    "wishes": ["To the best Appa in the world", "Dad, my first hero", "Thank you for everything, Dad", "Best Dad. No arguments."],
-    "seo": { "slug": "dad", "h1": "Mug for Dad with your own wish", "title": "Personalised Mug for Dad with Your Own Message", "desc": "A mug for Dad with your own words and name. Pick a design, see it live, delivered across Karnataka." }
-  },
-  "friend": {
-    "label": "Best friend", "title": "Best Friends", "ink": "#2a6f97", "accent": "#d0567a", "gold": "#d4a537",
-    "arts": ["confetti", "hearts", "stars"],
-    "def": "To my partner in crime",
-    "wishes": ["To my partner in crime", "Friends forever, no matter what", "Thank you for always being there", "Coffee, gossip and you"],
-    "seo": { "slug": "best-friend", "h1": "Best friend wish mug", "title": "Personalised Best Friend Mug with Your Own Message", "desc": "A mug for your best friend with your own words and name. Made to order in Bengaluru, delivered across Karnataka." }
-  },
-  "thanks": {
-    "label": "Thank you", "title": "Thank You", "ink": "#1c603a", "accent": "#b8742a", "gold": "#c9a24a",
-    "arts": ["laurel", "florals", "stars"],
-    "def": "Thank you for everything you do",
-    "wishes": ["Thank you for everything you do", "Thank you for being the best teacher", "Grateful for you, always", "Thank you for making this year special"],
-    "seo": { "slug": "thank-you", "h1": "Thank you wish mug", "title": "Personalised Thank You Mug for Teachers, Colleagues and Friends", "desc": "Say thank you with your own words on a mug, for a teacher, colleague or friend. Delivered across Karnataka." }
-  },
-  "congrats": {
-    "label": "Congratulations", "title": "Congratulations", "ink": "#1f3b5c", "accent": "#c0392b", "gold": "#d4a537",
-    "arts": ["stars", "confetti", "laurel"],
-    "def": "So proud of you. Congratulations!",
-    "wishes": ["So proud of you. Congratulations!", "Congratulations on the new job", "You did it! Onwards and upwards", "Happy new home!"],
-    "seo": { "slug": "congratulations", "h1": "Congratulations wish mug", "title": "Personalised Congratulations Mug for New Job, Graduation or New Home", "desc": "A congratulations mug with your own words and name. Pick a design, see it live, delivered across Karnataka." }
-  },
-  "christmas": {
-    "label": "Christmas", "title": "Merry Christmas", "ink": "#b3202a", "accent": "#1c603a", "gold": "#c9a24a",
-    "arts": ["reindeer", "snowglobe", "santa", "gnomes"],
-    "def": "Merry Christmas, Dearest Mom",
-    "wishes": ["Merry Christmas, Dearest Mom", "To the best dad in the world. Merry Christmas!", "Warm wishes and cosy nights this Christmas", "Thank you for making this year magical"],
-    "seo": { "slug": "christmas", "h1": "Christmas wish mug", "title": "Personalised Christmas Mug with Your Own Wish", "desc": "Write a Christmas wish, add your name, pick an illustration and we print it on a mug. Delivered across Karnataka." }
-  },
-  "newyear": {
-    "label": "New Year", "title": "Happy New Year", "ink": "#1f3b5c", "accent": "#b8742a", "gold": "#d4a537",
-    "arts": ["stars", "confetti", "snowglobe", "reindeer"],
-    "def": "Happy New Year, my favourite person",
-    "wishes": ["Happy New Year, my favourite person", "Here’s to a brighter, bolder 2027", "Cheers to new beginnings, together", "Thank you for an amazing year"],
-    "seo": { "slug": "new-year", "h1": "New Year wish mug", "title": "Personalised New Year Mug with Your Own Wish", "desc": "A New Year mug with your own words and name. Pick a design, see it live, delivered across Karnataka." }
+ "birthday": {
+  "label": "Birthday",
+  "title": "Happy Birthday",
+  "ink": "#b8336a",
+  "accent": "#2a6f97",
+  "gold": "#d4a537",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "Happy Birthday, my favourite person",
+  "wishes": [
+   "Happy Birthday, my favourite person",
+   "Happy Birthday, Amma. Love you always",
+   "Another year more awesome. Happy Birthday!",
+   "Cheers to you and many more coffees together"
+  ],
+  "seo": {
+   "slug": "birthday",
+   "h1": "Birthday wish mug",
+   "title": "Personalised Birthday Mug with Your Own Wish",
+   "desc": "Write your own birthday wish and name, pick a design and we print it on a mug. Made to order in Bengaluru, delivered across Karnataka."
   }
+ },
+ "anniversary": {
+  "label": "Anniversary",
+  "title": "Happy Anniversary",
+  "ink": "#9b1d3a",
+  "accent": "#7a5c3e",
+  "gold": "#c9a24a",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "Happy Anniversary, my love",
+  "wishes": [
+   "Happy Anniversary, my love",
+   "Every year with you is my favourite",
+   "To many more years of us",
+   "Happy Anniversary, Amma and Appa"
+  ],
+  "seo": {
+   "slug": "anniversary",
+   "h1": "Anniversary wish mug",
+   "title": "Personalised Anniversary Mug with Your Own Message",
+   "desc": "An anniversary mug with your own words and names. Pick a design, see it live, delivered across Karnataka."
+  }
+ },
+ "love": {
+  "label": "For my love",
+  "title": "Love You",
+  "ink": "#b3202a",
+  "accent": "#8a2f4a",
+  "gold": "#d4a537",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "You are my favourite hello",
+  "wishes": [
+   "You are my favourite hello",
+   "Love you more than coffee",
+   "My person, always",
+   "Every day with you is a good day"
+  ],
+  "seo": {
+   "slug": "love",
+   "h1": "Love wish mug for him or her",
+   "title": "Personalised Love Mug for Boyfriend, Girlfriend, Husband or Wife",
+   "desc": "A mug with your own love note and name. For him or for her, made to order in Bengaluru and delivered across Karnataka."
+  }
+ },
+ "mom": {
+  "label": "For Mom",
+  "title": "Best Mom Ever",
+  "ink": "#a8445e",
+  "accent": "#5f7f5a",
+  "gold": "#c9a24a",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "To the best Amma in the world",
+  "wishes": [
+   "To the best Amma in the world",
+   "Thank you for every cup of love, Mom",
+   "Mom, you make everything better",
+   "World's best mom, officially"
+  ],
+  "seo": {
+   "slug": "mom",
+   "h1": "Mug for Mom with your own wish",
+   "title": "Personalised Mug for Mom with Your Own Message",
+   "desc": "Write a note for Mom, add your name, pick a design and we print it on a mug. Delivered across Karnataka."
+  }
+ },
+ "dad": {
+  "label": "For Dad",
+  "title": "Best Dad Ever",
+  "ink": "#1f3b5c",
+  "accent": "#a4772e",
+  "gold": "#c9a24a",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "To the best Appa in the world",
+  "wishes": [
+   "To the best Appa in the world",
+   "Dad, my first hero",
+   "Thank you for everything, Dad",
+   "Best Dad. No arguments."
+  ],
+  "seo": {
+   "slug": "dad",
+   "h1": "Mug for Dad with your own wish",
+   "title": "Personalised Mug for Dad with Your Own Message",
+   "desc": "A mug for Dad with your own words and name. Pick a design, see it live, delivered across Karnataka."
+  }
+ },
+ "friend": {
+  "label": "Best friend",
+  "title": "Best Friends",
+  "ink": "#2a6f97",
+  "accent": "#d0567a",
+  "gold": "#d4a537",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "To my partner in crime",
+  "wishes": [
+   "To my partner in crime",
+   "Friends forever, no matter what",
+   "Thank you for always being there",
+   "Coffee, gossip and you"
+  ],
+  "seo": {
+   "slug": "best-friend",
+   "h1": "Best friend wish mug",
+   "title": "Personalised Best Friend Mug with Your Own Message",
+   "desc": "A mug for your best friend with your own words and name. Made to order in Bengaluru, delivered across Karnataka."
+  }
+ },
+ "thanks": {
+  "label": "Thank you",
+  "title": "Thank You",
+  "ink": "#1c603a",
+  "accent": "#b8742a",
+  "gold": "#c9a24a",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "Thank you for everything you do",
+  "wishes": [
+   "Thank you for everything you do",
+   "Thank you for being the best teacher",
+   "Grateful for you, always",
+   "Thank you for making this year special"
+  ],
+  "seo": {
+   "slug": "thank-you",
+   "h1": "Thank you wish mug",
+   "title": "Personalised Thank You Mug for Teachers, Colleagues and Friends",
+   "desc": "Say thank you with your own words on a mug, for a teacher, colleague or friend. Delivered across Karnataka."
+  }
+ },
+ "congrats": {
+  "label": "Congratulations",
+  "title": "So Proud of You",
+  "ink": "#1f3b5c",
+  "accent": "#c0392b",
+  "gold": "#d4a537",
+  "arts": [
+   "script",
+   "bold",
+   "badge"
+  ],
+  "def": "So proud of you. Congratulations!",
+  "wishes": [
+   "So proud of you. Congratulations!",
+   "Congratulations on the new job",
+   "You did it! Onwards and upwards",
+   "Happy new home!"
+  ],
+  "seo": {
+   "slug": "congratulations",
+   "h1": "Congratulations wish mug",
+   "title": "Personalised Congratulations Mug for New Job, Graduation or New Home",
+   "desc": "A congratulations mug with your own words and name. Pick a design, see it live, delivered across Karnataka."
+  }
+ },
+ "christmas": {
+  "label": "Christmas",
+  "title": "Merry Christmas",
+  "ink": "#b3202a",
+  "accent": "#1c603a",
+  "gold": "#c9a24a",
+  "arts": [
+   "reindeer",
+   "snowglobe",
+   "santa",
+   "gnomes"
+  ],
+  "def": "Merry Christmas, Dearest Mom",
+  "wishes": [
+   "Merry Christmas, Dearest Mom",
+   "To the best dad in the world. Merry Christmas!",
+   "Warm wishes and cosy nights this Christmas",
+   "Thank you for making this year magical"
+  ],
+  "seo": {
+   "slug": "christmas",
+   "h1": "Christmas wish mug",
+   "title": "Personalised Christmas Mug with Your Own Wish",
+   "desc": "Write a Christmas wish, add your name, pick an illustration and we print it on a mug. Delivered across Karnataka."
+  }
+ },
+ "newyear": {
+  "label": "New Year",
+  "title": "Happy New Year",
+  "ink": "#1f3b5c",
+  "accent": "#b8742a",
+  "gold": "#d4a537",
+  "arts": [
+   "script",
+   "bold",
+   "badge",
+   "snowglobe"
+  ],
+  "def": "Happy New Year, my favourite person",
+  "wishes": [
+   "Happy New Year, my favourite person",
+   "Here’s to a brighter, bolder 2027",
+   "Cheers to new beginnings, together",
+   "Thank you for an amazing year"
+  ],
+  "seo": {
+   "slug": "new-year",
+   "h1": "New Year wish mug",
+   "title": "Personalised New Year Mug with Your Own Wish",
+   "desc": "A New Year mug with your own words and name. Pick a design, see it live, delivered across Karnataka."
+  }
+ }
 }
