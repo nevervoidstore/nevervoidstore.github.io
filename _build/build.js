@@ -735,6 +735,13 @@ body.co-lock{overflow:hidden}
 #cm-name:focus{outline:2px solid var(--green);border-color:var(--green)}
 .cm-note{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:400}
 .cm-warn{display:block;margin-top:6px;padding:7px 10px;border-radius:9px;background:#fff6e5;color:#7a5200;font-size:13px;font-weight:600}.cm-warn.bad{background:#fbeeee;color:#a8332f}
+.swipe-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);box-shadow:0 2px 10px rgba(0,0,0,.15);color:var(--ink);font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.swipe-nav.prev{left:10px}.swipe-nav.next{right:10px}
+.swipe-pos{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;font-size:12px;font-weight:600;background:rgba(255,255,255,.92);padding:4px 10px;border-radius:999px;color:var(--ink);box-shadow:0 1px 6px rgba(0,0,0,.1);white-space:nowrap}
+.swipe-hint{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:rgba(20,30,24,.45);color:#fff;font-weight:600;font-size:16px;text-align:center;border-radius:inherit;animation:swh 2.8s ease forwards;pointer-events:none}
+.swipe-hint span{display:grid;gap:8px;justify-items:center}.swipe-hint i{font-style:normal;font-size:30px;animation:swx 1.1s ease-in-out 2}
+@keyframes swx{0%,100%{transform:translateX(0)}50%{transform:translateX(-26px)}}@keyframes swh{0%,80%{opacity:1}100%{opacity:0}}
+[data-swipe]{touch-action:pan-y}[data-swipe].leaving{transition:transform .22s ease,opacity .22s ease;opacity:0}
 .mc-row{display:grid;gap:2px;margin:0 0 4px}.mc-head{font-weight:600;font-size:14px}.mc-name{font-weight:400;color:var(--muted);margin-left:4px}@font-face{font-family:NVDancingH;src:url(/assets/fonts/dancing-script-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
 .sw-hero{text-align:center;padding:18px 0 6px}.sw-hero h1{font-family:NVDancingH,cursive;font-weight:700;font-size:clamp(48px,9vw,78px);color:#b3202a;margin:4px 0 6px;line-height:1.05}
 .sw-hero .lead{max-width:560px;margin:0 auto}
@@ -1258,7 +1265,14 @@ ${header("../","")}
 <main class="wrap">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › ${p.collection === "initials" ? `<a href="../initials/">Initials</a>` : p.collection === "cases" ? `<a href="../cases/">Phone cases</a>` : `<a href="../index.html#${p.cat}">${catLabel(p)} gifts</a>`} › <span>${esc(p.name)}</span></nav>
   <section class="pdp">
-    ${galleryHtml(p)}
+    ${(() => {
+      // swipe between designs of the same kind (all cases, or all ready-made mugs)
+      const isDesign = x => x.collection !== "initials" && !/custom/.test(x.id + x.slug);
+      const seq = PRODUCTS.filter(x => x.type === p.type && isDesign(x)), i = seq.findIndex(x => x.id === p.id), n = seq.length;
+      const at = k => seq[(i + k + n) % n];
+      return n > 1 && i >= 0 ? galleryHtml(p).replace('<div class="gallery ', `<div data-swipe data-prev="/products/${at(-1).slug}.html" data-next="/products/${at(1).slug}.html" data-next-img="${at(1).collection === "cases" ? `/images/cases/designs/${at(1).slug.replace("-glass-phone-case", "")}.webp` : at(1).photoMug ? `/images/mugs/${at(1).slug}-b.webp` : ""}" data-pos="${i + 1}" data-n="${n}" data-kind="${p.type === "case" ? "case designs" : "mug designs"}" class="gallery `) : galleryHtml(p);
+    })()}
+    <script defer src="/assets/swipe.js"></script>
     <div>
       <div class="tags"><span class="tag">${catLabel(p)} · ${typeLabel(p)}</span>${p.isNew?'<span class="tag new">· New</span>':''}</div>
       <h1>${esc(p.name)}</h1>
@@ -1437,6 +1451,7 @@ fs.copyFileSync(path.join(SRC,"custommug","custom-mug.js"), path.join(OUT,"asset
 fs.copyFileSync(path.join(SRC,"custommug","mugdesign.js"), path.join(OUT,"assets","mugdesign.js"));
 fs.copyFileSync(path.join(SRC,"custommug","mugcolor.js"), path.join(OUT,"assets","mugcolor.js"));
 fs.copyFileSync(path.join(SRC,"custommug","wish.js"), path.join(OUT,"assets","wish.js"));
+fs.copyFileSync(path.join(SRC,"custommug","swipe.js"), path.join(OUT,"assets","swipe.js"));
 fs.mkdirSync(path.join(OUT,"assets","wish"),{recursive:true}); fs.readdirSync(path.join(SRC,"wish")).forEach(f => fs.copyFileSync(path.join(SRC,"wish",f), path.join(OUT,"assets","wish",f)));
 if (fs.existsSync(path.join(SRC,"send-a-wish.jpg"))) fs.copyFileSync(path.join(SRC,"send-a-wish.jpg"), path.join(OUT,"images","send-a-wish.jpg"));
 fs.mkdirSync(path.join(OUT,"send-a-wish"),{recursive:true}); fs.writeFileSync(path.join(OUT,"send-a-wish","index.html"), wishPage());
