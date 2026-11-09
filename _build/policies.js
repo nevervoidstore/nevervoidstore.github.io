@@ -10,7 +10,8 @@ const CONTACT = {
   whatsapp: "919880000990", // digits only, e.g. "919876543210"
   metaPixel: "", // Meta dataset (Pixel) ID, digits only; empty = no Meta tracking
   metaDomainVerify: "", // content of the facebook-domain-verification meta tag
-  teamApi: "", // Google Apps Script web app URL (…/exec) for employee team links; empty hides the feature
+  teamApi: "", // Google Apps Script web app URL (…/exec): the site backend (checkout + team links). Empty = both off
+  checkoutApi: false, // true = pay in Razorpay's window via the backend; false = Razorpay Payment Page
   address: "",            // full business address
   grievanceOfficer: "",   // name of the person handling complaints
   instagram: "nevervoidstore",

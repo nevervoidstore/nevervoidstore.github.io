@@ -8,6 +8,8 @@ const CONFIG = {
   whatsapp: "919880000990",
   // Razorpay Payment Page (long form: https://pages.razorpay.com/pl_XXXX/view). Empty = WhatsApp ordering only.
   razorpayPage: "https://pages.razorpay.com/pl_Tw0kLnG202opHG/view",
+  // Checkout backend (Google Apps Script). Set = pay in Razorpay's window on our page; empty = Payment Page above.
+  api: "",
   // Field names on that page (label in lowercase, spaces as underscores)
   rzpFields: { product: "product", model: "phone_model", pincode: "pincode" },
   payLinks: {
@@ -53,7 +55,7 @@ const CONFIG = {
   function openCheckout(btn, model, pin) {
     const img = document.getElementById("pimg"), cv = document.getElementById("pcanvas");
     const pic = cv && !cv.hidden ? cv.toDataURL("image/jpeg", 0.8) : (img ? img.currentSrc || img.src : "");
-    const name = btn.dataset.name.replace(/ (design [^)]*)$/, ""), price = +btn.dataset.price;
+    const name = btn.dataset.name.split(" | design ")[0].replace(/ (design [^)]*)$/, ""), price = +btn.dataset.price;
     const wasEl = document.querySelector(".pprice .was, .price .was"), was = wasEl ? wasEl.textContent : "";
     let saved = {}; try { saved = JSON.parse(localStorage.getItem("nv_addr") || "{}"); } catch (e) {}
     if (!sheet) { sheet = document.createElement("div"); sheet.className = "co-wrap"; document.body.appendChild(sheet); }
@@ -72,7 +74,7 @@ const CONFIG = {
       '<div class="co-err" hidden></div>' +
       '<button class="buy co-pay" type="submit">🔒 Continue to secure payment · ' + rupee(price) + '</button>' +
       '<div class="co-ways"><span>UPI</span><span>GPay</span><span>PhonePe</span><span>Cards</span><span>Netbanking</span></div>' +
-      '<p class="co-note">You’ll pay on Razorpay’s secure page. Your details are already filled in. Replacement if anything arrives damaged.</p>' +
+      '<p class="co-note">' + (CONFIG.api ? "Razorpay’s secure payment window opens right here. " : "You’ll pay on Razorpay’s secure page. Your details are already filled in. ") + 'Replacement if anything arrives damaged.</p>' +
       '</form></div>';
     requestAnimationFrame(() => sheet.classList.add("open")); document.body.classList.add("co-lock");
     sheet.querySelectorAll("[data-close]").forEach(x => x.addEventListener("click", closeCheckout));
@@ -86,6 +88,7 @@ const CONFIG = {
         !isKA(v.z) ? [form.z, "We deliver within Karnataka only for now (pincodes starting 56–59)"] : null;
       if (bad) { err.hidden = false; err.textContent = bad[1]; bad[0].focus(); return; }
       try { localStorage.setItem("nv_addr", JSON.stringify(v)); localStorage.setItem("nv_last", JSON.stringify({ name, model, price, pic: pic && pic.length < 200000 ? pic : "", at: Date.now() })); } catch (e) {}
+      if (CONFIG.api) { payHere(btn, v, name, price, model, form, err); return; }
       const f = CONFIG.rzpFields, q = new URLSearchParams();
       q.set(btn.dataset.rzp, "1");
       q.set(f.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p);
@@ -94,6 +97,38 @@ const CONFIG = {
       form.querySelector(".co-pay").textContent = "Opening secure payment…";
       window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
       location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
+    });
+  }
+  // Razorpay Checkout on our page: the backend creates the order at the listed price, the payment is verified, the order is logged
+  let rzpLoad = null;
+  function loadRzp() { if (!rzpLoad) rzpLoad = new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "https://checkout.razorpay.com/v1/checkout.js"; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); return rzpLoad; }
+  function api(body) { return fetch(CONFIG.api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) }).then(r => r.json()); }
+  function payHere(btn, v, name, price, model, form, err) {
+    const payBtn = form.querySelector(".co-pay"), label = payBtn.textContent;
+    const parts = btn.dataset.name.split(" | "), design = (parts.find(x => /^design /.test(x)) || "").replace(/^design /, "");
+    const options = parts.slice(1).filter(x => !/^design /.test(x)).join(" | ");
+    const reset = msg => { payBtn.disabled = false; payBtn.textContent = label; if (msg) { err.hidden = false; err.textContent = msg; } };
+    payBtn.disabled = true; payBtn.textContent = "Opening secure payment…"; err.hidden = true;
+    window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
+    Promise.all([api({ a: "order", id: btn.dataset.id, product: parts[0], options: options, design: design ? "https://" + design.replace("https://", "").replace("http://", "") : "", model: model || "",
+      customer: { name: v.n, phone: v.p, address: v.a, city: v.c, pincode: v.z } }), loadRzp()]).then(([o]) => {
+      if (!o.ok) { reset(o.err || "Couldn’t start the payment. Please try again."); return; }
+      const rz = new window.Razorpay({
+        key: o.key, order_id: o.order_id, amount: o.amount, currency: "INR", name: "NevervoidStore", description: parts[0].slice(0, 120),
+        image: location.origin + "/images/nv-logo.png", prefill: { name: v.n, contact: "+91" + v.p }, theme: { color: "#1f4d36" },
+        modal: { ondismiss: () => reset("") },
+        handler: r => {
+          payBtn.textContent = "Confirming your payment…";
+          api({ a: "verify", order_id: r.razorpay_order_id, payment_id: r.razorpay_payment_id, signature: r.razorpay_signature })
+            .catch(() => ({})).then(() => { location.href = "/thank-you.html?paid=1"; });
+        }
+      });
+      rz.on("payment.failed", e => reset("Payment didn’t go through" + (e && e.error && e.error.description ? ": " + e.error.description : "") + ". You can try again."));
+      closeCheckout(); rz.open();
+    }).catch(() => {
+      // backend unreachable: fall back to the Razorpay Payment Page so nobody gets stuck
+      if (CONFIG.razorpayPage) { const q = new URLSearchParams(); q.set(btn.dataset.rzp, "1"); q.set(CONFIG.rzpFields.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p); q.set("phone", v.p); q.set("full_name", v.n); location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString(); }
+      else reset("Couldn’t reach the payment service. Please try again in a minute.");
     });
   }
   function closeCheckout() { if (!sheet) return; sheet.classList.remove("open"); document.body.classList.remove("co-lock"); }

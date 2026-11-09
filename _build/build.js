@@ -537,6 +537,73 @@ ${footer("../")}
 <script defer src="/assets/mugdesign.js"></script>
 <script defer src="/assets/team.js"></script>`;
 }
+// ---------- Send a Wish ----------
+const WISH_OCC = {
+  christmas: { label: "Christmas", wishes: ["Merry Christmas, Dearest Mom", "To the best dad in the world. Merry Christmas!", "Warm wishes and cosy nights this Christmas", "Thank you for making this year magical"] },
+  newyear:   { label: "New Year", wishes: ["Happy New Year, my favourite person", "Here’s to a brighter, bolder 2027", "Cheers to new beginnings, together", "Thank you for an amazing year"] }
+};
+const WISH_ART = [["reindeer","Reindeer in the snow"],["snowglobe","Snowy cottage"],["santa","Jolly Santa"],["gnomes","Christmas gnomes"]];
+function wishPage() {
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp), url = `${BASE}/send-a-wish/`;
+  const desc = "Send a Wish: write a Christmas or New Year wish, add your name, pick an illustration and we print it on a mug. Made to order in Bengaluru, delivered across Karnataka.";
+  const jsonld = [{"@context":"https://schema.org","@type":"Product","name":"Send a Wish Mug","description":desc,"image":`${BASE}/images/send-a-wish.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
+    "offers":{"@type":"Offer","priceCurrency":"INR","price":String(price),"availability":"https://schema.org/MadeToOrder","url":url}}];
+  return `${head({title:"Send a Wish: Personalised Christmas Wish Mug | Nevervoid Store", desc, url, image:`${BASE}/images/send-a-wish.jpg`, root:"../", jsonld})}
+<body>
+${header("../","shop")}
+<main class="wrap cm sw">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Send a Wish</span></nav>
+  <section class="sw-hero"><span class="eyebrow">Made by you</span><h1>Send a Wish</h1>
+    <p class="lead">Create a personalised Christmas mug for someone special. Don’t just send a gift, send a wish made by you.</p></section>
+  <div class="cm-grid sw-grid">
+    <div class="cm-preview sw-stage">
+      <canvas id="w-mug" width="620" height="620" aria-label="Live preview of your mug"></canvas>
+      <div class="cm-views" role="group" aria-label="Mug side"><button type="button" class="cm-view on" data-v="r">Wish side</button><button type="button" class="cm-view" data-v="l">Artwork side</button></div>
+      <p class="sw-note">Live preview on our real mug. Shown for a right-hand hold: the wish faces whoever drinks from it.</p>
+    </div>
+    <div class="cm-panel sw-panel">
+      <div class="cm-step"><b>Occasion</b><div class="cm-modes sw-occ" role="tablist">${Object.entries(WISH_OCC).map(([k,o],i)=>`<button type="button" class="cm-mode${i?"":" on"}" data-o="${k}" role="tab" aria-selected="${!i}">${o.label}</button>`).join("")}</div></div>
+      <label class="cm-step" for="w-wish"><b>1. Your wish</b> <span id="w-count" class="muted">0/100</span>
+        <textarea id="w-wish" rows="3" maxlength="100" placeholder="Merry Christmas, Dearest Mom" aria-describedby="w-wish-note"></textarea>
+        <span id="w-wish-note" class="cm-note">Up to 100 characters. Use the recipient’s name or how you call them, e.g. Mom, Appa, Priya.</span>
+        <span id="w-wish-warn" class="cm-warn" aria-live="polite" hidden></span></label>
+      <div class="sw-sugg" id="w-sugg" aria-label="Wish ideas"></div>
+      <label class="cm-step" for="w-by"><b>2. By (your name)</b>
+        <input id="w-by" maxlength="20" autocomplete="given-name" placeholder="Your name" aria-describedby="w-by-note">
+        <span id="w-by-note" class="cm-note">Shown as “By: your name”. Letters only, 2 to 20 characters.</span>
+        <span id="w-by-warn" class="cm-warn" aria-live="polite" hidden></span></label>
+      <div class="cm-step"><b>3. Choose a design</b> <span class="muted">for the other side</span>
+        <div class="sw-arts" id="w-arts" role="radiogroup" aria-label="Design">${WISH_ART.map(([k,l],i)=>`<button type="button" class="sw-art${i?"":" on"}" data-a="${k}" role="radio" aria-checked="${!i}"><img src="/assets/wish/${k}-sm.jpg" alt="" width="120" height="120" loading="lazy"><span>${l}</span></button>`).join("")}</div></div>
+      <div class="cm-step"><b>Mug colour</b> <span id="w-color-name" class="muted">White</span><div id="w-colors" class="cm-colors" role="radiogroup" aria-label="Mug colour"></div><span class="cm-note">The handle and the inside take the colour; the design is printed on white.</span></div>
+      <p id="w-hint" class="cm-hint" aria-live="polite"></p>
+      <div class="buybox sw-buy" id="w-order">
+        <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
+          <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
+        <div class="pin-msg" hidden></div>
+        <button class="buy sw-cta" type="button" data-order data-rzp="custom_pet_mug" data-id="mug-wish" data-name="Send a Wish Mug" data-price="${price}" disabled>Create My Mug · ${rupee(price)}</button>
+        <button class="ask" type="button" data-ask data-name="Send a Wish Mug">Ask a question</button>
+        <img id="pimg" alt="" hidden>
+      </div>
+      <p class="sw-tag">Made personal. Made to be remembered.</p>
+      <ul class="checks"><li>We print exactly the wish you see, no edits</li><li>Made to order, delivered across Karnataka in about 5–7 days</li><li>Arrived broken? <a href="../policies/returns.html">Free replacement or refund</a></li></ul>
+      <div id="w-admin" hidden><button id="w-dl" type="button" class="ask">Download print file (2550 × 1140)</button></div>
+    </div>
+  </div>
+</main>
+${footer("../")}
+<script>window.NV_WISH = ${JSON.stringify({occ: WISH_OCC})};</script>
+<script defer src="/assets/mugdesign.js"></script>
+<script defer src="/assets/wish.js"></script>`;
+}
+function wishCard(root) {
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}send-a-wish/`;
+  return `<article class="card coll-card" data-cat="christmas" data-type="mug">
+    <a class="stage ph" href="${href}" aria-label="Send a Wish mug">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/send-a-wish.jpg" alt="Send a Wish mug" width="620" height="620" loading="lazy"></a>
+    <div class="info"><div class="tags"><span class="tag">Personalised</span><span class="tag new">· New</span></div>
+      <h3><a href="${href}">Send a Wish</a></h3><p>Your own Christmas wish and name, on a mug.</p>
+      <div class="price">${SALE.on ? `<span class="was">${rupee(cp.price)}</span> ` : ""}<span class="now">${rupee(salePrice(cp))}</span></div>
+      <a class="buy" href="${href}">Write a wish</a></div></article>`;
+}
 function nameMugCard(root) {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}custom-mug/`;
   return `<article class="card coll-card" data-cat="christmas pets" data-type="mug">
@@ -668,7 +735,25 @@ body.co-lock{overflow:hidden}
 #cm-name:focus{outline:2px solid var(--green);border-color:var(--green)}
 .cm-note{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:400}
 .cm-warn{display:block;margin-top:6px;padding:7px 10px;border-radius:9px;background:#fff6e5;color:#7a5200;font-size:13px;font-weight:600}.cm-warn.bad{background:#fbeeee;color:#a8332f}
-.mc-row{display:grid;gap:2px;margin:0 0 4px}.mc-head{font-weight:600;font-size:14px}.mc-name{font-weight:400;color:var(--muted);margin-left:4px}.mc-row .cm-colors{margin-top:6px}
+.mc-row{display:grid;gap:2px;margin:0 0 4px}.mc-head{font-weight:600;font-size:14px}.mc-name{font-weight:400;color:var(--muted);margin-left:4px}@font-face{font-family:NVDancingH;src:url(/assets/fonts/dancing-script-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+.sw-hero{text-align:center;padding:18px 0 6px}.sw-hero h1{font-family:NVDancingH,cursive;font-weight:700;font-size:clamp(48px,9vw,78px);color:#b3202a;margin:4px 0 6px;line-height:1.05}
+.sw-hero .lead{max-width:560px;margin:0 auto}
+.sw-stage{background:radial-gradient(120% 90% at 50% 18%,#fffdf8 0,#f6efe3 70%);position:relative}
+.sw-stage::before{content:"";position:absolute;top:-16px;left:-12px;width:110px;height:110px;background:url(/assets/wish/holly.svg) no-repeat center/contain;transform:rotate(-14deg);pointer-events:none}
+.sw-note{font-size:12.5px;color:var(--muted);text-align:center;margin:8px 0 0}
+.sw-occ{margin-top:8px}
+#w-wish,#w-by{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:12px 14px;font:inherit;font-size:16px;border:1px solid #d8d0c2;border-radius:12px;background:#fff}
+#w-wish{font-family:NVDancingH,cursive;font-size:22px;line-height:1.35;resize:none;color:#8f1d24}
+#w-wish:focus,#w-by:focus{outline:2px solid var(--green);border-color:transparent}
+.sw-sugg{display:flex;gap:6px;flex-wrap:wrap;margin:-6px 0 16px}.sw-sugg button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px dashed #cdbfa6;background:#fffaf1;color:var(--ink);cursor:pointer}
+.sw-arts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.sw-art{display:grid;gap:4px;padding:6px;border:1px solid #d8d0c2;border-radius:14px;background:#fff;cursor:pointer;color:var(--ink);min-width:0}
+.sw-art img{width:100%;height:auto;aspect-ratio:1;object-fit:contain;border-radius:10px}.sw-art span{font-size:11.5px;line-height:1.25;text-align:center}
+.sw-art.on{border-color:var(--green);box-shadow:0 0 0 2px var(--green) inset;background:#f2f8f4}
+.sw-buy{margin-top:6px}.sw-cta{font-size:17px}.sw-cta:disabled{opacity:.55;cursor:not-allowed}
+.sw-tag{text-align:center;font-family:NVDancingH,cursive;font-size:22px;color:#1c603a;margin:12px 0 4px}
+@media (max-width:520px){.sw-arts{grid-template-columns:repeat(2,1fr)}.sw-stage::before{width:76px;height:76px}}
+.mc-row .cm-colors{margin-top:6px}
 .cm-colors{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .cm-color{display:grid;justify-items:center;gap:4px;width:72px;padding:8px 4px 6px;border:1px solid #d8d0c2;border-radius:12px;background:#fff;cursor:pointer;color:var(--ink)}
 .cm-color i{width:30px;height:30px;border-radius:50%;border:1px solid rgba(0,0,0,.18);box-shadow:inset 0 -3px 6px rgba(0,0,0,.12)}
@@ -867,6 +952,8 @@ const CONFIG = {
   whatsapp: "__WA__",
   // Razorpay Payment Page (long form: https://pages.razorpay.com/pl_XXXX/view). Empty = WhatsApp ordering only.
   razorpayPage: "__RZP__",
+  // Checkout backend (Google Apps Script). Set = pay in Razorpay's window on our page; empty = Payment Page above.
+  api: "__API__",
   // Field names on that page (label in lowercase, spaces as underscores)
   rzpFields: { product: "product", model: "phone_model", pincode: "pincode" },
   payLinks: {
@@ -912,7 +999,7 @@ const CONFIG = {
   function openCheckout(btn, model, pin) {
     const img = document.getElementById("pimg"), cv = document.getElementById("pcanvas");
     const pic = cv && !cv.hidden ? cv.toDataURL("image/jpeg", 0.8) : (img ? img.currentSrc || img.src : "");
-    const name = btn.dataset.name.replace(/ \(design [^)]*\)$/, ""), price = +btn.dataset.price;
+    const name = btn.dataset.name.split(" | design ")[0].replace(/ \(design [^)]*\)$/, ""), price = +btn.dataset.price;
     const wasEl = document.querySelector(".pprice .was, .price .was"), was = wasEl ? wasEl.textContent : "";
     let saved = {}; try { saved = JSON.parse(localStorage.getItem("nv_addr") || "{}"); } catch (e) {}
     if (!sheet) { sheet = document.createElement("div"); sheet.className = "co-wrap"; document.body.appendChild(sheet); }
@@ -931,7 +1018,7 @@ const CONFIG = {
       '<div class="co-err" hidden></div>' +
       '<button class="buy co-pay" type="submit">🔒 Continue to secure payment · ' + rupee(price) + '</button>' +
       '<div class="co-ways"><span>UPI</span><span>GPay</span><span>PhonePe</span><span>Cards</span><span>Netbanking</span></div>' +
-      '<p class="co-note">You’ll pay on Razorpay’s secure page. Your details are already filled in. Replacement if anything arrives damaged.</p>' +
+      '<p class="co-note">' + (CONFIG.api ? "Razorpay’s secure payment window opens right here. " : "You’ll pay on Razorpay’s secure page. Your details are already filled in. ") + 'Replacement if anything arrives damaged.</p>' +
       '</form></div>';
     requestAnimationFrame(() => sheet.classList.add("open")); document.body.classList.add("co-lock");
     sheet.querySelectorAll("[data-close]").forEach(x => x.addEventListener("click", closeCheckout));
@@ -945,6 +1032,7 @@ const CONFIG = {
         !isKA(v.z) ? [form.z, "We deliver within Karnataka only for now (pincodes starting 56–59)"] : null;
       if (bad) { err.hidden = false; err.textContent = bad[1]; bad[0].focus(); return; }
       try { localStorage.setItem("nv_addr", JSON.stringify(v)); localStorage.setItem("nv_last", JSON.stringify({ name, model, price, pic: pic && pic.length < 200000 ? pic : "", at: Date.now() })); } catch (e) {}
+      if (CONFIG.api) { payHere(btn, v, name, price, model, form, err); return; }
       const f = CONFIG.rzpFields, q = new URLSearchParams();
       q.set(btn.dataset.rzp, "1");
       q.set(f.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p);
@@ -953,6 +1041,38 @@ const CONFIG = {
       form.querySelector(".co-pay").textContent = "Opening secure payment…";
       window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
       location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
+    });
+  }
+  // Razorpay Checkout on our page: the backend creates the order at the listed price, the payment is verified, the order is logged
+  let rzpLoad = null;
+  function loadRzp() { if (!rzpLoad) rzpLoad = new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "https://checkout.razorpay.com/v1/checkout.js"; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); return rzpLoad; }
+  function api(body) { return fetch(CONFIG.api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) }).then(r => r.json()); }
+  function payHere(btn, v, name, price, model, form, err) {
+    const payBtn = form.querySelector(".co-pay"), label = payBtn.textContent;
+    const parts = btn.dataset.name.split(" | "), design = (parts.find(x => /^design /.test(x)) || "").replace(/^design /, "");
+    const options = parts.slice(1).filter(x => !/^design /.test(x)).join(" | ");
+    const reset = msg => { payBtn.disabled = false; payBtn.textContent = label; if (msg) { err.hidden = false; err.textContent = msg; } };
+    payBtn.disabled = true; payBtn.textContent = "Opening secure payment…"; err.hidden = true;
+    window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
+    Promise.all([api({ a: "order", id: btn.dataset.id, product: parts[0], options: options, design: design ? "https://" + design.replace("https://", "").replace("http://", "") : "", model: model || "",
+      customer: { name: v.n, phone: v.p, address: v.a, city: v.c, pincode: v.z } }), loadRzp()]).then(([o]) => {
+      if (!o.ok) { reset(o.err || "Couldn’t start the payment. Please try again."); return; }
+      const rz = new window.Razorpay({
+        key: o.key, order_id: o.order_id, amount: o.amount, currency: "INR", name: "NevervoidStore", description: parts[0].slice(0, 120),
+        image: location.origin + "/images/nv-logo.png", prefill: { name: v.n, contact: "+91" + v.p }, theme: { color: "#1f4d36" },
+        modal: { ondismiss: () => reset("") },
+        handler: r => {
+          payBtn.textContent = "Confirming your payment…";
+          api({ a: "verify", order_id: r.razorpay_order_id, payment_id: r.razorpay_payment_id, signature: r.razorpay_signature })
+            .catch(() => ({})).then(() => { location.href = "/thank-you.html?paid=1"; });
+        }
+      });
+      rz.on("payment.failed", e => reset("Payment didn’t go through" + (e && e.error && e.error.description ? ": " + e.error.description : "") + ". You can try again."));
+      closeCheckout(); rz.open();
+    }).catch(() => {
+      // backend unreachable: fall back to the Razorpay Payment Page so nobody gets stuck
+      if (CONFIG.razorpayPage) { const q = new URLSearchParams(); q.set(btn.dataset.rzp, "1"); q.set(CONFIG.rzpFields.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p); q.set("phone", v.p); q.set("full_name", v.n); location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString(); }
+      else reset("Couldn’t reach the payment service. Please try again in a minute.");
     });
   }
   function closeCheckout() { if (!sheet) return; sheet.classList.remove("open"); document.body.classList.remove("co-lock"); }
@@ -1201,7 +1321,7 @@ ${header("","shop")}
       <a class="chip-link" href="initials/">🔤 Initials A–Z</a>
     </div>
     <div class="grid" id="grid">
-${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(0, 0, nameMugCard("")); list.splice(2, 0, initialsCard("")); list.splice(4, 0, casesCard("")); return list.join("\n"); })()}
+${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(0, 0, nameMugCard("")); list.splice(1, 0, wishCard("")); list.splice(2, 0, initialsCard("")); list.splice(4, 0, casesCard("")); return list.join("\n"); })()}
     </div>
   </div>
   <section class="band">
@@ -1306,7 +1426,7 @@ fs.mkdirSync(path.join(OUT,"assets"), {recursive:true});
 fs.mkdirSync(path.join(OUT,"products"), {recursive:true});
 fs.mkdirSync(path.join(OUT,"images","products"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"assets","store.css"), fs.readFileSync(path.join(SRC,"base.css"),"utf8") + extraCss);
-fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || ""));
+fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || "").replace("__API__", POL.CONTACT.checkoutApi ? TEAM_API : ""));
 fs.writeFileSync(path.join(OUT,"assets","festive.css"), fs.readFileSync(path.join(SRC,"festive.css"),"utf8"));
 fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));
@@ -1316,6 +1436,11 @@ fs.mkdirSync(path.join(OUT,"custom-mug"),{recursive:true}); fs.writeFileSync(pat
 fs.copyFileSync(path.join(SRC,"custommug","custom-mug.js"), path.join(OUT,"assets","custom-mug.js"));
 fs.copyFileSync(path.join(SRC,"custommug","mugdesign.js"), path.join(OUT,"assets","mugdesign.js"));
 fs.copyFileSync(path.join(SRC,"custommug","mugcolor.js"), path.join(OUT,"assets","mugcolor.js"));
+fs.copyFileSync(path.join(SRC,"custommug","wish.js"), path.join(OUT,"assets","wish.js"));
+fs.mkdirSync(path.join(OUT,"assets","wish"),{recursive:true}); fs.readdirSync(path.join(SRC,"wish")).forEach(f => fs.copyFileSync(path.join(SRC,"wish",f), path.join(OUT,"assets","wish",f)));
+if (fs.existsSync(path.join(SRC,"send-a-wish.jpg"))) fs.copyFileSync(path.join(SRC,"send-a-wish.jpg"), path.join(OUT,"images","send-a-wish.jpg"));
+fs.mkdirSync(path.join(OUT,"send-a-wish"),{recursive:true}); fs.writeFileSync(path.join(OUT,"send-a-wish","index.html"), wishPage());
+fs.copyFileSync(path.join(SRC,"nv-logo.png"), path.join(OUT,"images","nv-logo.png"));
 fs.copyFileSync(path.join(SRC,"custommug","team.js"), path.join(OUT,"assets","team.js"));
 fs.copyFileSync(path.join(SRC,"custommug","team-template.xlsx"), path.join(OUT,"assets","team-template.xlsx"));
 fs.mkdirSync(path.join(OUT,"team"),{recursive:true}); fs.writeFileSync(path.join(OUT,"team","index.html"), teamPage());
@@ -1336,7 +1461,7 @@ fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/team/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/send-a-wish/", BASE+"/team/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);

@@ -121,8 +121,46 @@
   }
   // for pages: does this name print at a comfortable size in this style?
   function nameFit(name, font) { var c = document.createElement("canvas").getContext("2d"); return fitName(c, name || "Name", NAME_FONTS[font] || NAME_FONTS.classic); }
+  // ---------- Send a Wish: the wish faces the drinker, the artwork the other side ----------
+  var WISH_ART = {
+    reindeer:  { label: "Reindeer in the snow" },
+    snowglobe: { label: "Snowy cottage" },
+    santa:     { label: "Jolly Santa" },
+    gnomes:    { label: "Christmas gnomes" }
+  };
+  var artCache = {};
+  function wishArt(k) { if (!artCache[k]) artCache[k] = loadImg("/assets/wish/" + k + ".webp").catch(function () { return null; }); return artCache[k]; }
+  function wrapLines(ctx, text, maxw) { // keeps the customer's own line breaks, wraps long lines
+    var out = []; text.split("\n").forEach(function (para) { var ws = para.split(/\s+/).filter(Boolean), cur = ""; ws.forEach(function (w) { var t = cur ? cur + " " + w : w; if (ctx.measureText(t).width > maxw && cur) { out.push(cur); cur = w; } else cur = t; }); out.push(cur); }); return out.filter(function (l, i, a) { return l || (i > 0 && i < a.length - 1); });
+  }
+  function fitWish(ctx, text, box) {
+    for (var size = box.max; size >= box.min; size -= 3) {
+      ctx.font = "700 " + size + "px NVDancing, cursive"; var lines = wrapLines(ctx, text, box.w), lh = size * 1.22;
+      if (lines.length * lh <= box.h && lines.every(function (l) { return ctx.measureText(l).width <= box.w; })) return { size: size, lines: lines, lh: lh, small: size < box.ok };
+    }
+    ctx.font = "700 " + box.min + "px NVDancing, cursive"; var ln = wrapLines(ctx, text, box.w); return { size: box.min, lines: ln, lh: box.min * 1.22, small: true };
+  }
+  var WISH_BOX = { w: 600, h: 520, max: 120, min: 54, ok: 72, cy: 470 };
+  function drawWish(print, d) {
+    var ctx = print.getContext("2d"), wish = (d.wish || "").trim() || "Merry Christmas, Dearest Mom", by = (d.by || "").trim();
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, PW, PH);
+    // wish side (faces the person holding the mug in their right hand)
+    var f = fitWish(ctx, wish, WISH_BOX), top = WISH_BOX.cy - f.lines.length * f.lh / 2;
+    ctx.fillStyle = (d.wish || "").trim() ? "#b3202a" : "#d8cfc2"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    f.lines.forEach(function (l, i) { ctx.fillText(l, FRONT, top + f.lh * (i + 0.5)); });
+    flourish(ctx, FRONT, 790, 200, "#c9a24a");
+    ctx.fillStyle = "#1c603a"; ctx.textBaseline = "alphabetic";
+    fitFont(ctx, "By: " + (by || "Your name"), "NVScript, cursive", 400, 64, 40, 560); ctx.fillText("By: " + (by || "Your name"), FRONT, 900);
+    ctx.fillStyle = "#c9a24a"; ctx.fillRect(0, 1048, PW, 5); ctx.fillRect(0, 1064, PW, 2);
+    // artwork side, kept inside the face-on zone
+    return wishArt(d.art in WISH_ART ? d.art : "reindeer").then(function (im) {
+      if (!im) return; var bw = 640, bh = 860, r = Math.min(bw / im.width, bh / im.height), w = im.width * r, h = im.height * r;
+      ctx.drawImage(im, BACK - w / 2, 540 - h / 2, w, h);
+    });
+  }
+  function wishFit(wish) { var c = document.createElement("canvas").getContext("2d"); return fitWish(c, (wish || "").trim() || "x", WISH_BOX); }
   function newPrint() { var c = document.createElement("canvas"); c.width = PW; c.height = PH; return c; }
-  function render(print, d) { return fontsReady.then(function () { return drawPrint(print, d); }); }
+  function render(print, d) { return fontsReady.then(function () { return d.kind === "wish" ? drawWish(print, d) : drawPrint(print, d); }); }
 
   // real-mug preview: Printrove's mug photo with the print wrapped using the measured cylinder maps
   var MUGS = {}, small = document.createElement("canvas"); small.width = 1020; small.height = 456;
@@ -251,7 +289,7 @@
   function canvasPNG(c) { return new Promise(function (ok) { c.toBlob(function (b) { b.arrayBuffer().then(function (ab) { ok(new Uint8Array(ab)); }); }, "image/png"); }); }
   function fileName(d, i) { return (i != null ? String(i + 1).padStart(3, "0") + "-" : "") + (d.name || "mug").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-2550x1140.png"; }
 
-  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, NAME_FONTS: NAME_FONTS, MUG_COLORS: MUG_COLORS, nameFit: nameFit, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
+  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, NAME_FONTS: NAME_FONTS, MUG_COLORS: MUG_COLORS, nameFit: nameFit, WISH_ART: WISH_ART, wishFit: wishFit, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
     newPrint: newPrint, render: render, wrapMug: wrapMug, loadIndex: loadIndex, addCustom: addCustom, traitFor: traitFor,
     titleCase: titleCase, cleanName: cleanName, nameError: nameError, wordError: wordError, cleanMsg: cleanMsg, msgError: msgError,
     encode: encode, decode: decode, labels: labels, zip: zip, canvasPNG: canvasPNG, fileName: fileName };
