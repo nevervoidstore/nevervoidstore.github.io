@@ -189,7 +189,9 @@ function orderBlock(p) {
       <button class="ask" type="button" data-ask data-name="${esc(p.name)}">Ask a question</button>`;
   }
   return `${p.type==="case" ? `<label class="field">Your iPhone model
-        <select class="model" aria-label="iPhone model"><option value="">Choose your iPhone</option>${IPHONES.map(m=>`<option>${m}</option>`).join("")}</select></label>` : ""}
+        <select class="model" aria-label="iPhone model"><option value="">Choose your iPhone</option>${IPHONES.map(m=>`<option>${m}</option>`).join("")}</select></label>` : ""}${p.rzpItem === "ceramic_mug" ? `
+      <div class="mc-row" data-mugcolors><span class="mc-head">Mug colour <span class="mc-name">White</span></span><div class="mc-list cm-colors" role="radiogroup" aria-label="Mug colour"></div><span class="cm-note">The handle and the inside take the colour; the design is printed on white.</span></div>
+      <script defer src="/assets/mugcolor.js"></script>` : ""}
       <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
@@ -666,6 +668,7 @@ body.co-lock{overflow:hidden}
 #cm-name:focus{outline:2px solid var(--green);border-color:var(--green)}
 .cm-note{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:400}
 .cm-warn{display:block;margin-top:6px;padding:7px 10px;border-radius:9px;background:#fff6e5;color:#7a5200;font-size:13px;font-weight:600}.cm-warn.bad{background:#fbeeee;color:#a8332f}
+.mc-row{display:grid;gap:2px;margin:0 0 4px}.mc-head{font-weight:600;font-size:14px}.mc-name{font-weight:400;color:var(--muted);margin-left:4px}.mc-row .cm-colors{margin-top:6px}
 .cm-colors{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .cm-color{display:grid;justify-items:center;gap:4px;width:72px;padding:8px 4px 6px;border:1px solid #d8d0c2;border-radius:12px;background:#fff;cursor:pointer;color:var(--ink)}
 .cm-color i{width:30px;height:30px;border-radius:50%;border:1px solid rgba(0,0,0,.18);box-shadow:inset 0 -3px 6px rgba(0,0,0,.12)}
@@ -1312,6 +1315,7 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.mkdirSync(path.join(OUT,"custom-mug"),{recursive:true}); fs.writeFileSync(path.join(OUT,"custom-mug","index.html"), customMugPage());
 fs.copyFileSync(path.join(SRC,"custommug","custom-mug.js"), path.join(OUT,"assets","custom-mug.js"));
 fs.copyFileSync(path.join(SRC,"custommug","mugdesign.js"), path.join(OUT,"assets","mugdesign.js"));
+fs.copyFileSync(path.join(SRC,"custommug","mugcolor.js"), path.join(OUT,"assets","mugcolor.js"));
 fs.copyFileSync(path.join(SRC,"custommug","team.js"), path.join(OUT,"assets","team.js"));
 fs.copyFileSync(path.join(SRC,"custommug","team-template.xlsx"), path.join(OUT,"assets","team-template.xlsx"));
 fs.mkdirSync(path.join(OUT,"team"),{recursive:true}); fs.writeFileSync(path.join(OUT,"team","index.html"), teamPage());
