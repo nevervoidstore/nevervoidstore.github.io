@@ -25,6 +25,17 @@
     hand:    { label: "Handwritten", family: "NVHand, cursive", weight: 700, max: 220 },
     festive: { label: "Festive", family: "NVFestive, Georgia, serif", weight: 700, max: 190 }
   };
+  // Printrove mug colours: the handle and the inside take the colour; the printed body stays white
+  var MUG_COLORS = {
+    white:  { label: "White", hex: "#ffffff" },
+    black:  { label: "Black", hex: "#202020" },
+    red:    { label: "Red", hex: "#ce051f" },
+    orange: { label: "Orange", hex: "#ec692c" },
+    yellow: { label: "Yellow", hex: "#f4b63f" },
+    green:  { label: "Green", hex: "#93dc63" },
+    blue:   { label: "Light blue", hex: "#1bcefa" },
+    navy:   { label: "Dark blue", hex: "#112c47" }
+  };
   var NAME_BOX = { w: 610, h: 200, cy: 352, min: 96 }; // ink box above the flourish (y 495), face-on zone
   var fontsReady = Promise.all(FONTS.map(function (f) {
     try { var ff = new FontFace(f[0], "url(/assets/fonts/" + f[1] + ")", { weight: f[2] }); return ff.load().then(function (x) { document.fonts.add(x); }); }
@@ -120,16 +131,16 @@
   var mugsP = null;
   function mugsReady() {
     if (!mugsP) mugsP = Promise.all(["a", "b"].map(function (v) {
-      return Promise.all([loadImg("/assets/custommug/mug-" + v + ".jpg"), loadImg("/assets/custommug/map-" + v + "-s.png"), loadImg("/assets/custommug/map-" + v + "-v.png")]).then(function (r) {
-        var base = pixels(r[0]), ms = pixels(r[1]), mv = pixels(r[2]), n = 620 * 620, S = new Float32Array(n), V = new Float32Array(n), E = new Float32Array(n);
+      return Promise.all([loadImg("/assets/custommug/mug-" + v + ".jpg"), loadImg("/assets/custommug/map-" + v + "-s.png"), loadImg("/assets/custommug/map-" + v + "-v.png"), loadImg("/assets/custommug/tint-" + v + ".png")]).then(function (r) {
+        var base = pixels(r[0]), ms = pixels(r[1]), mv = pixels(r[2]), tn = pixels(r[3]), n = 620 * 620, S = new Float32Array(n), V = new Float32Array(n), E = new Float32Array(n);
         for (var i = 0; i < n; i++) { S[i] = (ms[i * 4] * 256 + ms[i * 4 + 1]) / 65535; V[i] = (mv[i * 4] * 256 + mv[i * 4 + 1]) / 65535; E[i] = ms[i * 4 + 2] / 255; }
-        MUGS[v] = { base: base, S: S, V: V, E: E };
+        MUGS[v] = { base: base, S: S, V: V, E: E, tint: tn }; // tint: R = shading, G = highlight, A = handle/inside mask
       });
     }));
     return mugsP;
   }
   // view "r" = handle right (name side), "l" = handle left (monogram side). out: a 620x620 canvas
-  function wrapMug(print, view, out) {
+  function wrapMug(print, view, out, color) {
     return mugsReady().then(function () {
       var m = MUGS[view === "l" ? "a" : "b"], sc = small.getContext("2d");
       sc.imageSmoothingQuality = "high"; sc.clearRect(0, 0, 1020, 456); sc.drawImage(print, 0, 0, 1020, 456);
@@ -144,6 +155,15 @@
           }
         } else { o[p] = b[p]; o[p + 1] = b[p + 1]; o[p + 2] = b[p + 2]; }
         o[p + 3] = 255;
+      }
+      var mc = MUG_COLORS[color];
+      if (mc && color !== "white") {
+        var cr = parseInt(mc.hex.slice(1, 3), 16), cg = parseInt(mc.hex.slice(3, 5), 16), cb = parseInt(mc.hex.slice(5, 7), 16), t = m.tint;
+        for (var j = 0, nn = 620 * 620; j < nn; j++) {
+          var q = j * 4, a = t[q + 3] / 255; if (!a) continue;
+          var L = t[q] / 255 * 1.25, H = t[q + 1] / 255, k = L * (1 - H), w = 255 * H;
+          o[q] = o[q] * (1 - a) + Math.min(255, cr * k + w) * a; o[q + 1] = o[q + 1] * (1 - a) + Math.min(255, cg * k + w) * a; o[q + 2] = o[q + 2] * (1 - a) + Math.min(255, cb * k + w) * a;
+        }
       }
       ctx.putImageData(img, 0, 0);
       return out;
@@ -197,10 +217,10 @@
   function msgError(v) { var t = v.trim(); if (t.length < 3) return "Message is too short"; if (t.length > 120) return "Message is over 120 characters"; if (BAD.test(t)) return "Let's keep it friendly"; return ""; }
 
   // design link codec: Name~k1.k2.k3.k4~theme  or  Name~m:message~theme
-  function encode(d) { return encodeURIComponent(d.name) + "~" + (d.mode === "msg" ? "m:" + encodeURIComponent((d.msg || "").trim()) : (d.traits || []).join(".")) + "~" + d.theme + (d.font && d.font !== "classic" && NAME_FONTS[d.font] ? "~" + d.font : ""); }
+  function encode(d) { return encodeURIComponent(d.name) + "~" + (d.mode === "msg" ? "m:" + encodeURIComponent((d.msg || "").trim()) : (d.traits || []).join(".")) + "~" + d.theme + (d.color && d.color !== "white" && MUG_COLORS[d.color] ? "~" + (NAME_FONTS[d.font] ? d.font : "classic") + "~" + d.color : d.font && d.font !== "classic" && NAME_FONTS[d.font] ? "~" + d.font : ""); }
   // resolves to a design with any custom traits registered
   function decode(s) {
-    var p = String(s || "").split("~"), d = { name: decodeURIComponent(p[0] || "").slice(0, 14), mode: "traits", traits: [], msg: "", theme: THEMES[p[2]] ? p[2] : "classic", font: NAME_FONTS[p[3]] ? p[3] : "classic" };
+    var p = String(s || "").split("~"), d = { name: decodeURIComponent(p[0] || "").slice(0, 14), mode: "traits", traits: [], msg: "", theme: THEMES[p[2]] ? p[2] : "classic", font: NAME_FONTS[p[3]] ? p[3] : "classic", color: MUG_COLORS[p[4]] ? p[4] : "white" };
     if ((p[1] || "").indexOf("m:") === 0) { d.mode = "msg"; d.msg = decodeURIComponent(p[1].slice(2)).slice(0, 120); return Promise.resolve(d); }
     var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4);
     return Promise.all(ent.map(function (k) {
@@ -231,7 +251,7 @@
   function canvasPNG(c) { return new Promise(function (ok) { c.toBlob(function (b) { b.arrayBuffer().then(function (ab) { ok(new Uint8Array(ab)); }); }, "image/png"); }); }
   function fileName(d, i) { return (i != null ? String(i + 1).padStart(3, "0") + "-" : "") + (d.name || "mug").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-2550x1140.png"; }
 
-  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, NAME_FONTS: NAME_FONTS, nameFit: nameFit, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
+  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, NAME_FONTS: NAME_FONTS, MUG_COLORS: MUG_COLORS, nameFit: nameFit, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
     newPrint: newPrint, render: render, wrapMug: wrapMug, loadIndex: loadIndex, addCustom: addCustom, traitFor: traitFor,
     titleCase: titleCase, cleanName: cleanName, nameError: nameError, wordError: wordError, cleanMsg: cleanMsg, msgError: msgError,
     encode: encode, decode: decode, labels: labels, zip: zip, canvasPNG: canvasPNG, fileName: fileName };

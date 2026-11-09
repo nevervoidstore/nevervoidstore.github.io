@@ -2,12 +2,12 @@
 (function () {
   "use strict";
   var M = window.NVMug, THEMES = M.THEMES, BAD = M.BAD, byKey = M.byKey, TRAITS = M.TRAITS;
-  var state = { name: "", traits: [], theme: "classic", font: "classic", view: "r", approved: false, mode: "traits", msg: "", nameErr: "" };
+  var state = { name: "", traits: [], theme: "classic", font: "classic", color: "white", view: "r", approved: false, mode: "traits", msg: "", nameErr: "" };
   var $ = function (s) { return document.querySelector(s); };
   var print = M.newPrint();
   var mug = $("#cm-mug"), nameIn = $("#cm-name"), chips = $("#cm-traits");
   function drawPrint() { return M.render(print, state); }
-  function drawMug() { return M.wrapMug(print, state.view, mug).then(function () { var pimg = $("#pimg"); if (pimg) pimg.src = mug.toDataURL("image/jpeg", 0.85); }).catch(function () {}); }
+  function drawMug() { return M.wrapMug(print, state.view, mug, state.color).then(function () { var pimg = $("#pimg"); if (pimg) pimg.src = mug.toDataURL("image/jpeg", 0.85); }).catch(function () {}); }
   var pending = 0;
   function render() {
     var seq = ++pending;
@@ -81,6 +81,14 @@
     fontBox.addEventListener("click", function (e) { var b = e.target.closest(".cm-font"); if (!b) return; setFont(b.dataset.f); render(); });
   }
   function setFont(k) { state.font = M.NAME_FONTS[k] ? k : "classic"; if (fontBox) fontBox.querySelectorAll(".cm-font").forEach(function (b) { var on = b.dataset.f === state.font; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); }); }
+  // mug colour: handle and inside
+  var colorBox = $("#cm-colors");
+  if (colorBox) {
+    colorBox.innerHTML = Object.keys(M.MUG_COLORS).map(function (k) { var c = M.MUG_COLORS[k]; return '<button type="button" class="cm-color' + (k === "white" ? " on" : "") + '" data-c="' + k + '" role="radio" aria-checked="' + (k === "white") + '" title="' + c.label + '"><i style="background:' + c.hex + '"></i><small>' + c.label + "</small></button>"; }).join("");
+    colorBox.addEventListener("click", function (e) { var b = e.target.closest(".cm-color"); if (!b) return; setColor(b.dataset.c); if (state.view === "r" || state.view === "l") render(); });
+  }
+  function setColor(k) { state.color = M.MUG_COLORS[k] ? k : "white"; if (colorBox) colorBox.querySelectorAll(".cm-color").forEach(function (b) { var on = b.dataset.c === state.color; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); }); var lab = $("#cm-color-name"); if (lab) lab.textContent = M.MUG_COLORS[state.color].label + (state.color === "white" ? "" : " handle & inside"); }
+  function colorText() { return state.color === "white" ? "White mug" : M.MUG_COLORS[state.color].label + " handle & inside"; }
   function fontLabels() { if (fontBox) fontBox.querySelectorAll(".cm-font-name").forEach(function (sp) { sp.textContent = state.name || "Priya"; }); }
   document.querySelectorAll(".cm-mode").forEach(function (b) { b.addEventListener("click", function () {
     state.mode = b.dataset.m; document.querySelectorAll(".cm-mode").forEach(function (x) { var on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); });
@@ -105,13 +113,13 @@
     if (JOIN) { submitJoin(); return; }
     state.approved = true; $("#cm-approve").hidden = true; var box = $("#cm-order"); box.hidden = false;
     var btn = box.querySelector("[data-order]"), labels = state.mode === "msg" ? "Message: \u201c" + state.msg.trim() + "\u201d" : state.traits.map(function (k) { return byKey[k].l; }).join(", ");
-    btn.dataset.name = "Custom Name Mug: " + state.name + " | " + labels + " | " + THEMES[state.theme].label + " | " + M.NAME_FONTS[state.font].label + " lettering | design nevervoidstore.com/custom-mug/?d=" + spec();
-    $("#cm-summary").textContent = state.name + " · " + labels + " · " + THEMES[state.theme].label + " · " + M.NAME_FONTS[state.font].label + " lettering";
+    btn.dataset.name = "Custom Name Mug: " + state.name + " | " + labels + " | " + THEMES[state.theme].label + " | " + M.NAME_FONTS[state.font].label + " lettering | " + colorText() + " | design nevervoidstore.com/custom-mug/?d=" + spec();
+    $("#cm-summary").textContent = state.name + " · " + labels + " · " + THEMES[state.theme].label + " · " + M.NAME_FONTS[state.font].label + " lettering · " + colorText();
     drawMug(); box.scrollIntoView({ behavior: "smooth", block: "center" });
   });
   // prefill from a design link (?d=Name~k1.k2.k3.k4~theme); ?admin=1 adds a download of the print file for Printrove
   var q = new URLSearchParams(location.search), d = q.get("d");
-  function loadSpec(d) { var p = d.split("~"); state.traits = []; setFont(p[3]); state.name = M.cleanName(decodeURIComponent(p[0] || "")).slice(0, 14).trim(); nameIn.value = state.name; state.nameErr = state.name ? M.nameError(state.name) : ""; fontLabels(); if ((p[1] || "").indexOf("m:") === 0) { state.mode = "msg"; state.msg = decodeURIComponent(p[1].slice(2)).slice(0, 120); if (msgIn) msgIn.value = state.msg; var mb = document.querySelector('.cm-mode[data-m="msg"]'); if (mb) mb.click(); } else { var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4); state.traits = ent.filter(function (k) { return byKey[k]; }); ent.forEach(function (k) { if (k[0] === "_") { var bits = k.split("_"); addCustom(decodeURIComponent(bits.slice(2).join("_")), bits[1], true); } }); } if (THEMES[p[2]]) { state.theme = p[2]; var r = document.querySelector("[name=cm-theme][value=" + p[2] + "]"); if (r) r.checked = true; } syncChips(); if (JOIN && JOIN.team && THEMES[JOIN.team.theme]) state.theme = JOIN.team.theme; syncChips(); render(); }
+  function loadSpec(d) { var p = d.split("~"); state.traits = []; setFont(p[3]); setColor(p[4]); state.name = M.cleanName(decodeURIComponent(p[0] || "")).slice(0, 14).trim(); nameIn.value = state.name; state.nameErr = state.name ? M.nameError(state.name) : ""; fontLabels(); if ((p[1] || "").indexOf("m:") === 0) { state.mode = "msg"; state.msg = decodeURIComponent(p[1].slice(2)).slice(0, 120); if (msgIn) msgIn.value = state.msg; var mb = document.querySelector('.cm-mode[data-m="msg"]'); if (mb) mb.click(); } else { var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4); state.traits = ent.filter(function (k) { return byKey[k]; }); ent.forEach(function (k) { if (k[0] === "_") { var bits = k.split("_"); addCustom(decodeURIComponent(bits.slice(2).join("_")), bits[1], true); } }); } if (THEMES[p[2]]) { state.theme = p[2]; var r = document.querySelector("[name=cm-theme][value=" + p[2] + "]"); if (r) r.checked = true; } syncChips(); if (JOIN && JOIN.team && THEMES[JOIN.team.theme]) state.theme = JOIN.team.theme; syncChips(); render(); }
   if (d && !window.NV_JOIN) loadSpec(d);
   if (q.get("admin") === "1") {
     var dl = document.createElement("button"); dl.type = "button"; dl.className = "buy"; dl.textContent = "Download print file (2550 × 1140)";

@@ -4,7 +4,7 @@
   var M = window.NVMug, byKey = M.byKey, CFG = window.NV_TEAM || {};
   var TIERS = CFG.tiers || [[25, 379], [50, 349], [100, 319]], SMALL = CFG.small || 649, WA = CFG.wa || "919880000990";
   var $ = function (s) { return document.querySelector(s); }, $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
-  var st = { theme: "classic", font: "classic", mode: "traits", traits: [], msg: "", text: "" };
+  var st = { theme: "classic", font: "classic", color: "white", mode: "traits", traits: [], msg: "", text: "" };
   var listIn = $("#tm-list"), grid = $("#tm-grid"), chips = $("#tm-traits"), q = new URLSearchParams(location.search), ADMIN = q.get("admin") === "1";
   var rows = [], thumbs = {}, renderSeq = 0;
 
@@ -36,6 +36,10 @@
   var fontBox = $("#tm-fonts");
   fontBox.innerHTML = Object.keys(M.NAME_FONTS).map(function (k) { var f = M.NAME_FONTS[k]; return '<button type="button" class="cm-font' + (k === "classic" ? " on" : "") + '" data-f="' + k + '" role="radio" aria-checked="' + (k === "classic") + '"><span class="cm-font-name" style="font-family:' + f.family.replace(/"/g, "") + ';font-weight:' + f.weight + '">Priya</span><small>' + f.label + "</small></button>"; }).join("");
   fontBox.addEventListener("click", function (e) { var b = e.target.closest(".cm-font"); if (b) { setFont(b.dataset.f); update(); } });
+  var colorBox = $("#tm-colors");
+  colorBox.innerHTML = Object.keys(M.MUG_COLORS).map(function (k) { var c = M.MUG_COLORS[k]; return '<button type="button" class="cm-color' + (k === "white" ? " on" : "") + '" data-c="' + k + '" role="radio" aria-checked="' + (k === "white") + '"><i style="background:' + c.hex + '"></i><small>' + c.label + "</small></button>"; }).join("");
+  colorBox.addEventListener("click", function (e) { var b = e.target.closest(".cm-color"); if (b) { setColor(b.dataset.c); update(); } });
+  function setColor(k) { st.color = M.MUG_COLORS[k] ? k : "white"; $$("#tm-colors .cm-color").forEach(function (b) { var on = b.dataset.c === st.color; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); }); $("#tm-color-name").textContent = M.MUG_COLORS[st.color].label + (st.color === "white" ? "" : " handle & inside"); }
   function setFont(k) { st.font = M.NAME_FONTS[k] ? k : "classic"; $$("#tm-fonts .cm-font").forEach(function (b) { var on = b.dataset.f === st.font; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); }); }
 
   // ---------- the list: one person per line ----------
@@ -64,7 +68,7 @@
   }
   // resolve a parsed row into a design (async: typed words need the icon index)
   function resolve(r) {
-    var raw = r.raw, d = { name: "", mode: st.mode, traits: st.traits.slice(), msg: st.msg, theme: st.theme, font: st.font }, errs = [], own = "";
+    var raw = r.raw, d = { name: "", mode: st.mode, traits: st.traits.slice(), msg: st.msg, theme: st.theme, font: st.font, color: st.color }, errs = [], own = "";
     var nm = raw.name.replace(/\s{2,}/g, " ").trim(), ne = M.nameError(nm);
     if (ne) errs.push(ne); d.name = ne ? nm.slice(0, 14) : M.titleCase(nm);
     r.note = !ne && M.nameFit(d.name, d.font).small ? "Long name: prints a little smaller" : "";
@@ -89,7 +93,7 @@
   big.width = big.height = 620; thumb.width = thumb.height = 360;
   function preview(d, view) {
     var id = M.encode(d) + "|" + view; if (thumbs[id]) return Promise.resolve(thumbs[id]);
-    return M.render(print, d).then(function () { return M.wrapMug(print, view, big); }).then(function () {
+    return M.render(print, d).then(function () { return M.wrapMug(print, view, big, d.color); }).then(function () {
       var t = thumb.getContext("2d"); t.imageSmoothingQuality = "high"; t.drawImage(big, 0, 0, 360, 360);
       return (thumbs[id] = thumb.toDataURL("image/jpeg", 0.82));
     });
@@ -189,7 +193,7 @@
   function b64u(u8) { var s = ""; for (var i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
   function unb64u(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
   function packState() {
-    var json = JSON.stringify({ v: 1, th: st.theme, f: st.font, m: st.mode, t: st.traits.map(function (k) { return byKey[k] && byKey[k].custom ? "_" + k.split("_")[1] + "_" + encodeURIComponent(byKey[k].l) : k; }), g: st.msg, l: st.text.trim(), c: $("#tm-co").value.trim() });
+    var json = JSON.stringify({ v: 1, th: st.theme, f: st.font, mc: st.color, m: st.mode, t: st.traits.map(function (k) { return byKey[k] && byKey[k].custom ? "_" + k.split("_")[1] + "_" + encodeURIComponent(byKey[k].l) : k; }), g: st.msg, l: st.text.trim(), c: $("#tm-co").value.trim() });
     var bytes = new TextEncoder().encode(json);
     if (window.CompressionStream) return new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer().then(function (ab) { return "z" + b64u(new Uint8Array(ab)); });
     return Promise.resolve("j" + b64u(bytes));
@@ -210,7 +214,7 @@
     link().then(function (url) {
       var txt = "Hi NevervoidStore, I'd like a quote for team name mugs.\n\n" +
         "Company: " + co + "\nName: " + who + "\nMugs: " + n + " (" + rupee(each) + " each, about " + rupee(each * n) + " before delivery)\n" +
-        "Style: " + M.THEMES[st.theme].label + ", " + M.NAME_FONTS[st.font].label + " lettering\nUnder each name: " + (st.mode === "msg" ? "message “" + st.msg.trim() + "”" : "4 things: " + st.traits.map(function (k) { return byKey[k].l; }).join(", ")) + (own ? " (" + own + " people have their own)" : "") + "\n" +
+        "Style: " + M.THEMES[st.theme].label + ", " + M.NAME_FONTS[st.font].label + " lettering, " + (st.color === "white" ? "white mug" : M.MUG_COLORS[st.color].label.toLowerCase() + " handle & inside") + "\nUnder each name: " + (st.mode === "msg" ? "message “" + st.msg.trim() + "”" : "4 things: " + st.traits.map(function (k) { return byKey[k].l; }).join(", ")) + (own ? " (" + own + " people have their own)" : "") + "\n" +
         "Delivery: " + (ship === "office" ? "one office, pincode " + pin : "to each person's home (I'll share addresses)") + (when ? "\nNeeded by: " + when : "") + "\n\nAll " + n + " designs: " + url;
       var wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(txt);
       if (window.nvTrack) window.nvTrack("Lead", { content_name: "Team mug quote", value: each * n, currency: "INR", num_items: n });
@@ -303,7 +307,7 @@
   if (h) {
     unpack(h[1]).then(function (s) {
       st.theme = M.THEMES[s.th] ? s.th : "classic"; var r = document.querySelector("[name=tm-theme][value=" + st.theme + "]"); if (r) r.checked = true;
-      setFont(s.f); setMode(s.m === "msg" ? "msg" : "traits"); st.msg = s.g || ""; msgIn.value = st.msg; $("#tm-msg-count").textContent = st.msg.length + "/120";
+      setFont(s.f); setColor(s.mc); setMode(s.m === "msg" ? "msg" : "traits"); st.msg = s.g || ""; msgIn.value = st.msg; $("#tm-msg-count").textContent = st.msg.length + "/120";
       st.text = s.l || ""; listIn.value = st.text; if (s.c) $("#tm-co").value = s.c;
       return Promise.all((s.t || []).map(function (k) { if (byKey[k]) return k; if (k[0] === "_") { var b = k.split("_"); return M.addCustom(decodeURIComponent(b.slice(2).join("_")), b[1]); } return null; }));
     }).then(function (ks) { st.traits = ks.filter(Boolean); st.traits.forEach(function (k) { if (byKey[k].custom) addChip(k); }); syncChips(); $("#tm-shared").hidden = false; rebuild(); })

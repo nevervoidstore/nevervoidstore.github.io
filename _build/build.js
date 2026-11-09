@@ -422,6 +422,7 @@ ${header(join ? "../../" : "../","shop")}
       <div class="cm-step" id="cm-pane-traits"><b>Pick 4 things that describe ${join ? "you" : "them"}</b> <span id="cm-count" class="muted">0 of 4 chosen</span>
         <div class="cm-own"><input id="cm-own" maxlength="18" autocomplete="off" placeholder="Or type your own (1–2 words), e.g. Yoga" aria-label="Type your own"><button id="cm-own-add" type="button">Add</button></div><div id="cm-traits" class="cm-chips" role="group" aria-label="Things that describe them"></div></div>
       <div class="cm-step"${join ? " hidden" : ""}><b>3. Style</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="cm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
+      <div class="cm-step"${join ? " hidden" : ""}><b>Mug colour</b> <span id="cm-color-name" class="muted">White</span><div id="cm-colors" class="cm-colors" role="radiogroup" aria-label="Mug colour"></div><span class="cm-note">The handle and the inside take the colour; the printed area stays white.</span></div>
       <p id="cm-hint" class="cm-hint" aria-live="polite">Type a name to start.</p>
       <div class="cm-actions"><button id="cm-approve" type="button" class="buy" disabled>Approve design</button><button id="cm-reset" type="button" class="ask">Reset</button></div>
       ${join ? `<div id="cm-joined" class="cm-ok tm-joined" hidden><span id="cm-joined-msg"></span> <button id="cm-again" type="button" class="linkbtn">Change my design</button></div>` : ""}
@@ -477,6 +478,7 @@ ${header("../","shop")}
     <div class="tm-col">
       <div class="cm-step"><b>1. Style for the whole team</b><div class="cm-themes">${themes.map((t,i)=>`<label class="cm-theme"><input type="radio" name="tm-theme" value="${t[0]}"${i?"":" checked"}><span><i style="background:${t[2]}"></i><i style="background:${t[3]}"></i>${t[1]}</span></label>`).join("")}</div></div>
       <div class="cm-step"><b>Name style</b><div id="tm-fonts" class="cm-fonts" role="radiogroup" aria-label="Name style"></div></div>
+      <div class="cm-step"><b>Mug colour</b> <span id="tm-color-name" class="muted">White</span><div id="tm-colors" class="cm-colors" role="radiogroup" aria-label="Mug colour"></div><span class="cm-note">The handle and the inside take the colour; the printed area stays white.</span></div>
       <div class="cm-step"><b>2. Under every name</b>
         <div class="cm-modes" role="tablist"><button type="button" class="cm-mode tm-mode on" data-m="traits" role="tab" aria-selected="true">4 things</button><button type="button" class="cm-mode tm-mode" data-m="msg" role="tab" aria-selected="false">A message</button></div>
         <p class="muted cm-small">This goes on everyone's mug. Anyone can have their own instead (see the list).</p></div>
@@ -664,6 +666,10 @@ body.co-lock{overflow:hidden}
 #cm-name:focus{outline:2px solid var(--green);border-color:var(--green)}
 .cm-note{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:400}
 .cm-warn{display:block;margin-top:6px;padding:7px 10px;border-radius:9px;background:#fff6e5;color:#7a5200;font-size:13px;font-weight:600}.cm-warn.bad{background:#fbeeee;color:#a8332f}
+.cm-colors{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cm-color{display:grid;justify-items:center;gap:4px;width:72px;padding:8px 4px 6px;border:1px solid #d8d0c2;border-radius:12px;background:#fff;cursor:pointer;color:var(--ink)}
+.cm-color i{width:30px;height:30px;border-radius:50%;border:1px solid rgba(0,0,0,.18);box-shadow:inset 0 -3px 6px rgba(0,0,0,.12)}
+.cm-color small{font-size:11px;color:var(--muted);line-height:1.2;text-align:center}.cm-color.on{border-color:var(--green);box-shadow:0 0 0 2px var(--green) inset;background:#f2f8f4}
 .cm-fonts{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;margin-top:10px}
 .cm-font{display:grid;gap:2px;justify-items:center;padding:10px 6px 8px;border:1px solid #d8d0c2;border-radius:12px;background:#fff;cursor:pointer;color:var(--ink);min-width:0}
 .cm-font.on{border-color:var(--green);box-shadow:0 0 0 2px var(--green) inset;background:#f2f8f4}
@@ -1310,7 +1316,7 @@ fs.copyFileSync(path.join(SRC,"custommug","team.js"), path.join(OUT,"assets","te
 fs.copyFileSync(path.join(SRC,"custommug","team-template.xlsx"), path.join(OUT,"assets","team-template.xlsx"));
 fs.mkdirSync(path.join(OUT,"team"),{recursive:true}); fs.writeFileSync(path.join(OUT,"team","index.html"), teamPage());
 if (TEAM_API) { fs.mkdirSync(path.join(OUT,"team","join"),{recursive:true}); fs.writeFileSync(path.join(OUT,"team","join","index.html"), customMugPage(true)); }
-fs.mkdirSync(path.join(OUT,"assets","custommug"),{recursive:true}); for (const f of ["mug-a.jpg","mug-b.jpg","map-a-s.png","map-a-v.png","map-b-s.png","map-b-v.png","iconindex.json"]) fs.copyFileSync(path.join(SRC,"custommug",f), path.join(OUT,"assets","custommug",f));
+fs.mkdirSync(path.join(OUT,"assets","custommug"),{recursive:true}); for (const f of ["mug-a.jpg","mug-b.jpg","map-a-s.png","map-a-v.png","map-b-s.png","map-b-v.png","tint-a.png","tint-b.png","iconindex.json"]) fs.copyFileSync(path.join(SRC,"custommug",f), path.join(OUT,"assets","custommug",f));
 fs.mkdirSync(path.join(OUT,"assets","fonts"),{recursive:true}); for (const f of fs.readdirSync(path.join(SRC,"custommug","fonts"))) fs.copyFileSync(path.join(SRC,"custommug","fonts",f), path.join(OUT,"assets","fonts",f));
 if (fs.existsSync(path.join(SRC,"custommug","sample.jpg"))) fs.copyFileSync(path.join(SRC,"custommug","sample.jpg"), path.join(OUT,"images","custom-name-mug.jpg"));
 fs.mkdirSync(path.join(OUT,"cases"),{recursive:true}); fs.writeFileSync(path.join(OUT,"cases","index.html"), casesPage());
