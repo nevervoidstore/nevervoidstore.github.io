@@ -134,7 +134,7 @@
       return Promise.all([loadImg("/assets/custommug/mug-" + v + ".jpg"), loadImg("/assets/custommug/map-" + v + "-s.png"), loadImg("/assets/custommug/map-" + v + "-v.png"), loadImg("/assets/custommug/tint-" + v + ".png")]).then(function (r) {
         var base = pixels(r[0]), ms = pixels(r[1]), mv = pixels(r[2]), tn = pixels(r[3]), n = 620 * 620, S = new Float32Array(n), V = new Float32Array(n), E = new Float32Array(n);
         for (var i = 0; i < n; i++) { S[i] = (ms[i * 4] * 256 + ms[i * 4 + 1]) / 65535; V[i] = (mv[i * 4] * 256 + mv[i * 4 + 1]) / 65535; E[i] = ms[i * 4 + 2] / 255; }
-        MUGS[v] = { base: base, S: S, V: V, E: E, tint: tn }; // tint: R = shading, G = highlight, A = handle/inside mask
+        MUGS[v] = { base: base, S: S, V: V, E: E, tint: tn }; // tint: R = shading, A = handle/inside coverage
       });
     }));
     return mugsP;
@@ -161,8 +161,8 @@
         var cr = parseInt(mc.hex.slice(1, 3), 16), cg = parseInt(mc.hex.slice(3, 5), 16), cb = parseInt(mc.hex.slice(5, 7), 16), t = m.tint;
         for (var j = 0, nn = 620 * 620; j < nn; j++) {
           var q = j * 4, a = t[q + 3] / 255; if (!a) continue;
-          var L = t[q] / 255 * 1.25, H = t[q + 1] / 255, k = L * (1 - H), w = 255 * H;
-          o[q] = o[q] * (1 - a) + Math.min(255, cr * k + w) * a; o[q + 1] = o[q + 1] * (1 - a) + Math.min(255, cg * k + w) * a; o[q + 2] = o[q + 2] * (1 - a) + Math.min(255, cb * k + w) * a;
+          var L = t[q] / 255 * 1.3; // shading of Printrove's coloured-mug photo, soft edges in the alpha
+          o[q] = o[q] * (1 - a) + Math.min(255, cr * L) * a; o[q + 1] = o[q + 1] * (1 - a) + Math.min(255, cg * L) * a; o[q + 2] = o[q + 2] * (1 - a) + Math.min(255, cb * L) * a;
         }
       }
       ctx.putImageData(img, 0, 0);
