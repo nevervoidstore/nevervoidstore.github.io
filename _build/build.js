@@ -538,34 +538,35 @@ ${footer("../")}
 <script defer src="/assets/team.js"></script>`;
 }
 // ---------- Send a Wish ----------
-const WISH_OCC = {
-  christmas: { label: "Christmas", wishes: ["Merry Christmas, Dearest Mom", "To the best dad in the world. Merry Christmas!", "Warm wishes and cosy nights this Christmas", "Thank you for making this year magical"] },
-  newyear:   { label: "New Year", wishes: ["Happy New Year, my favourite person", "Here’s to a brighter, bolder 2027", "Cheers to new beginnings, together", "Thank you for an amazing year"] }
-};
-const WISH_ART = [["reindeer","Reindeer in the snow"],["snowglobe","Snowy cottage"],["santa","Jolly Santa"],["gnomes","Christmas gnomes"]];
-function wishPage() {
-  const cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp), url = `${BASE}/send-a-wish/`;
-  const desc = "Send a Wish: write a Christmas or New Year wish, add your name, pick an illustration and we print it on a mug. Made to order in Bengaluru, delivered across Karnataka.";
-  const jsonld = [{"@context":"https://schema.org","@type":"Product","name":"Send a Wish Mug","description":desc,"image":`${BASE}/images/send-a-wish.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
+const WISH_OCC = JSON.parse(fs.readFileSync(path.join(SRC, "wish", "occasions.json"), "utf8"));
+const WISH_PATH = "send-a-wish-custom-mug";      // nevervoidstore.com/send-a-wish-custom-mug/<occasion>/
+const WISH_DEFAULT = "christmas";               // occasion the main page opens on (seasonal)
+function wishPage(start) {
+  const o = start ? WISH_OCC[start] : null, cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp);
+  const rel = start ? "../../" : "../", url = `${BASE}/${WISH_PATH}/${start ? WISH_OCC[start].seo.slug + "/" : ""}`;
+  const title = o ? `${o.seo.title} | Send a Wish | Nevervoid Store` : "Send a Wish: Custom Mug with Your Own Message | Nevervoid Store";
+  const desc = o ? o.seo.desc : "Send a wish on a custom mug: write your own message for a birthday, anniversary, Mom, Dad, a friend, thank you or Christmas, add your name, pick a design. Delivered across Karnataka.";
+  const jsonld = [{"@context":"https://schema.org","@type":"Product","name": o ? o.seo.title : "Send a Wish Custom Mug","description":desc,"image":`${BASE}/images/send-a-wish.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
     "offers":{"@type":"Offer","priceCurrency":"INR","price":String(price),"availability":"https://schema.org/MadeToOrder","url":url}}];
-  return `${head({title:"Send a Wish: Personalised Christmas Wish Mug | Nevervoid Store", desc, url, image:`${BASE}/images/send-a-wish.jpg`, root:"../", jsonld})}
+  const first = start || WISH_DEFAULT;
+  return `${head({title, desc, url, image:`${BASE}/images/send-a-wish.jpg`, root:rel, jsonld})}
 <body>
-${header("../","shop")}
+${header(rel,"shop")}
 <main class="wrap cm sw">
-  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Send a Wish</span></nav>
-  <section class="sw-hero"><span class="eyebrow">Made by you</span><h1>Send a Wish</h1>
-    <p class="lead">Create a personalised Christmas mug for someone special. Don’t just send a gift, send a wish made by you.</p></section>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="${rel}index.html">Shop</a> › ${o ? `<a href="/${WISH_PATH}/">Send a Wish</a> › <span>${o.label}</span>` : "<span>Send a Wish</span>"}</nav>
+  <section class="sw-hero"><span class="eyebrow">${o ? esc(o.seo.h1) : "A custom mug with your own wish"}</span><h1>Send a Wish</h1>
+    <p class="lead">Write your own wish for someone special, add your name and pick a design. We print it on a mug. Don’t just send a gift, send a wish made by you.</p></section>
   <div class="cm-grid sw-grid">
     <div class="cm-preview sw-stage">
       <canvas id="w-mug" width="620" height="620" aria-label="Live preview of your mug"></canvas>
-      <div class="cm-views" role="group" aria-label="Mug side"><button type="button" class="cm-view on" data-v="r">Wish side</button><button type="button" class="cm-view" data-v="l">Artwork side</button></div>
+      <div class="cm-views" role="group" aria-label="Mug side"><button type="button" class="cm-view on" data-v="r">Wish side</button><button type="button" class="cm-view" data-v="l">Design side</button></div>
       <p class="sw-note">Live preview on our real mug. Shown for a right-hand hold: the wish faces whoever drinks from it.</p>
     </div>
     <div class="cm-panel sw-panel">
-      <div class="cm-step"><b>Occasion</b><div class="cm-modes sw-occ" role="tablist">${Object.entries(WISH_OCC).map(([k,o],i)=>`<button type="button" class="cm-mode${i?"":" on"}" data-o="${k}" role="tab" aria-selected="${!i}">${o.label}</button>`).join("")}</div></div>
+      <div class="cm-step"><b>Occasion</b><div class="sw-occ" role="tablist" aria-label="Occasion">${Object.entries(WISH_OCC).map(([k,x])=>`<a class="sw-occ-chip${k===first?" on":""}" data-o="${k}" role="tab" aria-selected="${k===first}" href="/${WISH_PATH}/${x.seo.slug}/">${esc(x.label)}</a>`).join("")}</div></div>
       <label class="cm-step" for="w-wish"><b>1. Your wish</b> <span id="w-count" class="muted">0/100</span>
-        <textarea id="w-wish" rows="3" maxlength="100" placeholder="Merry Christmas, Dearest Mom" aria-describedby="w-wish-note"></textarea>
-        <span id="w-wish-note" class="cm-note">Up to 100 characters. Use the recipient’s name or how you call them, e.g. Mom, Appa, Priya.</span>
+        <textarea id="w-wish" rows="3" maxlength="100" placeholder="${esc(WISH_OCC[first].def)}" aria-describedby="w-wish-note"></textarea>
+        <span id="w-wish-note" class="cm-note">Up to 100 characters. Use the recipient’s name or how you call them, e.g. Amma, Appa, Priya.</span>
         <span id="w-wish-warn" class="cm-warn" aria-live="polite" hidden></span></label>
       <div class="sw-sugg" id="w-sugg" aria-label="Wish ideas"></div>
       <label class="cm-step" for="w-by"><b>2. By (your name)</b>
@@ -573,7 +574,7 @@ ${header("../","shop")}
         <span id="w-by-note" class="cm-note">Shown as “By: your name”. Letters only, 2 to 20 characters.</span>
         <span id="w-by-warn" class="cm-warn" aria-live="polite" hidden></span></label>
       <div class="cm-step"><b>3. Choose a design</b> <span class="muted">for the other side</span>
-        <div class="sw-arts" id="w-arts" role="radiogroup" aria-label="Design">${WISH_ART.map(([k,l],i)=>`<button type="button" class="sw-art${i?"":" on"}" data-a="${k}" role="radio" aria-checked="${!i}"><img src="/assets/wish/${k}-sm.jpg" alt="" width="120" height="120" loading="lazy"><span>${l}</span></button>`).join("")}</div></div>
+        <div class="sw-arts" id="w-arts" role="radiogroup" aria-label="Design"></div></div>
       <div class="cm-step"><b>Mug colour</b> <span id="w-color-name" class="muted">White</span><div id="w-colors" class="cm-colors" role="radiogroup" aria-label="Mug colour"></div><span class="cm-note">The handle and the inside take the colour; the design is printed on white.</span></div>
       <p id="w-hint" class="cm-hint" aria-live="polite"></p>
       <div class="buybox sw-buy" id="w-order">
@@ -585,22 +586,29 @@ ${header("../","shop")}
         <img id="pimg" alt="" hidden>
       </div>
       <p class="sw-tag">Made personal. Made to be remembered.</p>
-      <ul class="checks"><li>We print exactly the wish you see, no edits</li><li>Made to order, delivered across Karnataka in about 5–7 days</li><li>Arrived broken? <a href="../policies/returns.html">Free replacement or refund</a></li></ul>
+      <ul class="checks"><li>We print exactly the wish you see, no edits</li><li>Made to order, delivered across Karnataka in about 5–7 days</li><li>Arrived broken? <a href="${rel}policies/returns.html">Free replacement or refund</a></li></ul>
       <div id="w-admin" hidden><button id="w-dl" type="button" class="ask">Download print file (2550 × 1140)</button></div>
     </div>
   </div>
+  <section class="sw-more"><h2>A wish for every occasion</h2><p class="muted">${Object.values(WISH_OCC).map(x=>`<a href="/${WISH_PATH}/${x.seo.slug}/">${esc(x.seo.h1)}</a>`).join(" · ")}</p></section>
 </main>
-${footer("../")}
-<script>window.NV_WISH = ${JSON.stringify({occ: WISH_OCC})};</script>
+${footer(rel)}
+<script>window.NV_WISH = ${JSON.stringify({occ: Object.fromEntries(Object.entries(WISH_OCC).map(([k,x])=>[k,{label:x.label,title:x.title,ink:x.ink,accent:x.accent,gold:x.gold,arts:x.arts,def:x.def,wishes:x.wishes,slug:x.seo.slug}])), start: first, path: WISH_PATH})};</script>
 <script defer src="/assets/mugdesign.js"></script>
 <script defer src="/assets/wish.js"></script>`;
 }
+// old address: keep working (design links in past orders) and pass on to the new one
+function wishRedirect() {
+  const to = `/${WISH_PATH}/`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Send a Wish | Nevervoid Store</title><link rel="canonical" href="${BASE}${to}"><meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=${to}"><script>location.replace("${to}" + location.search + location.hash);</script></head><body><a href="${to}">Send a Wish</a></body></html>`;
+}
 function wishCard(root) {
-  const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}send-a-wish/`;
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}${WISH_PATH}/`;
   return `<article class="card coll-card" data-cat="christmas" data-type="mug">
     <a class="stage ph" href="${href}" aria-label="Send a Wish mug">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/send-a-wish.jpg" alt="Send a Wish mug" width="620" height="620" loading="lazy"></a>
     <div class="info"><div class="tags"><span class="tag">Personalised</span><span class="tag new">· New</span></div>
-      <h3><a href="${href}">Send a Wish</a></h3><p>Your own Christmas wish and name, on a mug.</p>
+      <h3><a href="${href}">Send a Wish</a></h3><p>Your own wish and name on a mug: birthday, love, Mom, Dad, Christmas and more.</p>
       <div class="price">${SALE.on ? `<span class="was">${rupee(cp.price)}</span> ` : ""}<span class="now">${rupee(salePrice(cp))}</span></div>
       <a class="buy" href="${href}">Write a wish</a></div></article>`;
 }
@@ -747,8 +755,12 @@ body.co-lock{overflow:hidden}
 .sw-hero .lead{max-width:560px;margin:0 auto}
 .sw-stage{background:radial-gradient(120% 90% at 50% 18%,#fffdf8 0,#f6efe3 70%);position:relative}
 .sw-stage::before{content:"";position:absolute;top:-16px;left:-12px;width:110px;height:110px;background:url(/assets/wish/holly.svg) no-repeat center/contain;transform:rotate(-14deg);pointer-events:none}
+.sw:not(.sw-xmas) .sw-stage::before{display:none}
 .sw-note{font-size:12.5px;color:var(--muted);text-align:center;margin:8px 0 0}
-.sw-occ{margin-top:8px}
+.sw-occ{display:flex;gap:6px;overflow-x:auto;margin-top:8px;padding:2px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.sw-occ::-webkit-scrollbar{display:none}
+.sw-occ-chip{flex:none;padding:9px 14px;border-radius:999px;border:1px solid #d8d0c2;background:#fff;color:var(--ink);font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}.sw-occ-chip.on{background:var(--green);border-color:var(--green);color:#fff}
+.sw-art canvas{width:100%;height:auto;aspect-ratio:1;border-radius:10px;display:block}
+.sw-more{margin:10px 0 34px;text-align:center}.sw-more h2{font-family:NVDancingH,cursive;color:#b3202a;font-size:34px;margin:0 0 6px}.sw-more a{color:var(--green);font-weight:600}
 #w-wish,#w-by{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:12px 14px;font:inherit;font-size:16px;border:1px solid #d8d0c2;border-radius:12px;background:#fff}
 #w-wish{font-family:NVDancingH,cursive;font-size:22px;line-height:1.35;resize:none;color:#8f1d24}
 #w-wish:focus,#w-by:focus{outline:2px solid var(--green);border-color:transparent}
@@ -1454,7 +1466,9 @@ fs.copyFileSync(path.join(SRC,"custommug","wish.js"), path.join(OUT,"assets","wi
 fs.copyFileSync(path.join(SRC,"custommug","swipe.js"), path.join(OUT,"assets","swipe.js"));
 fs.mkdirSync(path.join(OUT,"assets","wish"),{recursive:true}); fs.readdirSync(path.join(SRC,"wish")).forEach(f => fs.copyFileSync(path.join(SRC,"wish",f), path.join(OUT,"assets","wish",f)));
 if (fs.existsSync(path.join(SRC,"send-a-wish.jpg"))) fs.copyFileSync(path.join(SRC,"send-a-wish.jpg"), path.join(OUT,"images","send-a-wish.jpg"));
-fs.mkdirSync(path.join(OUT,"send-a-wish"),{recursive:true}); fs.writeFileSync(path.join(OUT,"send-a-wish","index.html"), wishPage());
+fs.mkdirSync(path.join(OUT,"send-a-wish"),{recursive:true}); fs.writeFileSync(path.join(OUT,"send-a-wish","index.html"), wishRedirect());
+fs.mkdirSync(path.join(OUT,WISH_PATH),{recursive:true}); fs.writeFileSync(path.join(OUT,WISH_PATH,"index.html"), wishPage());
+Object.entries(WISH_OCC).forEach(([k,x]) => { fs.mkdirSync(path.join(OUT,WISH_PATH,x.seo.slug),{recursive:true}); fs.writeFileSync(path.join(OUT,WISH_PATH,x.seo.slug,"index.html"), wishPage(k)); });
 fs.copyFileSync(path.join(SRC,"nv-logo.png"), path.join(OUT,"images","nv-logo.png"));
 fs.copyFileSync(path.join(SRC,"custommug","team.js"), path.join(OUT,"assets","team.js"));
 fs.copyFileSync(path.join(SRC,"custommug","team-template.xlsx"), path.join(OUT,"assets","team-template.xlsx"));
@@ -1476,7 +1490,7 @@ fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/send-a-wish/", BASE+"/team/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/"+WISH_PATH+"/", ...Object.values(WISH_OCC).map(x => `${BASE}/${WISH_PATH}/${x.seo.slug}/`), BASE+"/team/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);

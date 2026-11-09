@@ -3,7 +3,7 @@
   "use strict";
   var M = window.NVMug, CFG = window.NV_WISH || { occ: {} };
   var $ = function (s) { return document.querySelector(s); }, $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
-  var st = { kind: "wish", occ: "christmas", wish: "", by: "", art: "reindeer", color: "white", view: "r", wishErr: "", byErr: "" };
+  var st = { kind: "wish", occ: CFG.start || "christmas", wish: "", by: "", art: "", color: "white", view: "r", wishErr: "", byErr: "" };
   var print = M.newPrint(), mug = $("#w-mug"), wishIn = $("#w-wish"), byIn = $("#w-by"), btn = $("#w-order [data-order]"), q = new URLSearchParams(location.search);
   var BAD = M.BAD, symAt = 0;
 
@@ -43,10 +43,23 @@
     $("#w-sugg").innerHTML = o.wishes.map(function (w) { return '<button type="button">' + w.replace(/[<&]/g, "") + "</button>"; }).join("");
   }
   $("#w-sugg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; wishIn.value = b.textContent; st.wish = b.textContent; st.view = "r"; update(); wishIn.focus(); });
-  $$(".sw-occ .cm-mode").forEach(function (b) { b.addEventListener("click", function () { setOcc(b.dataset.o); update(); }); });
-  function setOcc(k) { st.occ = CFG.occ[k] ? k : "christmas"; $$(".sw-occ .cm-mode").forEach(function (x) { var on = x.dataset.o === st.occ; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); }); sugg(); }
+  // occasions are real links (each has its own page for search), switched in place here
+  $$(".sw-occ-chip").forEach(function (b) { b.addEventListener("click", function (e) { e.preventDefault(); var wasDefault = !st.wish.trim() || isSuggestion(st.wish); setOcc(b.dataset.o); if (wasDefault && st.wish.trim()) { wishIn.value = ""; st.wish = ""; } try { history.replaceState(null, "", "/" + CFG.path + "/" + CFG.occ[st.occ].slug + "/"); } catch (x) {} update(); }); });
+  function isSuggestion(w) { return Object.keys(CFG.occ).some(function (k) { return CFG.occ[k].wishes.indexOf(w.trim()) >= 0; }); }
+  function setOcc(k) {
+    st.occ = CFG.occ[k] ? k : CFG.start; var o = CFG.occ[st.occ];
+    $$(".sw-occ-chip").forEach(function (x) { var on = x.dataset.o === st.occ; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); if (on && x.scrollIntoView) { var row = x.parentNode; row.scrollLeft = x.offsetLeft - row.clientWidth / 2 + x.clientWidth / 2; } });
+    document.querySelector("main.sw").classList.toggle("sw-xmas", st.occ === "christmas" || st.occ === "newyear");
+    wishIn.placeholder = o.def; sugg(); arts(); if (o.arts.indexOf(st.art) < 0) setArt(o.arts[0]);
+  }
+  function arts() {
+    var box = $("#w-arts"), o = CFG.occ[st.occ];
+    box.innerHTML = o.arts.map(function (k) { return '<button type="button" class="sw-art" data-a="' + k + '" role="radio" aria-checked="false"><canvas width="240" height="240"></canvas><span>' + M.WISH_ART[k].label + "</span></button>"; }).join("");
+    $$(".sw-art").forEach(function (b) { M.artThumb(b.querySelector("canvas"), { occ: st.occ, art: b.dataset.a }); });
+    setArt(st.art);
+  }
   $("#w-arts").addEventListener("click", function (e) { var b = e.target.closest(".sw-art"); if (!b) return; setArt(b.dataset.a); st.view = "l"; update(); });
-  function setArt(k) { st.art = M.WISH_ART[k] ? k : "reindeer"; $$(".sw-art").forEach(function (x) { var on = x.dataset.a === st.art; x.classList.toggle("on", on); x.setAttribute("aria-checked", on); }); }
+  function setArt(k) { var o = CFG.occ[st.occ]; st.art = o.arts.indexOf(k) >= 0 ? k : o.arts[0]; $$(".sw-art").forEach(function (x) { var on = x.dataset.a === st.art; x.classList.toggle("on", on); x.setAttribute("aria-checked", on); }); }
   var colorBox = $("#w-colors");
   colorBox.innerHTML = Object.keys(M.MUG_COLORS).map(function (k) { var c = M.MUG_COLORS[k]; return '<button type="button" class="cm-color' + (k === "white" ? " on" : "") + '" data-c="' + k + '" role="radio" aria-checked="' + (k === "white") + '"><i style="background:' + c.hex + '"></i><small>' + c.label + "</small></button>"; }).join("");
   colorBox.addEventListener("click", function (e) { var b = e.target.closest(".cm-color"); if (b) { setColor(b.dataset.c); update(); } });
@@ -59,7 +72,7 @@
     var p = String(d).split("~");
     var w = cleanWish(decodeURIComponent(p[0] || "")).slice(0, 100); wishIn.value = w; st.wish = w;
     var b = cleanBy(decodeURIComponent(p[1] || "")).slice(0, 20).trim(); byIn.value = b; st.by = b ? M.titleCase(b) : "";
-    setArt(p[2]); setColor(p[3]); setOcc(p[4]);
+    setOcc(p[4]); setArt(p[2]); setColor(p[3]);
   }
 
   // ---------- render ----------
@@ -83,7 +96,7 @@
     btn.disabled = !ok;
     $("#w-hint").textContent = ok ? "Looks lovely. Check the preview, then create your mug." : !st.wish.trim() ? "Write your wish to start." : st.wishErr ? "Fix the wish first." : !st.by ? "Add your name so they know it’s from you." : "Fix your name first.";
     var colour = st.color === "white" ? "White mug" : M.MUG_COLORS[st.color].label + " handle & inside";
-    btn.dataset.name = "Send a Wish Mug (" + CFG.occ[st.occ].label + "): “" + st.wish.trim().replace(/\n/g, " / ") + "” | By: " + st.by + " | Design: " + M.WISH_ART[st.art].label + " | " + colour + " | design nevervoidstore.com/send-a-wish/?d=" + spec();
+    btn.dataset.name = "Send a Wish Mug (" + CFG.occ[st.occ].label + "): “" + st.wish.trim().replace(/\n/g, " / ") + "” | By: " + st.by + " | Design: " + M.WISH_ART[st.art].label + " | " + colour + " | design nevervoidstore.com/" + CFG.path + "/?d=" + spec();
     clearTimeout(t); t = setTimeout(draw, 60);
   }
 
@@ -96,7 +109,7 @@
   // the store script relabels order buttons; this one keeps its own words
   function labels() { btn.textContent = "Create My Mug · " + btn.textContent.replace(/^.*·\s*/, ""); var bar = document.querySelector(".buybar .buy"); if (bar) bar.textContent = "Create My Mug"; }
   labels();
-  sugg();
+  setOcc(st.occ);
   if (q.get("d")) load(q.get("d")); else { st.wish = ""; }
   update();
 })();

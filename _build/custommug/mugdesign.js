@@ -122,14 +122,77 @@
   // for pages: does this name print at a comfortable size in this style?
   function nameFit(name, font) { var c = document.createElement("canvas").getContext("2d"); return fitName(c, name || "Name", NAME_FONTS[font] || NAME_FONTS.classic); }
   // ---------- Send a Wish: the wish faces the drinker, the artwork the other side ----------
+  // artwork: illustrations (files) for Christmas, drawn designs for every other occasion
   var WISH_ART = {
-    reindeer:  { label: "Reindeer in the snow" },
-    snowglobe: { label: "Snowy cottage" },
-    santa:     { label: "Jolly Santa" },
-    gnomes:    { label: "Christmas gnomes" }
+    reindeer:  { label: "Reindeer in the snow", img: true },
+    snowglobe: { label: "Snowy cottage", img: true },
+    santa:     { label: "Jolly Santa", img: true },
+    gnomes:    { label: "Christmas gnomes", img: true },
+    balloons:  { label: "Balloons" },
+    confetti:  { label: "Confetti" },
+    florals:   { label: "Flowers" },
+    hearts:    { label: "Hearts" },
+    laurel:    { label: "Golden wreath" },
+    stars:     { label: "Stars" }
   };
+  function occ(d) { var o = (window.NV_WISH && window.NV_WISH.occ) || {}; return o[d.occ] || o.christmas || { title: "", ink: "#b3202a", accent: "#1c603a", gold: "#c9a24a", def: "Merry Christmas, Dearest Mom" }; }
   var artCache = {};
   function wishArt(k) { if (!artCache[k]) artCache[k] = loadImg("/assets/wish/" + k + ".webp").catch(function () { return null; }); return artCache[k]; }
+  function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+  function heart(ctx, x, y, s) { ctx.beginPath(); ctx.moveTo(x, y + s * 0.3); ctx.bezierCurveTo(x, y - s * 0.2, x - s, y - s * 0.25, x - s, y + s * 0.25); ctx.bezierCurveTo(x - s, y + s * 0.65, x - s * 0.35, y + s * 0.9, x, y + s * 1.2); ctx.bezierCurveTo(x + s * 0.35, y + s * 0.9, x + s, y + s * 0.65, x + s, y + s * 0.25); ctx.bezierCurveTo(x + s, y - s * 0.25, x, y - s * 0.2, x, y + s * 0.3); ctx.closePath(); }
+  function star(ctx, x, y, r, pts, inner) { ctx.beginPath(); for (var i = 0; i < pts * 2; i++) { var a = Math.PI / pts * i - Math.PI / 2, rr = i % 2 ? r * (inner || 0.45) : r; ctx[i ? "lineTo" : "moveTo"](x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); }
+  function leaf(ctx, x, y, len, wid, ang) { ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(len * 0.5, -wid, len, 0); ctx.quadraticCurveTo(len * 0.5, wid, 0, 0); ctx.fill(); ctx.restore(); }
+  function flower(ctx, x, y, r, col, centre) { ctx.fillStyle = col; for (var i = 0; i < 6; i++) { var a = i * Math.PI / 3; ctx.beginPath(); ctx.ellipse(x + Math.cos(a) * r * 0.55, y + Math.sin(a) * r * 0.55, r * 0.5, r * 0.32, a, 0, 7); ctx.fill(); } ctx.fillStyle = centre; ctx.beginPath(); ctx.arc(x, y, r * 0.28, 0, 7); ctx.fill(); }
+  function tint(hex, amt) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; function m(c) { return Math.round(amt > 0 ? c + (255 - c) * amt : c * (1 + amt)); } return "rgb(" + m(r) + "," + m(g) + "," + m(b) + ")"; }
+  // draws a motif centred at (cx, cy) inside a w x h box
+  function drawMotif(ctx, key, cx, cy, w, h, o) {
+    var R = rng(7 + key.length * 13), ink = o.ink, acc = o.accent, gold = o.gold;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (key === "balloons") {
+      var bs = [[-150, -60, 118, ink], [40, -140, 128, acc], [170, -30, 110, gold], [-40, 40, 104, tint(ink, 0.35)]];
+      bs.forEach(function (b) { var x = cx + b[0], y = cy + b[1] - 40, r = b[2];
+        ctx.strokeStyle = "#8d8577"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y + r * 1.18); ctx.bezierCurveTo(x - 30, y + r * 1.6, x + 30, y + r * 2.0, cx + (b[0] * 0.1), cy + h / 2 - 20); ctx.stroke();
+        ctx.fillStyle = b[3]; ctx.beginPath(); ctx.ellipse(x, y, r * 0.86, r, 0, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(x - 12, y + r + 14); ctx.lineTo(x + 12, y + r + 14); ctx.lineTo(x, y + r - 4); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.beginPath(); ctx.ellipse(x - r * 0.32, y - r * 0.38, r * 0.16, r * 0.3, -0.5, 0, 7); ctx.fill(); });
+      ctx.fillStyle = gold; for (var i = 0; i < 18; i++) { star(ctx, cx + (R() - 0.5) * w, cy + (R() - 0.5) * h * 0.9, 6 + R() * 8, 4, 0.4); ctx.fill(); }
+    } else if (key === "confetti") {
+      var cols = [ink, acc, gold, tint(acc, 0.4), tint(ink, 0.45)];
+      for (var j = 0; j < 140; j++) { var a = R() * Math.PI * 2, rad = Math.sqrt(R()), x = cx + Math.cos(a) * rad * w * 0.48, y = cy + Math.sin(a) * rad * h * 0.46, t = R();
+        ctx.fillStyle = cols[j % cols.length]; ctx.save(); ctx.translate(x, y); ctx.rotate(R() * 6.28);
+        if (t < 0.4) ctx.fillRect(-11, -5, 22, 10); else if (t < 0.7) { ctx.beginPath(); ctx.arc(0, 0, 7, 0, 7); ctx.fill(); } else if (t < 0.85) { star(ctx, 0, 0, 13, 5); ctx.fill(); } else { ctx.strokeStyle = cols[(j + 2) % cols.length]; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.bezierCurveTo(-6, -12, 6, 12, 16, 0); ctx.stroke(); }
+        ctx.restore(); }
+      ctx.fillStyle = gold; star(ctx, cx, cy, 70, 5); ctx.fill(); ctx.fillStyle = "#fff"; star(ctx, cx, cy, 30, 5); ctx.fill();
+    } else if (key === "florals") {
+      var green = "#5f7f5a";
+      ctx.fillStyle = green; for (var k = 0; k < 16; k++) leaf(ctx, cx + (R() - 0.5) * w * 0.7, cy + (R() - 0.5) * h * 0.55, 70 + R() * 50, 18, R() * 6.28);
+      ctx.fillStyle = tint(green, 0.35); for (var k2 = 0; k2 < 10; k2++) leaf(ctx, cx + (R() - 0.5) * w * 0.75, cy + (R() - 0.5) * h * 0.6, 50 + R() * 40, 14, R() * 6.28);
+      [[0, -20, 120, ink], [-170, 60, 90, acc], [160, 70, 96, tint(ink, 0.4)], [-90, -150, 70, gold], [110, -150, 76, tint(acc, 0.35)], [20, 150, 66, gold]].forEach(function (f) { flower(ctx, cx + f[0], cy + f[1], f[2], f[3], f[3] === gold ? ink : gold); });
+    } else if (key === "hearts") {
+      [[0, -60, 150, ink], [-190, 40, 70, tint(ink, 0.35)], [180, 20, 80, acc], [-120, -200, 46, gold], [140, -190, 52, tint(acc, 0.4)], [40, 190, 50, tint(ink, 0.5)], [-60, 160, 34, gold], [210, 170, 30, ink]].forEach(function (hh) { ctx.fillStyle = hh[3]; heart(ctx, cx + hh[0], cy + hh[1] - hh[2] * 0.5, hh[2]); ctx.fill(); });
+      ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.beginPath(); ctx.ellipse(cx - 60, cy - 110, 22, 34, -0.6, 0, 7); ctx.fill();
+    } else if (key === "laurel") {
+      var r0 = Math.min(w, h) * 0.4;
+      ctx.strokeStyle = tint(gold, -0.15); ctx.lineWidth = 6;
+      [-1, 1].forEach(function (sd) {
+        ctx.beginPath(); ctx.arc(cx, cy, r0, Math.PI / 2 + (sd < 0 ? 0.15 : -0.15), Math.PI / 2 + sd * -2.75 + (sd < 0 ? 0 : 0), sd > 0); ctx.stroke();
+        for (var i2 = 0; i2 < 13; i2++) {
+          var th = Math.PI / 2 - sd * (0.28 + i2 * 0.2), x2 = cx + Math.cos(th) * r0, y2 = cy + Math.sin(th) * r0, along = th - sd * Math.PI / 2;
+          ctx.fillStyle = i2 % 2 ? gold : tint(gold, -0.2);
+          leaf(ctx, x2, y2, 62 - i2 * 2, 17, along - sd * 0.55);   // outer leaf
+          ctx.fillStyle = i2 % 2 ? tint(gold, -0.2) : gold;
+          leaf(ctx, x2, y2, 54 - i2 * 2, 15, along + sd * 0.55);   // inner leaf
+        }
+      });
+      ctx.fillStyle = ink; heart(ctx, cx, cy - 46, 58); ctx.fill();
+    } else if (key === "stars") {
+      ctx.fillStyle = gold; star(ctx, cx, cy - 20, 150, 5); ctx.fill();
+      ctx.fillStyle = tint(gold, 0.35); star(ctx, cx, cy - 20, 92, 5); ctx.fill();
+      [[-200, -170, 48, acc], [210, -140, 40, ink], [-210, 120, 36, ink], [190, 150, 52, acc], [-60, 200, 26, gold], [80, -240, 30, gold]].forEach(function (s2) { ctx.fillStyle = s2[3]; star(ctx, cx + s2[0], cy + s2[1], s2[2], 5); ctx.fill(); });
+      ctx.fillStyle = gold; for (var q2 = 0; q2 < 24; q2++) { star(ctx, cx + (R() - 0.5) * w, cy + (R() - 0.5) * h * 0.9, 5 + R() * 7, 4, 0.4); ctx.fill(); }
+    }
+    ctx.restore();
+  }
   function wrapLines(ctx, text, maxw) { // keeps the customer's own line breaks, wraps long lines
     var out = []; text.split("\n").forEach(function (para) { var ws = para.split(/\s+/).filter(Boolean), cur = ""; ws.forEach(function (w) { var t = cur ? cur + " " + w : w; if (ctx.measureText(t).width > maxw && cur) { out.push(cur); cur = w; } else cur = t; }); out.push(cur); }); return out.filter(function (l, i, a) { return l || (i > 0 && i < a.length - 1); });
   }
@@ -141,22 +204,33 @@
     ctx.font = "700 " + box.min + "px NVDancing, cursive"; var ln = wrapLines(ctx, text, box.w); return { size: box.min, lines: ln, lh: box.min * 1.22, small: true };
   }
   var WISH_BOX = { w: 600, h: 520, max: 120, min: 54, ok: 72, cy: 470 };
+  // the artwork side, also used for the small design cards
+  function drawArtSide(ctx, d, cx, cy, bw, bh) {
+    var o = occ(d), key = WISH_ART[d.art] ? d.art : (o.arts || ["reindeer"])[0];
+    if (WISH_ART[key].img) return wishArt(key).then(function (im) { if (!im) return; var r = Math.min(bw / im.width, bh / im.height), w = im.width * r, h = im.height * r; ctx.drawImage(im, cx - w / 2, cy - h / 2, w, h); });
+    var mh = bh * 0.7; drawMotif(ctx, key, cx, cy - bh * 0.12, bw, mh, o);
+    if (o.title) { ctx.fillStyle = o.ink; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; fitFont(ctx, o.title, "NVDancing, cursive", 700, bh * 0.15, bh * 0.08, bw * 0.95); ctx.fillText(o.title, cx, cy + bh * 0.42); }
+    return Promise.resolve();
+  }
   function drawWish(print, d) {
-    var ctx = print.getContext("2d"), wish = (d.wish || "").trim() || "Merry Christmas, Dearest Mom", by = (d.by || "").trim();
+    var ctx = print.getContext("2d"), o = occ(d), wish = (d.wish || "").trim() || o.def, by = (d.by || "").trim();
     ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, PW, PH);
     // wish side (faces the person holding the mug in their right hand)
     var f = fitWish(ctx, wish, WISH_BOX), top = WISH_BOX.cy - f.lines.length * f.lh / 2;
-    ctx.fillStyle = (d.wish || "").trim() ? "#b3202a" : "#d8cfc2"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = (d.wish || "").trim() ? o.ink : "#d8cfc2"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     f.lines.forEach(function (l, i) { ctx.fillText(l, FRONT, top + f.lh * (i + 0.5)); });
-    flourish(ctx, FRONT, 790, 200, "#c9a24a");
-    ctx.fillStyle = "#1c603a"; ctx.textBaseline = "alphabetic";
+    flourish(ctx, FRONT, 790, 200, o.gold);
+    ctx.fillStyle = o.accent; ctx.textBaseline = "alphabetic";
     fitFont(ctx, "By: " + (by || "Your name"), "NVScript, cursive", 400, 64, 40, 560); ctx.fillText("By: " + (by || "Your name"), FRONT, 900);
-    ctx.fillStyle = "#c9a24a"; ctx.fillRect(0, 1048, PW, 5); ctx.fillRect(0, 1064, PW, 2);
+    ctx.fillStyle = o.gold; ctx.fillRect(0, 1048, PW, 5); ctx.fillRect(0, 1064, PW, 2);
     // artwork side, kept inside the face-on zone
-    return wishArt(d.art in WISH_ART ? d.art : "reindeer").then(function (im) {
-      if (!im) return; var bw = 640, bh = 860, r = Math.min(bw / im.width, bh / im.height), w = im.width * r, h = im.height * r;
-      ctx.drawImage(im, BACK - w / 2, 540 - h / 2, w, h);
-    });
+    return drawArtSide(ctx, d, BACK, 540, 640, 860);
+  }
+  // small preview of a design for the picker
+  function artThumb(canvas, d) {
+    var c = canvas.getContext("2d"), W = canvas.width;
+    return fontsReady.then(function () { c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = "#fff"; c.fillRect(0, 0, W, W); c.save(); c.scale(W / 900, W / 900);
+      return drawArtSide(c, d, 450, 460, 760, 800).then(function () { c.restore(); }, function () { c.restore(); }); });
   }
   function wishFit(wish) { var c = document.createElement("canvas").getContext("2d"); return fitWish(c, (wish || "").trim() || "x", WISH_BOX); }
   function newPrint() { var c = document.createElement("canvas"); c.width = PW; c.height = PH; return c; }
@@ -289,7 +363,7 @@
   function canvasPNG(c) { return new Promise(function (ok) { c.toBlob(function (b) { b.arrayBuffer().then(function (ab) { ok(new Uint8Array(ab)); }); }, "image/png"); }); }
   function fileName(d, i) { return (i != null ? String(i + 1).padStart(3, "0") + "-" : "") + (d.name || "mug").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-2550x1140.png"; }
 
-  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, NAME_FONTS: NAME_FONTS, MUG_COLORS: MUG_COLORS, nameFit: nameFit, WISH_ART: WISH_ART, wishFit: wishFit, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
+  window.NVMug = { PW: PW, PH: PH, THEMES: THEMES, NAME_FONTS: NAME_FONTS, MUG_COLORS: MUG_COLORS, nameFit: nameFit, WISH_ART: WISH_ART, wishFit: wishFit, artThumb: artThumb, TRAITS: TRAITS, byKey: byKey, BAD: BAD, fontsReady: fontsReady,
     newPrint: newPrint, render: render, wrapMug: wrapMug, loadIndex: loadIndex, addCustom: addCustom, traitFor: traitFor,
     titleCase: titleCase, cleanName: cleanName, nameError: nameError, wordError: wordError, cleanMsg: cleanMsg, msgError: msgError,
     encode: encode, decode: decode, labels: labels, zip: zip, canvasPNG: canvasPNG, fileName: fileName };
