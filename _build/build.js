@@ -713,8 +713,14 @@ const extraCss = `
 .co-row{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
 .co-err{background:#fdecea;color:#a8332f;border-radius:10px;padding:9px 12px;font-size:14px;margin:4px 0 10px}
 .co-pay{width:100%;margin-top:4px;font-size:16px;padding:15px}
+.co-ic{width:18px;height:18px;vertical-align:-3px;fill:currentColor;margin-right:4px}
+.co-chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 2px}.co-chips i{font-style:normal;font-size:12px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:#3a463f}
+label small{font-weight:400;color:var(--muted);font-size:11.5px}
+.co-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0 2px;font-size:12px;color:var(--muted)}.co-trust span{display:inline-flex;align-items:center;gap:5px}.co-trust svg{width:16px;height:16px;color:var(--green)}
+.co-ways svg{width:16px;height:16px;fill:currentColor;flex:none}
+.co-row label small{font-weight:400;color:var(--muted);font-size:11.5px}
 .co-ways{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:12px 0 6px}
-.co-ways span{font-size:11px;font-weight:700;letter-spacing:.03em;color:#4c5a52;border:1px solid var(--line);border-radius:6px;padding:3px 7px;background:#fff}
+.co-ways span{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#3a463f;border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:#fff}
 .co-note{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 0}
 body.co-lock{overflow:hidden}
 .buybar{position:fixed;left:0;right:0;bottom:0;z-index:80;display:none;align-items:center;gap:12px;background:#fff;border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.08);transform:translateY(110%);transition:transform .25s}
@@ -1027,18 +1033,27 @@ const CONFIG = {
       '<div class="co-back" data-close></div><div class="co" role="dialog" aria-modal="true" aria-labelledby="co-t">' +
       '<button class="co-x" type="button" data-close aria-label="Close">×</button>' +
       '<h2 id="co-t">Checkout</h2>' +
-      '<div class="co-sum">' + (pic ? '<img src="' + esc2(pic) + '" alt="">' : "") + '<div><b>' + esc2(name) + '</b>' + (model ? '<span>' + esc2(model) + '</span>' : "") +
+      '<div class="co-sum">' + (pic ? '<img src="' + esc2(pic) + '" alt="">' : "") + '<div><b>' + esc2(name.split(" | ")[0]) + '</b>' + (name.split(" | ").length > 1 ? '<span class="co-chips">' + name.split(" | ").slice(1).map(x => '<i>' + esc2(x) + '</i>').join("") + '</span>' : "") + (model ? '<span>' + esc2(model) + '</span>' : "") +
       '<div class="co-price">' + (was ? '<s>' + esc2(was) + '</s> ' : "") + '<b>' + rupee(price) + '</b></div><span class="co-free">Made to order · delivered in about 5–7 days</span></div></div>' +
       '<form class="co-form" novalidate>' +
       '<label>Full name<input name="n" autocomplete="name" required value="' + esc2(saved.n || "") + '"></label>' +
       '<label>Mobile number<input name="p" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10-digit mobile" required value="' + esc2(saved.p || "") + '"></label>' +
+      '<label>Email <small>(we send your order confirmation here)</small><input name="e" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required value="' + esc2(saved.e || "") + '"></label>' +
       '<label>House / flat, street, area<textarea name="a" rows="2" autocomplete="street-address" required>' + esc2(saved.a || "") + '</textarea></label>' +
       '<div class="co-row"><label>City<input name="c" autocomplete="address-level2" required value="' + esc2(saved.c || "") + '"></label>' +
       '<label>Pincode<input name="z" inputmode="numeric" maxlength="6" autocomplete="postal-code" required value="' + esc2(pin || saved.z || "") + '"></label></div>' +
       '<div class="co-err" hidden></div>' +
-      '<button class="buy co-pay" type="submit">🔒 Continue to secure payment · ' + rupee(price) + '</button>' +
-      '<div class="co-ways"><span>UPI</span><span>GPay</span><span>PhonePe</span><span>Cards</span><span>Netbanking</span></div>' +
-      '<p class="co-note">' + (CONFIG.api ? "Razorpay’s secure payment window opens right here. " : "You’ll pay on Razorpay’s secure page. Your details are already filled in. ") + 'Replacement if anything arrives damaged.</p>' +
+      '<button class="buy co-pay" type="submit"><svg class="co-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg> Pay ' + rupee(price) + ' securely</button>' +
+      '<div class="co-ways" aria-label="Ways to pay">' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 18h4" stroke="currentColor" stroke-width="1.8"/></svg>UPI apps</span>' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.8"/></svg>Cards</span>' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Netbanking</span>' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H3z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="13.5" r="1.5"/></svg>Wallets</span>' +
+      '</div>' +
+      '<div class="co-trust"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Secured by Razorpay</span>' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>5–7 day delivery</span>' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Free replacement if damaged</span></div>' +
+      '<p class="co-note">' + (CONFIG.api ? "The secure payment window opens right here." : "Next, Razorpay’s secure page opens with your details filled in. Tap Pay there.") + '</p>' +
       '</form></div>';
     requestAnimationFrame(() => sheet.classList.add("open")); document.body.classList.add("co-lock");
     sheet.querySelectorAll("[data-close]").forEach(x => x.addEventListener("click", closeCheckout));
@@ -1046,8 +1061,8 @@ const CONFIG = {
     (form.n.value ? form.a : form.n).focus({ preventScroll: true });
     form.addEventListener("submit", ev => {
       ev.preventDefault();
-      const v = { n: form.n.value.trim(), p: form.p.value.replace(/\\D/g, ""), a: form.a.value.trim().replace(/\\s+/g, " "), c: form.c.value.trim(), z: form.z.value.trim() };
-      const bad = !v.n ? [form.n, "Please enter your name"] : !/^[6-9]\\d{9}$/.test(v.p) ? [form.p, "Please enter a valid 10-digit mobile number"] :
+      const v = { e: form.e.value.trim(), n: form.n.value.trim(), p: form.p.value.replace(/\\D/g, ""), a: form.a.value.trim().replace(/\\s+/g, " "), c: form.c.value.trim(), z: form.z.value.trim() };
+      const bad = !v.n ? [form.n, "Please enter your name"] : !/^[6-9]\\d{9}$/.test(v.p) ? [form.p, "Please enter a valid 10-digit mobile number"] : !/^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$/i.test(v.e) ? [form.e, "Please enter your email so we can send your order confirmation"] :
         v.a.length < 8 ? [form.a, "Please enter your full delivery address"] : !v.c ? [form.c, "Please enter your city"] :
         !isKA(v.z) ? [form.z, "We deliver within Karnataka only for now (pincodes starting 56–59)"] : null;
       if (bad) { err.hidden = false; err.textContent = bad[1]; bad[0].focus(); return; }
@@ -1057,7 +1072,7 @@ const CONFIG = {
       q.set(btn.dataset.rzp, "1");
       q.set(f.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p);
       if (model) q.set(f.model, model);
-      q.set(f.pincode, v.z); q.set("phone", v.p); q.set("full_name", v.n); q.set("name", v.n); q.set("address", v.a); q.set("city", v.c);
+      q.set(f.pincode, v.z); q.set("email", v.e); q.set("phone", v.p); q.set("full_name", v.n); q.set("name", v.n); q.set("address", v.a); q.set("city", v.c);
       form.querySelector(".co-pay").textContent = "Opening secure payment…";
       window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
       location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
@@ -1075,11 +1090,11 @@ const CONFIG = {
     payBtn.disabled = true; payBtn.textContent = "Opening secure payment…"; err.hidden = true;
     window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
     Promise.all([api({ a: "order", id: btn.dataset.id, product: parts[0], options: options, design: design ? "https://" + design.replace("https://", "").replace("http://", "") : "", model: model || "",
-      customer: { name: v.n, phone: v.p, address: v.a, city: v.c, pincode: v.z } }), loadRzp()]).then(([o]) => {
+      customer: { name: v.n, phone: v.p, email: v.e, address: v.a, city: v.c, pincode: v.z } }), loadRzp()]).then(([o]) => {
       if (!o.ok) { reset(o.err || "Couldn’t start the payment. Please try again."); return; }
       const rz = new window.Razorpay({
         key: o.key, order_id: o.order_id, amount: o.amount, currency: "INR", name: "NevervoidStore", description: parts[0].slice(0, 120),
-        image: location.origin + "/images/nv-logo.png", prefill: { name: v.n, contact: "+91" + v.p }, theme: { color: "#1f4d36" },
+        image: location.origin + "/images/nv-logo.png", prefill: { name: v.n, contact: "+91" + v.p, email: v.e }, theme: { color: "#1f4d36" },
         modal: { ondismiss: () => reset("") },
         handler: r => {
           payBtn.textContent = "Confirming your payment…";
@@ -1453,7 +1468,7 @@ fs.mkdirSync(path.join(OUT,"assets"), {recursive:true});
 fs.mkdirSync(path.join(OUT,"products"), {recursive:true});
 fs.mkdirSync(path.join(OUT,"images","products"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"assets","store.css"), fs.readFileSync(path.join(SRC,"base.css"),"utf8") + extraCss);
-fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || "").replace("__API__", POL.CONTACT.checkoutApi ? TEAM_API : ""));
+fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || "").replace("__API__", (POL.CONTACT.checkoutApi || process.env.CHECKOUT_ON) ? TEAM_API : ""));
 fs.writeFileSync(path.join(OUT,"assets","festive.css"), fs.readFileSync(path.join(SRC,"festive.css"),"utf8"));
 fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));

@@ -28,7 +28,7 @@ function doPost(e) {
 }
 
 // ---------- checkout ----------
-function orders_() { return sheet_("Orders", ["Created", "Order ID", "Status", "Product", "Options", "Price (Rs)", "Name", "Phone", "Address", "City", "Pincode", "Design link", "Payment ID", "Paid at"]); }
+function orders_() { return sheet_("Orders", ["Created", "Order ID", "Status", "Product", "Options", "Price (Rs)", "Name", "Phone", "Address", "City", "Pincode", "Design link", "Payment ID", "Paid at", "Email"]); }
 function prices_() {
   var c = CacheService.getScriptCache(), hit = c.get("prices");
   if (hit) return JSON.parse(hit);
@@ -49,16 +49,16 @@ function createOrder_(d) {
   try {
     var price = prices_()[d.id];
     if (!price) return out_({ ok: false, err: "Unknown product" });
-    var c = d.customer || {}, name = clean_(c.name, 60), phone = String(c.phone || "").replace(/\D/g, "").slice(-10), addr = clean_(c.address, 250), city = clean_(c.city, 60), pin = String(c.pincode || "").replace(/\D/g, "");
+    var c = d.customer || {}, email = clean_(c.email, 100), name = clean_(c.name, 60), phone = String(c.phone || "").replace(/\D/g, "").slice(-10), addr = clean_(c.address, 250), city = clean_(c.city, 60), pin = String(c.pincode || "").replace(/\D/g, "");
     if (!name || !/^[6-9]\d{9}$/.test(phone) || addr.length < 8 || !city || !/^5[6-9]\d{4}$/.test(pin)) return out_({ ok: false, err: "Please check your delivery details" });
     var product = clean_(d.product, 120), options = clean_(d.options, 250), design = clean_(d.design, 250), model = clean_(d.model, 60);
-    var notes = { product: product, ship_name: name, phone: "+91 " + phone, address: addr, city: city, pincode: pin };
+    var notes = { product: product, ship_name: name, phone: "+91 " + phone, email: email, address: addr, city: city, pincode: pin };
     if (options) notes.options = options;
     if (model) notes.phone_model = model;
     if (design) notes.design_link = design;
     var receipt = "NV" + Utilities.formatDate(new Date(), "Asia/Kolkata", "yyMMddHHmmss") + Math.floor(Math.random() * 90 + 10);
     var o = rzp_("post", "/orders", { amount: price * 100, currency: "INR", receipt: receipt, notes: notes });
-    orders_().appendRow([new Date(), o.id, "created", product, [options, model].filter(String).join(" | "), price, name, "+91 " + phone, addr, city, pin, design, "", ""]);
+    orders_().appendRow([new Date(), o.id, "created", product, [options, model].filter(String).join(" | "), price, name, "+91 " + phone, addr, city, pin, design, "", "", email]);
     return out_({ ok: true, order_id: o.id, amount: o.amount, key: PropertiesService.getScriptProperties().getProperty("RZP_KEY_ID") });
   } catch (err) { return out_({ ok: false, err: String(err.message || err) }); }
 }
@@ -76,6 +76,20 @@ function verifyPayment_(d) {
         MailApp.sendEmail(NOTIFY_EMAIL, "New order: " + rows[i][3] + " (Rs " + rows[i][5] + ")",
           ["Product: " + rows[i][3], "Options: " + rows[i][4], "Price: Rs " + rows[i][5], "", "Ship to: " + rows[i][6] + ", " + rows[i][8] + ", " + rows[i][9] + " " + rows[i][10], "Phone: " + rows[i][7],
            rows[i][11] ? "Design link (add &admin=1 for the print file): " + rows[i][11] : "", "", "Razorpay payment: " + d.payment_id, "Order: " + d.order_id].join("\n"));
+      } catch (x) {}
+      var to = rows[i][14];
+      if (to && /@/.test(to)) try {
+        var first = String(rows[i][6]).split(" ")[0];
+        MailApp.sendEmail({ to: to, name: "NevervoidStore", replyTo: NOTIFY_EMAIL || undefined, subject: "Your NevervoidStore order is confirmed",
+          htmlBody: '<div style="font-family:Arial,sans-serif;font-size:15px;color:#1a201c;max-width:520px">' +
+            "<p>Hi " + first + ",</p><p>Thank you! We’ve received your order and payment. It’s made to order and usually reaches you in 5–7 days.</p>" +
+            '<table style="border-collapse:collapse;width:100%;font-size:14px">' +
+            '<tr><td style="padding:6px 0;color:#5f665f">Product</td><td style="padding:6px 0"><b>' + rows[i][3] + "</b></td></tr>" +
+            (rows[i][4] ? '<tr><td style="padding:6px 0;color:#5f665f">Your choices</td><td style="padding:6px 0">' + rows[i][4] + "</td></tr>" : "") +
+            '<tr><td style="padding:6px 0;color:#5f665f">Paid</td><td style="padding:6px 0">Rs ' + rows[i][5] + "</td></tr>" +
+            '<tr><td style="padding:6px 0;color:#5f665f">Delivering to</td><td style="padding:6px 0">' + rows[i][6] + ", " + rows[i][8] + ", " + rows[i][9] + " " + rows[i][10] + "</td></tr>" +
+            '<tr><td style="padding:6px 0;color:#5f665f">Order ID</td><td style="padding:6px 0">' + d.order_id + "</td></tr></table>" +
+            "<p>Questions? Just reply to this email or WhatsApp us on +91 98800 00990.</p><p>NevervoidStore<br>A brand by Nevervoid Photography, Bengaluru</p></div>" });
       } catch (x) {}
       return out_({ ok: true });
     }
