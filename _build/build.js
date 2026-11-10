@@ -978,6 +978,7 @@ const CONFIG = {
   whatsapp: "__WA__",
   // Razorpay Payment Page (long form: https://pages.razorpay.com/pl_XXXX/view). Empty = WhatsApp ordering only.
   razorpayPage: "__RZP__",
+  rzpPages: __RZPPAGES__,
   // Checkout backend (Google Apps Script). Set = pay in Razorpay's window on our page; empty = Payment Page above.
   api: "__API__",
   // Field names on that page (label in lowercase, spaces as underscores)
@@ -1022,6 +1023,7 @@ const CONFIG = {
   // ---------- on-site checkout sheet: collect delivery details, show the summary, then hand over to Razorpay to pay ----------
   const esc2 = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   let sheet = null;
+  function rzpUrl(item) { return (CONFIG.rzpPages && CONFIG.rzpPages[item]) || CONFIG.razorpayPage; }
   function openCheckout(btn, model, pin) {
     const img = document.getElementById("pimg"), cv = document.getElementById("pcanvas");
     const pic = cv && !cv.hidden ? cv.toDataURL("image/jpeg", 0.8) : (img ? img.currentSrc || img.src : "");
@@ -1075,7 +1077,7 @@ const CONFIG = {
       q.set(f.pincode, v.z); q.set("email", v.e); q.set("phone", v.p); q.set("full_name", v.n); q.set("name", v.n); q.set("address", v.a); q.set("city", v.c);
       form.querySelector(".co-pay").textContent = "Opening secure payment…";
       window.nvTrack("InitiateCheckout", { value: price, currency: "INR", content_name: name, content_ids: [btn.dataset.id], content_type: "product" });
-      location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
+      location.href = rzpUrl(btn.dataset.rzp) + (rzpUrl(btn.dataset.rzp).includes("?") ? "&" : "?") + q.toString();
     });
   }
   // Razorpay Checkout on our page: the backend creates the order at the listed price, the payment is verified, the order is logged
@@ -1106,7 +1108,7 @@ const CONFIG = {
       closeCheckout(); rz.open();
     }).catch(() => {
       // backend unreachable: fall back to the Razorpay Payment Page so nobody gets stuck
-      if (CONFIG.razorpayPage) { const q = new URLSearchParams(); q.set(btn.dataset.rzp, "1"); q.set(CONFIG.rzpFields.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p); q.set("phone", v.p); q.set("full_name", v.n); location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString(); }
+      if (CONFIG.razorpayPage) { const q = new URLSearchParams(); q.set(btn.dataset.rzp, "1"); q.set(CONFIG.rzpFields.product, btn.dataset.name + " | Ship to: " + v.n + ", " + v.a + ", " + v.c + " " + v.z + ", +91 " + v.p); q.set("phone", v.p); q.set("full_name", v.n); location.href = rzpUrl(btn.dataset.rzp) + (rzpUrl(btn.dataset.rzp).includes("?") ? "&" : "?") + q.toString(); }
       else reset("Couldn’t reach the payment service. Please try again in a minute.");
     });
   }
@@ -1157,7 +1159,7 @@ const CONFIG = {
         q.set(btn.dataset.rzp, "1"); q.set(f.product, btn.dataset.name);
         if (model) q.set(f.model, model);
         q.set(f.pincode, pin);
-        location.href = CONFIG.razorpayPage + (CONFIG.razorpayPage.includes("?") ? "&" : "?") + q.toString();
+        location.href = rzpUrl(btn.dataset.rzp) + (rzpUrl(btn.dataset.rzp).includes("?") ? "&" : "?") + q.toString();
         return;
       }
       send(text);
@@ -1468,7 +1470,7 @@ fs.mkdirSync(path.join(OUT,"assets"), {recursive:true});
 fs.mkdirSync(path.join(OUT,"products"), {recursive:true});
 fs.mkdirSync(path.join(OUT,"images","products"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"assets","store.css"), fs.readFileSync(path.join(SRC,"base.css"),"utf8") + extraCss);
-fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || "").replace("__API__", (POL.CONTACT.checkoutApi || process.env.CHECKOUT_ON) ? TEAM_API : ""));
+fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || "").replace("__RZPPAGES__", JSON.stringify(POL.CONTACT.rzpPages || {})).replace("__API__", (POL.CONTACT.checkoutApi || process.env.CHECKOUT_ON) ? TEAM_API : ""));
 fs.writeFileSync(path.join(OUT,"assets","festive.css"), fs.readFileSync(path.join(SRC,"festive.css"),"utf8"));
 fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));

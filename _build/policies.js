@@ -15,7 +15,14 @@ const CONTACT = {
   address: "",            // full business address
   grievanceOfficer: "",   // name of the person handling complaints
   instagram: "nevervoidstore",
-  razorpayPage: "https://pages.razorpay.com/pl_Tw0kLnG202opHG/view",       // long Payment Page URL, e.g. https://pages.razorpay.com/pl_XXXX/view
+  razorpayPage: "https://pages.razorpay.com/pl_Tw0kLnG202opHG/view",
+  // one Payment Page per item (single item, fixed quantity); the all-items page above is the fallback
+  rzpPages: {
+    glass_phone_case: "https://rzp.io/rzp/glass-phone-case",
+    ceramic_mug: "https://rzp.io/rzp/ceramic-mug",
+    custom_pet_mug: "https://rzp.io/rzp/custom-mug",
+    custom_phone_case: "https://rzp.io/rzp/custom-phone"
+  },       // long Payment Page URL, e.g. https://pages.razorpay.com/pl_XXXX/view
   updated: "4 November 2026"
 };
 
