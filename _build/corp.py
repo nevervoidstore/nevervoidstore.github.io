@@ -57,5 +57,6 @@ _bar=_re.search(r'<div class="trustbar".*?</div></div>', _home, _re.S).group(0).
 _css=_re.search(r'\.trustbar\{.*?@media \(max-width:640px\)\{[^}]*\}[^}]*\}[^}]*\}', open('site/assets/store.css').read(), _re.S)
 s=s.replace('</header>', '</header>\n'+_bar, 1)
 if _css and '.trustbar{' not in s: s=s.replace('</head>', '<style>'+_css.group(0)+'</style>\n</head>', 1)
+s=s.replace(' · <a id="igFoot"', ' · <a style="font-weight:400" href="policies/contact.html#report">Report an issue</a> · <a id="igFoot"', 1)
 open('site/corporate.html','w').write(s)
 print("ok")

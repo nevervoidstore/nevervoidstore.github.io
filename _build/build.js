@@ -161,6 +161,7 @@ function footer(root) {
     <a href="${root}policies/returns.html#cancellation">Cancellation</a>
     <a href="${root}policies/privacy.html">Privacy</a>
     <a href="${root}policies/terms.html">Terms</a>
+    <a href="#report" data-report>⚠️ Report an issue</a>
   </div>
   <p class="foot-brand">NevervoidStore is a brand by <a href="${POL.CONTACT.photographySite}" rel="noopener">Nevervoid Photography</a>, founded by ${POL.CONTACT.linkedin ? `<a href="${POL.CONTACT.linkedin}" rel="noopener">Antony Pratap</a>` : "Antony Pratap"}.</p>
   <div class="foot-social">
@@ -172,6 +173,7 @@ function footer(root) {
 </footer>
 <div class="toast" id="toast"></div>
 <script src="${root}assets/store.js"></script>
+<script defer src="${root}assets/report.js"></script>
 </body>
 </html>`;
 }
@@ -1055,7 +1057,7 @@ const CONFIG = {
       '<div class="co-trust"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Secured by Razorpay</span>' +
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>5–7 day delivery</span>' +
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Free replacement if damaged</span></div>' +
-      '<p class="co-note">' + (CONFIG.api ? "The secure payment window opens right here." : "Next, Razorpay’s secure page opens with your details filled in. Tap Pay there.") + '</p>' +
+      '<p class="co-note">' + (CONFIG.api ? "The secure payment window opens right here." : "Next, Razorpay’s secure page opens with your details filled in. Tap Pay there.") + ' <a href="#report" data-report>Trouble paying?</a></p>' +
       '</form></div>';
     requestAnimationFrame(() => sheet.classList.add("open")); document.body.classList.add("co-lock");
     sheet.querySelectorAll("[data-close]").forEach(x => x.addEventListener("click", closeCheckout));
@@ -1473,6 +1475,7 @@ fs.writeFileSync(path.join(OUT,"assets","store.css"), fs.readFileSync(path.join(
 fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || "").replace("__RZPPAGES__", JSON.stringify(POL.CONTACT.rzpPages || {})).replace("__API__", (POL.CONTACT.checkoutApi || process.env.CHECKOUT_ON) ? TEAM_API : ""));
 fs.writeFileSync(path.join(OUT,"assets","festive.css"), fs.readFileSync(path.join(SRC,"festive.css"),"utf8"));
 fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
+fs.writeFileSync(path.join(OUT,"assets","report.js"), fs.readFileSync(path.join(SRC,"report.js"),"utf8").replace("__WA__", POL.CONTACT.whatsapp));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));
 fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join(SRC,"festive.js"),"utf8").replace("__SALE__", JSON.stringify(SALE)));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());

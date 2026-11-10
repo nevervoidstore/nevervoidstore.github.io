@@ -85,7 +85,7 @@ const CONFIG = {
       '<div class="co-trust"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Secured by Razorpay</span>' +
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>5–7 day delivery</span>' +
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Free replacement if damaged</span></div>' +
-      '<p class="co-note">' + (CONFIG.api ? "The secure payment window opens right here." : "Next, Razorpay’s secure page opens with your details filled in. Tap Pay there.") + '</p>' +
+      '<p class="co-note">' + (CONFIG.api ? "The secure payment window opens right here." : "Next, Razorpay’s secure page opens with your details filled in. Tap Pay there.") + ' <a href="#report" data-report>Trouble paying?</a></p>' +
       '</form></div>';
     requestAnimationFrame(() => sheet.classList.add("open")); document.body.classList.add("co-lock");
     sheet.querySelectorAll("[data-close]").forEach(x => x.addEventListener("click", closeCheckout));

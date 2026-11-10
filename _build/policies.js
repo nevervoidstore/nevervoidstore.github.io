@@ -149,6 +149,8 @@ const PAGES = [
 <ul class="contact-list">${contactLines()}</ul>
 <h2>Help with an order</h2>
 <p>Please include your name and the phone number you ordered with. If something arrived damaged, add a photo. See our <a href="returns.html">returns policy</a> for what happens next.</p>
+<h2>Something not working on the site?</h2>
+<p>If a page, button, preview or payment isn't working, <a href="#report" data-report>report an issue</a>. It takes a few seconds and helps us fix it quickly.</p>
 ${CONTACT.grievanceOfficer ? `<h2>Grievance officer</h2><p>If you're not satisfied with how we've handled an issue, contact our grievance officer, <strong>${CONTACT.grievanceOfficer}</strong>${CONTACT.email ? `, at <a href="mailto:${CONTACT.email}">${CONTACT.email}</a>` : ""}. We acknowledge complaints within 48 hours and aim to resolve them within one month.</p>` : ""}
 <h2>Bulk and corporate orders</h2>
 <p>See <a href="../corporate.html">corporate gifting</a> for bulk pricing and quotes.</p>`
