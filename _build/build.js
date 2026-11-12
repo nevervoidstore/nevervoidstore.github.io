@@ -382,7 +382,7 @@ ${footer("")}
 <script>
 (function(){ try {
   var o = JSON.parse(localStorage.getItem("nv_last") || "null"); if (!o || Date.now() - o.at > 3 * 864e5) return;
-  if (!o.tracked) { window.nvTrack("Purchase", { value: Number(o.price) || 0, currency: "INR", content_name: o.name }); o.tracked = 1; localStorage.setItem("nv_last", JSON.stringify(o)); }
+  if (!o.tracked && /[?&](paid=1|razorpay_payment_id=)/.test(location.search)) { window.nvTrack("Purchase", { value: Number(o.price) || 0, currency: "INR", content_name: o.name }); o.tracked = 1; localStorage.setItem("nv_last", JSON.stringify(o)); }
   var el = document.getElementById("ty-sum"), e = function(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
   el.innerHTML = (o.pic ? '<img src="' + e(o.pic) + '" alt="">' : "") + "<div><b>" + e(o.name) + "</b>" + (o.model ? "<span>" + e(o.model) + "</span>" : "") + '<div class="co-price"><b>₹' + Number(o.price).toLocaleString("en-IN") + "</b></div></div>";
   el.hidden = false;
