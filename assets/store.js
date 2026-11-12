@@ -8,7 +8,7 @@ const CONFIG = {
   whatsapp: "919880000990",
   // Razorpay Payment Page (long form: https://pages.razorpay.com/pl_XXXX/view). Empty = WhatsApp ordering only.
   razorpayPage: "https://pages.razorpay.com/pl_Tw0kLnG202opHG/view",
-  rzpPages: {"glass_phone_case":"https://rzp.io/rzp/glass-phone-case","ceramic_mug":"https://rzp.io/rzp/ceramic-mug","custom_pet_mug":"https://rzp.io/rzp/custom-mug","custom_phone_case":"https://rzp.io/rzp/custom-phone"},
+  rzpPages: {"glass_phone_case":"https://pages.razorpay.com/glass-phone-case","ceramic_mug":"https://pages.razorpay.com/ceramic-mug","custom_pet_mug":"https://pages.razorpay.com/custom-mug","custom_phone_case":"https://pages.razorpay.com/custom-phone"},
   // Checkout backend (Google Apps Script). Set = pay in Razorpay's window on our page; empty = Payment Page above.
   api: "",
   // Field names on that page (label in lowercase, spaces as underscores)
