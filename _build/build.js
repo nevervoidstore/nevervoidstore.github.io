@@ -206,7 +206,7 @@ function card(p, root) {
   return `<article class="card" data-cat="${(p.cats||[p.cat]).join(" ")}" data-type="${p.type}">
     <a class="stage ${p.cat}${p.photoMug ? " ph" : ""}" href="${href}" aria-label="${esc(p.name)}">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}${p.art}</a>
     <div class="info">
-      <div class="tags"><span class="tag">${p.type === "case" ? "Phone case" : typeLabel(p)}</span>${p.isNew?'<span class="tag new">· New</span>':''}</div>
+      <div class="tags"><span class="tag">${p.type === "case" ? "Phone case" : typeLabel(p)}</span></div>
       <h3><a href="${href}">${esc(p.name)}</a></h3>
       <p>${esc(p.desc)}</p>
       ${priceHtml(p)}
@@ -223,7 +223,7 @@ function casesCard(root) {
   return `<article class="card coll-card" data-cat="christmas" data-type="case">
     <a class="stage christmas" href="${href}" aria-label="Christmas Phone Cases">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}${lead.art}<span class="coll-letters" aria-hidden="true">${items.length} designs</span></a>
     <div class="info">
-      <div class="tags"><span class="tag">Collection</span><span class="tag new">· New</span></div>
+      <div class="tags"><span class="tag">Collection</span></div>
       <h3><a href="${href}">Christmas Phone Cases</a></h3>
       <p>${items.length} festive glass cases, made for your exact phone.</p>
       <div class="price">${SALE.on ? `<span class="was">${rupee(was)}</span> ` : ""}<span class="now">From ${rupee(from)}</span></div>
@@ -260,7 +260,7 @@ function initialsCard(root) {
   return `<article class="card coll-card" data-cat="christmas" data-type="mug">
     <a class="stage christmas ph" href="${href}" aria-label="Christmas Initial Mugs">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/mugs/${lead.slug}-${lead.view}.webp" alt="Christmas Initial Mugs" width="620" height="620" loading="lazy"><span class="coll-letters" aria-hidden="true">A–Z</span></a>
     <div class="info">
-      <div class="tags"><span class="tag">Collection</span><span class="tag new">· New</span></div>
+      <div class="tags"><span class="tag">Collection</span></div>
       <h3><a href="${href}">Christmas Initial Mugs</a></h3>
       <p>Their first letter in a Santa hat. Pick a letter A to Z.</p>
       <div class="price">${SALE.on ? `<span class="was">${rupee(was)}</span> ` : ""}<span class="now">From ${rupee(from)}</span></div>
@@ -291,7 +291,7 @@ ${header(root,"shop")}
   <nav class="crumbs" aria-label="Breadcrumb"><a href="${root}index.html">Shop</a> › <a href="/initials/">Christmas Initial Mugs</a></nav>
   <section class="pdp ini-grid">
     <div class="ini-title">
-      <div class="tags"><span class="tag">Christmas · Initial mug</span><span class="tag new">· New</span></div>
+      <div class="tags"><span class="tag">Christmas · Initial mug</span></div>
       <h1 id="ini-name">${esc(cur.name)}</h1>
       ${priceHtml(cur,"pprice")}${SALE.on ? `<div class="save">You save ${rupee(cur.price - salePrice(cur))} · ${SALE.label} ends 25 Dec</div>` : ""}
     </div>
@@ -609,7 +609,7 @@ function wishCard(root) {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}${WISH_PATH}/`;
   return `<article class="card coll-card" data-cat="christmas" data-type="mug">
     <a class="stage ph" href="${href}" aria-label="Send a Wish mug">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/send-a-wish.jpg" alt="Send a Wish mug" width="620" height="620" loading="lazy"></a>
-    <div class="info"><div class="tags"><span class="tag">Personalised</span><span class="tag new">· New</span></div>
+    <div class="info"><div class="tags"><span class="tag">Personalised</span></div>
       <h3><a href="${href}">Send a Wish</a></h3><p>Your own wish and name on a mug: birthday, love, Mom, Dad, Christmas and more.</p>
       <div class="price">${SALE.on ? `<span class="was">${rupee(cp.price)}</span> ` : ""}<span class="now">${rupee(salePrice(cp))}</span></div>
       <a class="buy" href="${href}">Write a wish</a></div></article>`;
@@ -618,7 +618,7 @@ function nameMugCard(root) {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}custom-mug/`;
   return `<article class="card coll-card" data-cat="christmas pets" data-type="mug">
     <a class="stage ph" href="${href}" aria-label="Personalised name mug">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/custom-name-mug.jpg" alt="Personalised name mug" width="620" height="620" loading="lazy"><span class="coll-letters" aria-hidden="true">Design yours</span></a>
-    <div class="info"><div class="tags"><span class="tag">Personalised</span><span class="tag new">· New</span></div>
+    <div class="info"><div class="tags"><span class="tag">Personalised</span></div>
       <h3><a href="${href}">Your Name Mug</a></h3><p>Their name and 4 things they love, designed live.</p>
       <div class="price">${SALE.on ? `<span class="was">${rupee(cp.price)}</span> ` : ""}<span class="now">${rupee(salePrice(cp))}</span></div>
       <a class="buy" href="${href}">Design yours</a></div></article>`;
@@ -1310,7 +1310,7 @@ ${header("../","")}
     })()}
     <script defer src="/assets/swipe.js"></script>
     <div>
-      <div class="tags"><span class="tag">${catLabel(p)} · ${typeLabel(p)}</span>${p.isNew?'<span class="tag new">· New</span>':''}</div>
+      <div class="tags"><span class="tag">${catLabel(p)} · ${typeLabel(p)}</span></div>
       <h1>${esc(p.name)}</h1>
       ${priceHtml(p,"pprice")}${SALE.on ? `<div class="save">You save ${rupee(p.price - salePrice(p))} · ${SALE.label} ends 25 Dec</div>` : ""}
       <div class="pnote">Made to order · delivering across Karnataka</div>
@@ -1354,7 +1354,7 @@ ${header("","shop")}
       <span class="eyebrow">Christmas Drop 2026</span>
       <h1>Mugs &amp; phone cases, <em>made to order</em> for you</h1>
       <p>Cosy Christmas designs and cute pet prints. Or send us a photo of your pet and we'll turn it into a custom portrait for your mug or case.</p>
-      <div class="deadline">🎁 Order by 12 December for delivery before Christmas</div>${SALE.on ? `<div class="hero-sale">${SALE.label}: <b>${SALE.pct}% off</b> every mug &amp; case</div>` : ""}
+      <div class="deadline">🎁 Order by 12 December for delivery before Christmas</div>
     </section>
     <div class="trust">
       <div data-paytrust><b>Easy ordering</b>Order on WhatsApp. We confirm every detail before you pay</div>
@@ -1378,8 +1378,8 @@ ${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")
     <div class="wrap">
       <h2>How ordering works</h2>
       <div class="steps">
-        <div><div class="n">1</div><b>Pick your design</b><span>Open any product. For cases, choose your iPhone model.</span></div>
-        <div><div class="n">2</div><b>Order by DM</b><span>Your order details are copied for you. Just paste and send.</span></div>
+        <div><div class="n">1</div><b>Pick your design</b><span>Open any product. For cases, choose your phone model.</span></div>
+        <div><div class="n">2</div><b>Pay securely</b><span>UPI, card or netbanking through Razorpay. You get a receipt by email straight away.</span></div>
         <div><div class="n">3</div><b>We print &amp; ship</b><span>Your order is made fresh and shipped with tracking.</span></div>
       </div>
     </div>
