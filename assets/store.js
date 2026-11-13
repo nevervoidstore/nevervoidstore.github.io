@@ -8,7 +8,7 @@ const CONFIG = {
   whatsapp: "919880000990",
   // Razorpay Payment Page (long form: https://pages.razorpay.com/pl_XXXX/view). Empty = WhatsApp ordering only.
   razorpayPage: "https://pages.razorpay.com/pl_Tw0kLnG202opHG/view",
-  rzpPages: {"glass_phone_case":"https://rzp.io/rzp/glass-phone-case","ceramic_mug":"https://rzp.io/rzp/ceramic-mug","custom_pet_mug":"https://rzp.io/rzp/custom-mug","custom_phone_case":"https://rzp.io/rzp/custom-phone"},
+  rzpPages: {"glass_phone_case":"https://pages.razorpay.com/glass-phone-case","ceramic_mug":"https://pages.razorpay.com/ceramic-mug","custom_pet_mug":"https://pages.razorpay.com/custom-mug","custom_phone_case":"https://pages.razorpay.com/custom-phone"},
   // Checkout backend (Google Apps Script). Set = pay in Razorpay's window on our page; empty = Payment Page above.
   api: "",
   // Field names on that page (label in lowercase, spaces as underscores)
@@ -210,8 +210,8 @@ const CONFIG = {
   async function previewOn(cv, slug, label) {
     const seq = ++previewSeq, img = document.getElementById("pimg"), note = document.getElementById("shown-on");
     try {
-      if (!RECTS) RECTS = await (await fetch("/images/cases/frames/rects.json?v=3")).json();
-      const [art, frame, mask] = await Promise.all([loadImg(cv.dataset.art), loadImg("/images/cases/frames/" + slug + "-frame.webp?v=3"), loadImg("/images/cases/frames/" + slug + "-mask.png?v=3")]);
+      if (!RECTS) RECTS = await (await fetch("/images/cases/frames/rects.json?v=2")).json();
+      const [art, frame, mask] = await Promise.all([loadImg(cv.dataset.art), loadImg("/images/cases/frames/" + slug + "-frame.webp?v=2"), loadImg("/images/cases/frames/" + slug + "-mask.png?v=2")]);
       if (seq !== previewSeq) return;
       const S = cv.width / 1200, ctx = cv.getContext("2d"), [x0, y0, x1, y1] = RECTS[slug];
       ctx.clearRect(0, 0, cv.width, cv.height);
