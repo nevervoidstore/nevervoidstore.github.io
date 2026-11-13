@@ -3,7 +3,7 @@ import json, re, sys
 from PIL import Image
 D = "/home/claude/nevervoid/src/caseframes"; C = "/home/claude/nevervoid/src/casedesigns"
 R = json.load(open(f"{D}/rects.json")); x0, y0, x1, y1 = R["iphone-16-pro"]
-frame = Image.open(f"{D}/iphone-16-pro-frame.webp").convert("RGBA"); mask = Image.open(f"{D}/iphone-16-pro-mask.png").convert("L")
+frame = Image.open(f"{D}/iphone-16-pro-frame.webp").convert("RGBA"); mask = Image.open(f"{D}/iphone-16-pro-mask.png").getchannel("A")
 slugs = re.findall(r'D\("\w+",\s*"([\w-]+)"', open("/home/claude/nevervoid/src/cases.js").read())
 for s in slugs:
     art = Image.open(f"{C}/{s}-art.webp").convert("RGB"); rw, rh = x1 - x0, y1 - y0

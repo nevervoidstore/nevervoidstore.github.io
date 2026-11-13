@@ -147,7 +147,7 @@ def build(slug):
     # soft contact shadow under the case
     sh = Image.fromarray((outer * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(18))
     sha = np.asarray(sh).astype(np.float32) / 255
-    sha = np.roll(sha, 14, axis=0) * 0.28
+    sha = np.roll(sha, 14, axis=0) * 0.28 * (1 - outer)   # outside the case only, never over the print
     over(img, (0, 0, 0), sha)
     # case rim: dark, with a light catch on the top-left edge
     rim = np.clip(outer - body, 0, 1)
@@ -182,7 +182,8 @@ def build(slug):
     im = Image.fromarray(np.clip(img[..., :3] / np.maximum(img[..., 3:], 1e-6), 0, 255).astype(np.uint8))
     im.putalpha(Image.fromarray((img[..., 3] * 255).clip(0, 255).astype(np.uint8)))
     im.save(f"{OUT}/{slug}-frame.webp", "WEBP", quality=90, method=6)
-    Image.fromarray((printm * 255).astype(np.uint8), "L").save(f"{OUT}/{slug}-mask.png", optimize=True)
+    mk = Image.new("LA", (W, H), 255); mk.putalpha(Image.fromarray((printm * 255).astype(np.uint8), "L"))
+    mk.save(f"{OUT}/{slug}-mask.png", optimize=True)   # print area in the alpha channel (canvas clips by alpha)
     return [round(bx0), round(by0), round(bx1), round(by1)]
 
 if __name__ == "__main__":
