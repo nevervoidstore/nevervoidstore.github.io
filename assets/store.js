@@ -8,7 +8,7 @@ const CONFIG = {
   whatsapp: "919880000990",
   // Razorpay Payment Page (long form: https://pages.razorpay.com/pl_XXXX/view). Empty = WhatsApp ordering only.
   razorpayPage: "https://pages.razorpay.com/pl_Tw0kLnG202opHG/view",
-  rzpPages: {"glass_phone_case":"https://pages.razorpay.com/glass-phone-case","ceramic_mug":"https://pages.razorpay.com/ceramic-mug","custom_pet_mug":"https://pages.razorpay.com/custom-mug","custom_phone_case":"https://pages.razorpay.com/custom-phone"},
+  rzpPages: {"glass_phone_case":"https://rzp.io/rzp/glass-phone-case","ceramic_mug":"https://rzp.io/rzp/ceramic-mug","custom_pet_mug":"https://rzp.io/rzp/custom-mug","custom_phone_case":"https://rzp.io/rzp/custom-phone"},
   // Checkout backend (Google Apps Script). Set = pay in Razorpay's window on our page; empty = Payment Page above.
   api: "",
   // Field names on that page (label in lowercase, spaces as underscores)
@@ -196,9 +196,13 @@ const CONFIG = {
     });
   });
   document.querySelectorAll(".model").forEach(sel => sel.addEventListener("change", () => {
-    // one clean preview for every model (per-model cut-outs were distracting); just confirm the fit in words
-    const o = sel.selectedOptions[0], note = document.getElementById("shown-on");
-    if (note && o && o.value) note.textContent = "Shown on an iPhone 16 Pro. We’ll print it to fit your " + o.value + ".";
+    // show the design on the phone the shopper picked
+    const o = sel.selectedOptions[0], note = document.getElementById("shown-on"), cv = document.getElementById("pcanvas"), img = document.getElementById("pimg");
+    if (!o || !o.value || !o.dataset.s) return;
+    if (cv && sel.closest(".buybox")) { previewOn(cv, o.dataset.s, o.value); return; }
+    if (img && img.dataset.base && sel.closest(".buybox")) {
+      const n = new Image(); n.onload = () => { img.src = n.src; if (note) note.textContent = "Shown on your " + o.value + "."; }; n.src = img.dataset.base + o.dataset.s + ".webp";
+    }
   }));
   // live preview: the chosen design on the chosen phone model (frame + print-area mask + design)
   const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
@@ -209,14 +213,14 @@ const CONFIG = {
       if (!RECTS) RECTS = await (await fetch("/images/cases/frames/rects.json")).json();
       const [art, frame, mask] = await Promise.all([loadImg(cv.dataset.art), loadImg("/images/cases/frames/" + slug + "-frame.webp"), loadImg("/images/cases/frames/" + slug + "-mask.png")]);
       if (seq !== previewSeq) return;
-      const S = cv.width / 600, ctx = cv.getContext("2d"), [x0, y0, x1, y1] = RECTS[slug];
+      const S = cv.width / 1200, ctx = cv.getContext("2d"), [x0, y0, x1, y1] = RECTS[slug];
       ctx.clearRect(0, 0, cv.width, cv.height);
       const rw = (x1 - x0) * S, rh = (y1 - y0) * S, r = Math.max(rw / art.width, rh / art.height), dw = art.width * r, dh = art.height * r;
       ctx.drawImage(art, x0 * S + (rw - dw) / 2, y0 * S + (rh - dh) / 2, dw, dh);       // cover, centred, never stretched
       ctx.globalCompositeOperation = "destination-in"; ctx.drawImage(mask, 0, 0, cv.width, cv.height);
       ctx.globalCompositeOperation = "source-over"; ctx.drawImage(frame, 0, 0, cv.width, cv.height);
       cv.hidden = false; if (img) img.style.visibility = "hidden";
-      if (note) note.textContent = "Showing on " + label + ".";
+      if (note) note.textContent = "Shown on your " + label + ".";
     } catch (e) { cv.hidden = true; if (img) img.style.visibility = ""; }
   }
   // share: native share sheet on phones, otherwise a small menu

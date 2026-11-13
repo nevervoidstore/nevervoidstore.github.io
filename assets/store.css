@@ -151,7 +151,7 @@ footer a{font-weight:700;color:var(--ink)}
 .share-menu a:hover,.share-menu button:hover{background:#f4efe6}
 .coll-card .stage{position:relative}
 .pdp .gallery.christmas,.pdp .gallery.pets{background:#fff}
-#pcanvas{position:absolute;inset:36px;width:calc(100% - 72px);height:calc(100% - 72px);object-fit:contain}
+#pcanvas{position:absolute;inset:28px;width:calc(100% - 56px);height:calc(100% - 56px);object-fit:contain;animation:pcIn .25s ease}@keyframes pcIn{from{opacity:.4}to{opacity:1}}
 .co-wrap{position:fixed;inset:0;z-index:200;pointer-events:none}
 .co-wrap.open{pointer-events:auto}
 .co-back{position:absolute;inset:0;background:rgba(20,28,24,.45);opacity:0;transition:opacity .25s}

@@ -8,7 +8,7 @@ const CONTACT = {
   email: "",              // e.g. "hello@nevervoidstore.com"
   phone: "",              // e.g. "+91 98765 43210"
   whatsapp: "919880000990", // digits only, e.g. "919876543210"
-  metaPixel: "185720795222527", // Meta dataset (Pixel) ID, digits only; empty = no Meta tracking
+  metaPixel: "", // Meta dataset (Pixel) ID, digits only; empty = no Meta tracking
   metaDomainVerify: "", // content of the facebook-domain-verification meta tag
   teamApi: "", // Google Apps Script web app URL (…/exec): the site backend (checkout + team links). Empty = both off
   checkoutApi: false, // true = pay in Razorpay's window via the backend; false = Razorpay Payment Page
@@ -18,10 +18,10 @@ const CONTACT = {
   razorpayPage: "https://pages.razorpay.com/pl_Tw0kLnG202opHG/view",
   // one Payment Page per item (single item, fixed quantity); the all-items page above is the fallback
   rzpPages: {
-    glass_phone_case: "https://pages.razorpay.com/glass-phone-case",
-    ceramic_mug: "https://pages.razorpay.com/ceramic-mug",
-    custom_pet_mug: "https://pages.razorpay.com/custom-mug",
-    custom_phone_case: "https://pages.razorpay.com/custom-phone"
+    glass_phone_case: "https://rzp.io/rzp/glass-phone-case",
+    ceramic_mug: "https://rzp.io/rzp/ceramic-mug",
+    custom_pet_mug: "https://rzp.io/rzp/custom-mug",
+    custom_phone_case: "https://rzp.io/rzp/custom-phone"
   },       // long Payment Page URL, e.g. https://pages.razorpay.com/pl_XXXX/view
   updated: "4 November 2026"
 };
