@@ -32,6 +32,17 @@ def camroi(slug, silP):
 def trace(slug):
     P = Image.open(os.path.join(PUP, slug + '.webp')).convert('RGBA'); p = np.asarray(P).astype(np.float32)
     silP = p[..., 3] > 128
+    # some mockups (iPhone 17) bake an opaque light-grey drop shadow under the case: drop light neutral pixels touching the outside
+    rgbP = p[..., :3]; shade = silP & (rgbP.min(2) > 185) & ((rgbP.max(2) - rgbP.min(2)) < 14)
+    lab, n = ndi.label(shade); outside = ndi.binary_dilation(~silP, iterations=2)
+    touch = np.unique(lab[outside & (lab > 0)]); silP &= ~np.isin(lab, touch[touch > 0])
+    silP = ndi.binary_opening(ndi.binary_fill_holes(silP), iterations=1)
+    lab, n = ndi.label(silP); silP = lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1)
+    # case outlines are the same top and bottom: use the top's corners for the bottom (shadows blur the bottom edge)
+    ys = np.nonzero(silP.any(1))[0]; t0, t1 = ys.min(), ys.max(); h = t1 - t0 + 1
+    flip = np.zeros_like(silP); flip[t0:t1 + 1] = silP[t0:t1 + 1][::-1]
+    bottom = np.zeros_like(silP); bottom[t0 + h // 2:] = True
+    silP = np.where(bottom, silP & flip, silP)
     bx0, by0, bx1, by1 = bbox(silP)
     best = None
     for ef in elf_candidates(slug):
@@ -66,9 +77,9 @@ def trace(slug):
         ea = place(sc, dx, dy)
         diff = ndi.gaussian_filter(np.abs(p[..., :3] - ea).mean(2), 1.0)
         score = 100 * (1 - f0)   # % of case-interior pixels that do NOT match (lower = better aligned)
-        if best is None or score < best[0]: best = (score, diff, ef)
+        if best is None or score < best[0]: best = (score, diff, ef, ea)
     if best is None: raise SystemExit(f'no elf mockup for {slug}')
-    score, diff, ef = best
+    score, diff, ef, best_ea = best
     same = silP & (diff < float(os.environ.get('SAME_T', '14')))
     same = ndi.binary_opening(same, iterations=2)
     lab, n = ndi.label(same); sizes = np.bincount(lab.ravel()); keep = np.zeros_like(sizes, bool)
@@ -92,21 +103,43 @@ def trace(slug):
     cams = (np.asarray(hull_img) > 0) & silP
     frame = (rim_thin | cams) & silP
     printm = silP & ~frame
-    lab, n = ndi.label(printm); sizes = np.bincount(lab.ravel()); keepp = np.zeros_like(sizes, bool)
-    keepp[1:] = sizes[1:] > silP.sum() * 0.0008; printm = keepp[lab]   # main area + thin strips beside camera plateaus
+    # Anything off the rim where the two mockups differ is printed design, never case: print it.
+    # (Catches thin strips beside camera plateaus that would otherwise show the old mockup's design.)
+    raw = np.abs(p[..., :3] - best_ea).mean(2)
+    edge = ndi.distance_transform_edt(silP) < (bx1 - bx0) * float(os.environ.get('EDGE_BAND', '0.07'))   # strips run along the case edge
+    differs = ndi.gaussian_filter(raw, 0.7) > 18
+    leak = ndi.binary_opening(silP & ~rim_thin & ~printm & ~ndi.binary_erosion(cams, iterations=3) & differs, iterations=1)
+    # thin design strips squeezed between a plateau and the case edge: keep them even if only 2-3 px wide
+    strip = silP & ~rim_thin & ~printm & edge & differs
+    lab, n = ndi.label(strip); sz = np.bincount(lab.ravel()); sz[0] = 0
+    leak |= np.isin(lab, np.nonzero(sz >= 6)[0])
+    # inside a module, only big, strongly different patches are design (e.g. beside the iPhone 17 flash)
+    inner = ndi.binary_opening(cams & ~edge & (ndi.gaussian_filter(raw, 1.0) > float(os.environ.get('IN_T', '45'))), iterations=3)
+    leak |= inner
+    printm = ndi.binary_closing(printm | leak, iterations=1) & silP
+    if os.environ.get('DEBUG'):
+        v = np.zeros(silP.shape + (3,), np.uint8); v[silP] = 60; v[rim_thin] = (0, 0, 255); v[cams] = (0, 200, 0); v[leak] = (255, 0, 0)
+        Image.fromarray(v).save(os.path.join(OUT, slug + '-debug.png'))
+    left = silP & ~rim_thin & ~printm & (raw > 30)
+    LEAKS[slug] = round(100 * left.sum() / max(1, (silP & ~rim_thin & ~printm).sum()), 2)
     # back to soft edges
     soft = ndi.gaussian_filter(printm.astype(np.float32), 0.8)
     frame_alpha = np.clip((p[..., 3] / 255) * (1 - soft), 0, 1)
+    frame_alpha *= ndi.gaussian_filter(ndi.binary_dilation(silP, iterations=1).astype(np.float32), 0.6)   # no baked-in shadow outside the case
     # scale x2 into the 1200x1600 canvas (puppies mockups are 600x800)
-    fr = Image.fromarray(np.dstack([p[..., :3], frame_alpha * 255]).astype(np.uint8), 'RGBA').resize((1200, 1600), Image.LANCZOS)
+    # last guard: any case pixel still showing the old mockup's design (differs between the mockups) takes the rim colour
+    rgbF = p[..., :3].copy(); stray = (frame_alpha > 0.05) & differs & ~ndi.binary_erosion(cams, iterations=4)
+    rimcol = np.median(p[..., :3][rim_thin & ~differs], axis=0) if (rim_thin & ~differs).any() else np.array([30, 30, 30])
+    rgbF[ndi.binary_dilation(stray, iterations=1)] = rimcol
+    fr = Image.fromarray(np.dstack([rgbF, frame_alpha * 255]).astype(np.uint8), 'RGBA').resize((1200, 1600), Image.LANCZOS)
     mk = Image.fromarray((soft * 255).astype(np.uint8), 'L').resize((1200, 1600), Image.LANCZOS)
     fr.save(os.path.join(OUT, slug + '-frame.webp'), 'WEBP', quality=92, method=6)
     mk.save(os.path.join(OUT, slug + '-mask.png'), optimize=True)
     x0, y0, x1, y1 = (int(v) * 2 for v in (bx0, by0, bx1, by1))
     return [int(x0), int(y0), int(x1), int(y1)], os.path.basename(ef), float(score)
 
-rects = {}
+rects = {}; LEAKS = {}
 for s in slugs:
     r, ef, sc = trace(s); rects[s] = r
-    print(f'{s:20s} body {r}  mismatch {sc:.1f}%  {ef[33:80]}')
+    print(f'{s:20s} body {r}  case-pixels-that-differ {LEAKS[s]}%')
 json.dump(rects, open(os.path.join(OUT, 'rects.part.json'), 'w'))

@@ -1182,8 +1182,8 @@ const CONFIG = {
   async function previewOn(cv, slug, label) {
     const seq = ++previewSeq, img = document.getElementById("pimg"), note = document.getElementById("shown-on");
     try {
-      if (!RECTS) RECTS = await (await fetch("/images/cases/frames/rects.json?v=3")).json();
-      const [art, frame, mask] = await Promise.all([loadImg(cv.dataset.art), loadImg("/images/cases/frames/" + slug + "-frame.webp?v=3"), loadImg("/images/cases/frames/" + slug + "-mask.png?v=3")]);
+      if (!RECTS) RECTS = await (await fetch("/images/cases/frames/rects.json?v=4")).json();
+      const [art, frame, mask] = await Promise.all([loadImg(cv.dataset.art), loadImg("/images/cases/frames/" + slug + "-frame.webp?v=4"), loadImg("/images/cases/frames/" + slug + "-mask.png?v=4")]);
       if (seq !== previewSeq) return;
       const S = cv.width / 1200, ctx = cv.getContext("2d"), [x0, y0, x1, y1] = RECTS[slug];
       ctx.clearRect(0, 0, cv.width, cv.height);
