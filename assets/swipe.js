@@ -6,10 +6,12 @@
   var prev = g.dataset.prev, next = g.dataset.next, kind = g.dataset.kind || "designs";
   if (getComputedStyle(g).position === "static") g.style.position = "relative";
 
-  // arrows + position
-  g.insertAdjacentHTML("beforeend", '<button type="button" class="swipe-nav prev" aria-label="Previous design">‹</button><button type="button" class="swipe-nav next" aria-label="Next design">›</button><span class="swipe-pos">' + g.dataset.pos + " of " + g.dataset.n + " " + kind + "</span>");
-  g.querySelector(".swipe-nav.prev").addEventListener("click", function (e) { e.stopPropagation(); go(prev, 1); });
-  g.querySelector(".swipe-nav.next").addEventListener("click", function (e) { e.stopPropagation(); go(next, -1); });
+  // labelled buttons BELOW the picture, so they read as "another design", not "more photos of this one"
+  var one = kind.replace(/s$/, "").replace(/^case /, "");
+  g.insertAdjacentHTML("afterend", '<nav class="design-nav" aria-label="Browse ' + kind + '"><button type="button" class="swipe-nav prev">‹ Previous<span class="wide"> ' + one + '</span></button><span class="swipe-pos">' + g.dataset.pos + " of " + g.dataset.n + " " + kind + '</span><button type="button" class="swipe-nav next">Next<span class="wide"> ' + one + '</span> ›</button></nav>');
+  var nav = g.nextElementSibling;
+  nav.querySelector(".swipe-nav.prev").addEventListener("click", function (e) { e.stopPropagation(); go(prev, 1); });
+  nav.querySelector(".swipe-nav.next").addEventListener("click", function (e) { e.stopPropagation(); go(next, -1); });
 
   // make the next page and its picture load instantly
   var l = document.createElement("link"); l.rel = "prefetch"; l.href = next; document.head.appendChild(l);
