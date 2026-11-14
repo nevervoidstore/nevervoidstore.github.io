@@ -86,7 +86,28 @@ def trace(slug):
     keep[1:] = sizes[1:] > silP.sum() * 0.0015
     frame = keep[lab]
     rim = silP & ~ndi.binary_erosion(silP, iterations=int(round((bx1 - bx0) * 0.022)))          # wide, for finding modules
-    rim_thin = silP & ~ndi.binary_erosion(silP, iterations=max(3, int(round((bx1 - bx0) * 0.010))))  # what the case edge really covers
+    # The case body without the side buttons (they stick out a few px and would make the rim wavy)
+    body = ndi.binary_opening(silP, structure=np.ones((1, 15), bool))
+    body = ndi.binary_fill_holes(body); lab, n = ndi.label(body); body = lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1)
+    # How wide the case's dark rim really is: measured from the mockup on the long sides (rows 30-70% down)
+    dark = diff < 16   # case pixels look the same in both mockups; the design differs
+    widths = []
+    for y in range(by0 + int((by1 - by0) * 0.3), by0 + int((by1 - by0) * 0.7), 3):
+        xs = np.nonzero(body[y])[0]
+        if xs.size < 10: continue
+        for xs_ in (range(xs.min(), xs.min() + 20), range(xs.max(), xs.max() - 20, -1)):
+            w, started = 0, False
+            for k, x in enumerate(xs_):
+                if dark[y, x]: w += 1; started = True
+                elif not started and k < 3: w += 1          # the 1-2 px edge highlight
+                else: break
+            widths.append(w)
+    rimw = float(np.clip(np.percentile(widths, 25) if widths else 4, 3, 14))
+    # where the measurement fails (glossy rims), use the sibling model's measured rim
+    SIBLING_RIM = {'iphone-12-pro': 14, 'iphone-12-mini': 11, 'iphone-14': 10, 'iphone-15': 10, 'galaxy-s22-ultra': 7}
+    if rimw <= 3 and slug in SIBLING_RIM: rimw = float(SIBLING_RIM[slug])
+    RIMW[slug] = rimw
+    rim_thin = body & (ndi.distance_transform_edt(body) <= rimw + 0.5) | (silP & ~body)   # even rim + the buttons
     upper = np.zeros_like(silP); upper[: by0 + int((by1 - by0) * 0.34)] = True   # camera modules sit in the top of the back
     # camera modules: pixels that are identical in both mockups (strict), inside where this model's camera can be,
     # each piece closed up by its convex hull (modules, plateaus and lens rings are convex shapes).
@@ -138,8 +159,8 @@ def trace(slug):
     x0, y0, x1, y1 = (int(v) * 2 for v in (bx0, by0, bx1, by1))
     return [int(x0), int(y0), int(x1), int(y1)], os.path.basename(ef), float(score)
 
-rects = {}; LEAKS = {}
+rects = {}; LEAKS = {}; RIMW = {}
 for s in slugs:
     r, ef, sc = trace(s); rects[s] = r
-    print(f'{s:20s} body {r}  case-pixels-that-differ {LEAKS[s]}%')
+    print(f'{s:20s} body {r}  rim {RIMW[s]:.1f}px')
 json.dump(rects, open(os.path.join(OUT, 'rects.part.json'), 'w'))
