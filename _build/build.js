@@ -751,9 +751,9 @@ body.co-lock{overflow:hidden}
 #cm-name:focus{outline:2px solid var(--green);border-color:var(--green)}
 .cm-note{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:400}
 .cm-warn{display:block;margin-top:6px;padding:7px 10px;border-radius:9px;background:#fff6e5;color:#7a5200;font-size:13px;font-weight:600}.cm-warn.bad{background:#fbeeee;color:#a8332f}
-.design-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 2px}
-.swipe-nav{border:1px solid rgba(28,36,32,.18);background:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:14px;font-weight:600;line-height:1.1;color:var(--ink);cursor:pointer;white-space:nowrap}.swipe-nav:hover{border-color:var(--ink)}
-.swipe-pos{font-size:13px;font-weight:600;color:#6b6358;white-space:nowrap}@media(max-width:400px){.swipe-nav .wide{display:none}}
+.design-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 2px;max-width:100%}
+.swipe-nav{flex:none;border:1px solid rgba(28,36,32,.18);background:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:14px;font-weight:600;line-height:1.1;color:var(--ink);cursor:pointer;white-space:nowrap}.swipe-nav:hover{border-color:var(--ink)}
+.swipe-pos{font-size:13px;font-weight:600;color:#6b6358;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:center}@media(max-width:600px){.swipe-nav .wide{display:none}.swipe-nav{padding:9px 12px}.design-nav{gap:6px}}@media(max-width:360px){.swipe-pos{font-size:12px}}
 .swipe-hint{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:rgba(20,30,24,.45);color:#fff;font-weight:600;font-size:16px;text-align:center;border-radius:inherit;animation:swh 2.8s ease forwards;pointer-events:none}
 .swipe-hint span{display:grid;gap:8px;justify-items:center}.swipe-hint i{font-style:normal;font-size:30px;animation:swx 1.1s ease-in-out 2}
 @keyframes swx{0%,100%{transform:translateX(0)}50%{transform:translateX(-26px)}}@keyframes swh{0%,80%{opacity:1}100%{opacity:0}}
