@@ -55,8 +55,8 @@ def oneplus11r():
 def xr():
     return dict(cut=[("rr", 7, 7, 22, 34, 7.5)], lens=[(14.5, 14.5, 11.5)], flash=[(14.5, 27, 4)], dot=[])
 
-PRO17 = lambda: plateau(45, [(14, 13.5, 14), (14, 31.5, 14), (29.5, 22.5, 14)], [(58, 14, 4.4)], [(58, 31, 4.4), (58, 22.5, 1.3)], lidar=True)
-AIR = lambda: plateau(27, [(15, 13, 13)], [(30, 13, 4.2)], [(38, 13, 1.3)])
+PRO17 = lambda: dict(cut=[("rr", 3.1, 2.7, -3.1, 45.3, 10)], lens=[(14.8, 14.1, 17.4), (32.7, 23.3, 17.4), (14.8, 32.4, 17.4)], flash=[(63.9, 14.1, 9)], dot=[(63.9, 33.3, 9), (63.9, 23.7, 3.2)], lidar=True, ringed=True)   # measured from Printrove's 17 Pro Max template
+AIR = lambda: dict(cut=[("rr", 3.1, 2.7, -3.1, 27, 9)], lens=[(15, 14.8, 15)], flash=[(31, 14.8, 4.6)], dot=[(39, 14.8, 1.4)])
 
 MODELS = {   # slug: (width mm, height mm, corner radius mm, layout)
  "iphone-17-pro-max": (78.0, 163.4, 11.5, PRO17()), "iphone-17-pro": (71.9, 150.0, 11, PRO17()), "iphone-air": (74.7, 156.2, 11.5, AIR()),
@@ -85,7 +85,7 @@ def shape_mask(shapes, conv, grow=0):
     m = Image.new("L", (W * SS, H * SS), 0); d = ImageDraw.Draw(m)
     for s in shapes:
         if s[0] == "rr":
-            x0, y0, x1, y1 = conv(s[1], s[2]) + conv(s[3], s[4]); r = s[5] * conv.k
+            x0, y0, x1, y1 = conv(s[1], s[2]) + conv(s[3] if s[3] >= 0 else conv.wmm + s[3], s[4]); r = s[5] * conv.k
             x1 = min(x1, conv.bx1 + 40)
             d.rounded_rectangle(((x0 - grow) * SS, (y0 - grow) * SS, (x1 + grow) * SS, (y1 + grow) * SS), radius=(r + grow) * SS, fill=255)
         else:
@@ -116,6 +116,10 @@ def lens(img, cx, cy, d):
     # highlights
     h1, _ = disc(cx - R * 0.26, cy - R * 0.28, R * 0.13, 1.6); over(img, (235, 240, 255), h1 * 0.85)
     h2, _ = disc(cx + R * 0.22, cy + R * 0.25, R * 0.06, 1.2); over(img, (160, 190, 255), h2 * 0.6)
+def ring(img, cx, cy, d):
+    R = d / 2; a, _ = disc(cx, cy, R); ang = np.arctan2(yy - cy, xx - cx)
+    steel = 150 + 55 * np.cos(ang - 2.3); over(img, np.dstack([steel, steel, steel + 6]), a)
+    a2, _ = disc(cx, cy, R * 0.84); over(img, (16, 16, 18), a2)
 def flash(img, cx, cy, d):
     R = d / 2
     a, dist = disc(cx, cy, R); over(img, (212, 210, 204), a)
@@ -136,7 +140,7 @@ def build(slug):
     wmm, hmm, rmm, L = MODELS[slug]
     BH = 1480; bw = BH * wmm / hmm
     bx0, by0 = (W - bw) / 2, (H - BH) / 2; bx1, by1 = bx0 + bw, by0 + BH
-    k = bw / wmm; cv = Conv(bx0, by0, k, bx1)
+    k = bw / wmm; cv = Conv(bx0, by0, k, bx1); cv.wmm = wmm
     body = shape_mask([("rr", 0, 0, wmm, hmm, rmm)], cv)
     outer = shape_mask([("rr", 0, 0, wmm, hmm, rmm)], cv, grow=11)
     cut = shape_mask(L["cut"], cv) * body
@@ -156,8 +160,10 @@ def build(slug):
     edge_in = np.clip(outer - shape_mask([("rr", 0, 0, wmm, hmm, rmm)], cv, grow=8.5), 0, 1)
     over(img, (120, 122, 126), edge_in * 0.35)
     # camera cut-out: phone body (graphite) with a dark lip from the case
-    plate_tone = 52 + 18 * np.clip(1 - (yy - by0) / (60 * k), 0, 1)
-    over(img, np.dstack([plate_tone, plate_tone, plate_tone + 4]), cut)
+    # dark camera plate, as on Printrove's case templates
+    sv = np.clip((yy - by0) / (50 * k), 0, 1)
+    plate_tone = 44 - 22 * sv + 8 * np.clip(1 - np.abs((xx - bx0) / bw - 0.5) / 0.5, 0, 1)
+    over(img, np.dstack([plate_tone, plate_tone + 1, plate_tone + 4]), cut)
     if "plate" in L:   # raised glass pill inside a wider cut-out
         pm = shape_mask(L["plate"], cv)
         over(img, (34, 35, 39), pm)
@@ -170,8 +176,11 @@ def build(slug):
     cs = np.asarray(Image.fromarray((cut * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(5))).astype(np.float32) / 255
     over(img, (0, 0, 0), np.clip(cut - cs, 0, 1) * 0.9)
     for (x, y, d) in L.get("lens", []): lens(img, *cv(x, y), d * k)
-    for (x, y, d) in L.get("flash", []): flash(img, *cv(x, y), d * k)
+    for (x, y, d) in L.get("flash", []):
+        if L.get("ringed"): ring(img, *cv(x, y), d * k)
+        flash(img, *cv(x, y), d * k * (0.72 if L.get("ringed") else 1))
     for (x, y, d) in L.get("dot", []):
+        if L.get("ringed") and d > 3: ring(img, *cv(x, y), d * k); d = d * 0.72
         (lidar if (L.get("lidar") and d > 3) else dot)(img, *cv(x, y), d * k)
     # print edge: hairline inner shadow + glass gloss over the print
     pe = np.asarray(Image.fromarray((printm * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(4))).astype(np.float32) / 255
