@@ -370,8 +370,8 @@ ${header("","shop")}
     <div id="ty-sum" class="co-sum" hidden></div>
     <ol class="ty-steps">
       <li><b>Today:</b> we check your design and details. If anything needs confirming, we'll WhatsApp you.</li>
-      <li><b>1–2 days:</b> your item is printed to order.</li>
-      <li><b>About 5–7 days:</b> delivered to your door, with tracking shared on WhatsApp.</li>
+      <li><b>2–4 working days:</b> your item is printed, checked and packed.</li>
+      <li><b>3–5 days later:</b> the courier delivers it to your door. We share tracking on WhatsApp.</li>
     </ol>
     <a class="buy ty-wa" id="ty-wa" href="https://wa.me/${wa}" target="_blank" rel="noopener">Message us on WhatsApp</a>
     <a class="ty-back" href="/">Continue shopping</a>
@@ -588,7 +588,7 @@ ${header(rel,"shop")}
         <img id="pimg" alt="" hidden>
       </div>
       <p class="sw-tag">Made personal. Made to be remembered.</p>
-      <ul class="checks"><li>We print exactly the wish you see, no edits</li><li>Made to order, delivered across Karnataka in about 5–7 days</li><li>Arrived broken? <a href="${rel}policies/returns.html">Free replacement or refund</a></li></ul>
+      <ul class="checks"><li>We print exactly the wish you see, no edits</li><li>Made to order, delivered across Karnataka in 5–9 days</li><li>Arrived broken? <a href="${rel}policies/returns.html">Free replacement or refund</a></li></ul>
       <div id="w-admin" hidden><button id="w-dl" type="button" class="ask">Download print file (2550 × 1140)</button></div>
     </div>
   </div>
@@ -1038,7 +1038,7 @@ const CONFIG = {
       '<button class="co-x" type="button" data-close aria-label="Close">×</button>' +
       '<h2 id="co-t">Checkout</h2>' +
       '<div class="co-sum">' + (pic ? '<img src="' + esc2(pic) + '" alt="">' : "") + '<div><b>' + esc2(name.split(" | ")[0]) + '</b>' + (name.split(" | ").length > 1 ? '<span class="co-chips">' + name.split(" | ").slice(1).map(x => '<i>' + esc2(x) + '</i>').join("") + '</span>' : "") + (model ? '<span>' + esc2(model) + '</span>' : "") +
-      '<div class="co-price">' + (was ? '<s>' + esc2(was) + '</s> ' : "") + '<b>' + rupee(price) + '</b></div><span class="co-free">Made to order · delivered in about 5–7 days</span></div></div>' +
+      '<div class="co-price">' + (was ? '<s>' + esc2(was) + '</s> ' : "") + '<b>' + rupee(price) + '</b></div><span class="co-free">Made to order · delivered in 5–9 days</span></div></div>' +
       '<form class="co-form" novalidate>' +
       '<label>Full name<input name="n" autocomplete="name" required value="' + esc2(saved.n || "") + '"></label>' +
       '<label>Mobile number<input name="p" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10-digit mobile" required value="' + esc2(saved.p || "") + '"></label>' +
@@ -1055,7 +1055,7 @@ const CONFIG = {
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H3z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="13.5" r="1.5"/></svg>Wallets</span>' +
       '</div>' +
       '<div class="co-trust"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Secured by Razorpay</span>' +
-        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>5–7 day delivery</span>' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>Delivered in 5–9 days</span>' +
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Free replacement if damaged</span></div>' +
       '<p class="co-note">' + (CONFIG.api ? "The secure payment window opens right here." : "Next, Razorpay’s secure page opens with your details filled in. Tap Pay there.") + ' <a href="#report" data-report>Trouble paying?</a></p>' +
       '</form></div>';
@@ -1291,10 +1291,10 @@ function productPage(p) {
       {"@type":"ListItem","position":3,"name":p.name,"item":url}]}
   ];
   const specs = p.type === "case"
-    ? [["Type","Glass phone case"],["Models",`${p.models.length} models: iPhone 11 to iPhone 17 Pro Max, Galaxy S22 Ultra to S25, OnePlus 11 to 12R`],["Print","Full-colour design, printed to order"],["Dispatch","3–5 days, then about 5–8 days to arrive"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
+    ? [["Type","Glass phone case"],["Models",`${p.models.length} models: iPhone 11 to iPhone 17 Pro Max, Galaxy S22 Ultra to S25, OnePlus 11 to 12R`],["Print","Full-colour design, printed to order"],["Delivery","5–9 days in total: 2–4 working days to print, then 3–5 days by courier"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
     : p.type === "mug"
-    ? [["Type","11oz ceramic mug"],["Print","Full-colour design, printed to order"],["Theme",catLabel(p)],["Dispatch","3–5 days, then about 5–8 days to arrive"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
-    : [["Type","Printed iPhone case"],["Models","iPhone 13 to iPhone 17 Pro Max, and iPhone Air"],["Print","Full-colour design, printed to order"],["Dispatch","3–5 days, then about 5–8 days to arrive"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]];
+    ? [["Type","11oz ceramic mug"],["Print","Full-colour design, printed to order"],["Theme",catLabel(p)],["Delivery","5–9 days in total: 2–4 working days to print, then 3–5 days by courier"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
+    : [["Type","Printed iPhone case"],["Models","iPhone 13 to iPhone 17 Pro Max, and iPhone Air"],["Print","Full-colour design, printed to order"],["Delivery","5–9 days in total: 2–4 working days to print, then 3–5 days by courier"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]];
   return `${head({title, desc, url, image: img, type:"product", root:"../", jsonld})}
 <body>
 ${header("../","")}
@@ -1324,7 +1324,7 @@ ${header("../","")}
         <li>Printed fresh when you order</li>
         <li>Arrived broken? <a href="../policies/returns.html">Free replacement or refund</a></li>
       </ul>
-      <div class="trust-links"><a href="../policies/shipping.html">🚚 Ships in 3–5 days</a><a href="../policies/returns.html">↺ Easy replacements</a><a href="../policies/privacy.html">🔒 Your data stays private</a></div>
+      <div class="trust-links"><a href="../policies/shipping.html">🚚 Delivered in 5–9 days</a><a href="../policies/returns.html">↺ Easy replacements</a><a href="../policies/privacy.html">🔒 Your data stays private</a></div>
       ${p.steps ? `<div class="pdp-steps"><h2>How custom orders work</h2><ol><li>Place your order and DM us a clear, well-lit photo of your pet.</li><li>Pick a style: watercolour, cartoon, minimal line art and more.</li><li>We send you a preview. Ask for changes until you love it.</li><li>We print and ship once you approve.</li></ol></div>` : ""}
       <div class="specs"><h2>Details</h2><dl>${specs.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>
     </div>
@@ -1359,7 +1359,7 @@ ${header("","shop")}
     <div class="trust">
       <div data-paytrust><b>Easy ordering</b>Order on WhatsApp. We confirm every detail before you pay</div>
       <div><b>Made to order</b>Printed fresh when you order</div>
-      <div><b>Delivering across Karnataka</b>Dispatched in 3–5 days, delivered in about 5–8 days. <a href="policies/shipping.html">Details</a></div>
+      <div><b>Delivering across Karnataka</b>Delivered in 5–9 days: we print in 2–4 working days, then the courier takes 3–5 days. <a href="policies/shipping.html">Details</a></div>
       <div><b>Damage-free promise</b>Arrived broken? We replace it. <a href="policies/returns.html">See policy</a></div>
     </div>
     <div class="filters" id="filters">
@@ -1387,7 +1387,7 @@ ${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")
   <div class="faq">
     <h2>Questions</h2>
     <details><summary>How do custom pet orders work?</summary><p>Order the custom mug or case, then DM us a clear, well-lit photo of your pet on Instagram (@nevervoidstore). We create a custom portrait in your chosen style (watercolour, cartoon, minimal line art and more), touch it up, and send you a preview to approve before printing. Free changes until you're happy.</p></details>
-    <details><summary>When will my order arrive?</summary><p>Dispatched in 3–5 days, delivered in about 5–8 days. You'll get tracking details once it ships.</p></details>
+    <details><summary>When will my order arrive?</summary><p>Usually 5–9 days in total: we print and pack it in 2–4 working days, then the courier takes 3–5 days. Bengaluru orders often arrive sooner. You'll get tracking on WhatsApp once it ships.</p></details>
     <details><summary>Do you do bulk or corporate orders?</summary><p>Yes. See our <a href="corporate.html">corporate gifting page</a> for logo mugs, team pet mugs and bulk pricing from ₹319 a piece.</p></details>
     <details><summary>What if it arrives damaged?</summary><p>Send us a photo or unboxing video within 48 hours of delivery and we'll ship a free replacement.</p></details>
   </div>

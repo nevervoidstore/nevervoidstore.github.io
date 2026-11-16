@@ -66,7 +66,7 @@ const CONFIG = {
       '<button class="co-x" type="button" data-close aria-label="Close">×</button>' +
       '<h2 id="co-t">Checkout</h2>' +
       '<div class="co-sum">' + (pic ? '<img src="' + esc2(pic) + '" alt="">' : "") + '<div><b>' + esc2(name.split(" | ")[0]) + '</b>' + (name.split(" | ").length > 1 ? '<span class="co-chips">' + name.split(" | ").slice(1).map(x => '<i>' + esc2(x) + '</i>').join("") + '</span>' : "") + (model ? '<span>' + esc2(model) + '</span>' : "") +
-      '<div class="co-price">' + (was ? '<s>' + esc2(was) + '</s> ' : "") + '<b>' + rupee(price) + '</b></div><span class="co-free">Made to order · delivered in about 5–7 days</span></div></div>' +
+      '<div class="co-price">' + (was ? '<s>' + esc2(was) + '</s> ' : "") + '<b>' + rupee(price) + '</b></div><span class="co-free">Made to order · delivered in 5–9 days</span></div></div>' +
       '<form class="co-form" novalidate>' +
       '<label>Full name<input name="n" autocomplete="name" required value="' + esc2(saved.n || "") + '"></label>' +
       '<label>Mobile number<input name="p" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10-digit mobile" required value="' + esc2(saved.p || "") + '"></label>' +
@@ -83,7 +83,7 @@ const CONFIG = {
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H3z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="13.5" r="1.5"/></svg>Wallets</span>' +
       '</div>' +
       '<div class="co-trust"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Secured by Razorpay</span>' +
-        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>5–7 day delivery</span>' +
+        '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>Delivered in 5–9 days</span>' +
         '<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Free replacement if damaged</span></div>' +
       '<p class="co-note">' + (CONFIG.api ? "The secure payment window opens right here." : "Next, Razorpay’s secure page opens with your details filled in. Tap Pay there.") + ' <a href="#report" data-report>Trouble paying?</a></p>' +
       '</form></div>';
