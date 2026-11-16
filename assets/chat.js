@@ -31,4 +31,14 @@
   if (!seen) setTimeout(show, 5000);
   wrap.querySelector(".wa-x").addEventListener("click", hide);
   wrap.querySelector(".wa-go").addEventListener("click", hide);
+  // phones: step aside while the "Previous / Next design" buttons are on screen, so it never covers them
+  // (the buttons are added by swipe.js, which can run after this script, so look once the page has loaded)
+  function watchNav() {
+    var nav = document.querySelector(".design-nav"), small = matchMedia("(max-width: 760px)");
+    if (!nav || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (es) {
+      wrap.classList.toggle("wa-aside", es[0].isIntersecting && small.matches);
+    }, { rootMargin: "0px 0px -40px 0px" }).observe(nav);
+  }
+  if (document.readyState === "complete") watchNav(); else window.addEventListener("load", watchNav);
 })();
