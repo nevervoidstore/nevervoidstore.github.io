@@ -2,6 +2,7 @@
  * NevervoidStore backend: lives in your own Google Sheet, free.
  *   1. Checkout: creates Razorpay orders at the right price, verifies payments, logs every order in the "Orders" tab.
  *   2. Team links: each employee designs their own mug ("Teams" and "Entries" tabs).
+ *   3. Pet designs: the pet mug / case maker uploads the print file to a Drive folder ("Pet designs" tab).
  *
  * Setup (once):
  *   Extensions > Apps Script, paste this whole file, Save.
@@ -24,6 +25,7 @@ function doPost(e) {
   try { d = JSON.parse(e.postData.contents); } catch (x) { return out_({ ok: false, err: "bad request" }); }
   if (d.a === "order") return createOrder_(d);
   if (d.a === "verify") return verifyPayment_(d);
+  if (d.a === "petdesign") return petDesign_(d);
   return teamPost_(e);
 }
 
@@ -174,4 +176,22 @@ function teamPost_(e) {
     return out_({ ok: false, err: "unknown" });
   } catch (err) { return out_({ ok: false, err: String(err) }); }
   finally { lock.releaseLock(); }
+}
+
+
+// ---------- pet designs ----------
+// The pet maker on the website sends the finished print file (JPEG) with a reference like PET-AB12 that also appears in the order.
+function petDesign_(d) {
+  try {
+    var ref = String(d.ref || "").replace(/[^A-Z0-9-]/g, "").slice(0, 12), kind = d.kind === "case" ? "case" : "mug";
+    var m = /^data:image\/jpeg;base64,(.+)$/.exec(String(d.image || ""));
+    if (!/^PET-[A-Z0-9]{4}$/.test(ref) || !m) return out_({ ok: false, err: "bad design" });
+    var bytes = Utilities.base64Decode(m[1]);
+    if (bytes.length > 12 * 1024 * 1024) return out_({ ok: false, err: "too large" });
+    var it = DriveApp.getFoldersByName("NevervoidStore pet designs"), folder = it.hasNext() ? it.next() : DriveApp.createFolder("NevervoidStore pet designs");
+    var file = folder.createFile(Utilities.newBlob(bytes, "image/jpeg", ref + "-" + kind + ".jpg"));
+    var sh = sheet_("Pet designs", ["Created", "Ref", "Product", "Choices", "File"]);
+    sh.appendRow([new Date(), ref, kind === "mug" ? "Custom Pet Portrait Mug" : "Custom Pet Glass Case", clean_(d.summary, 200), file.getUrl()]);
+    return out_({ ok: true, ref: ref });
+  } catch (x) { return out_({ ok: false, err: "could not save" }); }
 }
