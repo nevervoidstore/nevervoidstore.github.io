@@ -125,7 +125,7 @@ const PAGES = [
 <h2>Orders</h2>
 <p>An order is confirmed once we've confirmed the details with you and received payment. We may decline or cancel an order, with a full refund, if an item is unavailable or there's an error in its price or description.</p>
 <h2>Prices and offers</h2>
-<p>Prices are in Indian rupees (₹). Sale prices apply until the date shown on the site. Any shipping charge is shown before you pay.</p>
+<p>Prices are in Indian rupees (₹). Prices are not fixed and may change at any time without notice, including regular prices, sale prices and offers. The price you pay is the one shown when you place your order; a later price change does not affect an order you have already paid for. Sale prices apply until the date shown on the site. Any shipping charge is shown before you pay.</p>
 <h2>Made-to-order products</h2>
 <p>Every item is printed to order. Product images are representative: colours can look slightly different on screen than in print. Case cutouts and edges vary slightly between phone models.</p>
 <h2>Custom orders and your photos</h2>
