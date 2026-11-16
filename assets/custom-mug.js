@@ -1,4 +1,4 @@
-// NevervoidStore "Your Name Mug" builder: name + 4 traits -> print-ready design (2550x1140, Printrove's mug print area) + live mug preview.
+// NevervoidStore "Your Name Mug" builder: name + 4 traits -> print-ready design (2550x1140, mug print area) + live mug preview.
 (function () {
   "use strict";
   var M = window.NVMug, THEMES = M.THEMES, BAD = M.BAD, byKey = M.byKey, TRAITS = M.TRAITS;
@@ -117,7 +117,7 @@
     $("#cm-summary").textContent = state.name + " · " + labels + " · " + THEMES[state.theme].label + " · " + M.NAME_FONTS[state.font].label + " lettering · " + colorText();
     drawMug(); box.scrollIntoView({ behavior: "smooth", block: "center" });
   });
-  // prefill from a design link (?d=Name~k1.k2.k3.k4~theme); ?admin=1 adds a download of the print file for Printrove
+  // prefill from a design link (?d=Name~k1.k2.k3.k4~theme); ?admin=1 adds a download of the print file for printing
   var q = new URLSearchParams(location.search), d = q.get("d");
   function loadSpec(d) { var p = d.split("~"); state.traits = []; setFont(p[3]); setColor(p[4]); state.name = M.cleanName(decodeURIComponent(p[0] || "")).slice(0, 14).trim(); nameIn.value = state.name; state.nameErr = state.name ? M.nameError(state.name) : ""; fontLabels(); if ((p[1] || "").indexOf("m:") === 0) { state.mode = "msg"; state.msg = decodeURIComponent(p[1].slice(2)).slice(0, 120); if (msgIn) msgIn.value = state.msg; var mb = document.querySelector('.cm-mode[data-m="msg"]'); if (mb) mb.click(); } else { var ent = (p[1] || "").split(".").filter(Boolean).slice(0, 4); state.traits = ent.filter(function (k) { return byKey[k]; }); ent.forEach(function (k) { if (k[0] === "_") { var bits = k.split("_"); addCustom(decodeURIComponent(bits.slice(2).join("_")), bits[1], true); } }); } if (THEMES[p[2]]) { state.theme = p[2]; var r = document.querySelector("[name=cm-theme][value=" + p[2] + "]"); if (r) r.checked = true; } syncChips(); if (JOIN && JOIN.team && THEMES[JOIN.team.theme]) state.theme = JOIN.team.theme; syncChips(); render(); }
   if (d && !window.NV_JOIN) loadSpec(d);

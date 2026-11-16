@@ -370,8 +370,8 @@ ${header("","shop")}
     <div id="ty-sum" class="co-sum" hidden></div>
     <ol class="ty-steps">
       <li><b>Today:</b> we check your design and details. If anything needs confirming, we'll WhatsApp you.</li>
-      <li><b>2–4 working days:</b> your item is printed, checked and packed.</li>
-      <li><b>3–5 days later:</b> the courier delivers it to your door. We share tracking on WhatsApp.</li>
+      <li><b>Next few days:</b> your item is made and checked.</li>
+      <li><b>5–9 days:</b> delivered to your door. We share tracking on WhatsApp.</li>
     </ol>
     <a class="buy ty-wa" id="ty-wa" href="https://wa.me/${wa}" target="_blank" rel="noopener">Message us on WhatsApp</a>
     <a class="ty-back" href="/">Continue shopping</a>
@@ -526,7 +526,7 @@ Anita: Thank you for an amazing year!"></textarea>
     <p id="tm-send-hint" class="cm-hint" aria-live="polite"></p>
     <div class="cm-actions"><button id="tm-send" type="button" class="buy" disabled>Send for a quote on WhatsApp</button></div>
     <div class="tm-more"><button id="tm-copy" type="button" class="linkbtn">Copy a link to these mugs</button><button id="tm-csv" type="button" class="linkbtn">Download the list</button></div>
-    <div id="tm-admin" class="tm-admin" hidden><b>Owner tools</b><button id="tm-zip" type="button" class="buy">Download all print files (.zip)</button><p class="muted cm-small">2550 × 1140 PNG per person, numbered, with list.csv. Upload each to Printrove.</p></div>
+    <div id="tm-admin" class="tm-admin" hidden><b>Owner tools</b><button id="tm-zip" type="button" class="buy">Download all print files (.zip)</button><p class="muted cm-small">2550 × 1140 PNG per person, numbered, with list.csv. Upload each to the print queue.</p></div>
   </section>
   <section class="tm-faq">
     <details><summary>How does payment work?</summary><p>We confirm the price on WhatsApp and send one payment link for the whole order. Teams of 25 or more pay team prices: ₹379 a mug for 25–49, ₹349 for 50–99 and ₹319 for 100+.</p></details>
@@ -1291,10 +1291,10 @@ function productPage(p) {
       {"@type":"ListItem","position":3,"name":p.name,"item":url}]}
   ];
   const specs = p.type === "case"
-    ? [["Type","Glass phone case"],["Models",`${p.models.length} models: iPhone 11 to iPhone 17 Pro Max, Galaxy S22 Ultra to S25, OnePlus 11 to 12R`],["Print","Full-colour design, printed to order"],["Delivery","5–9 days in total: 2–4 working days to print, then 3–5 days by courier"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
+    ? [["Type","Glass phone case"],["Models",`${p.models.length} models: iPhone 11 to iPhone 17 Pro Max, Galaxy S22 Ultra to S25, OnePlus 11 to 12R`],["Print","Full-colour design, printed to order"],["Delivery","5–9 days"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
     : p.type === "mug"
-    ? [["Type","11oz ceramic mug"],["Print","Full-colour design, printed to order"],["Theme",catLabel(p)],["Delivery","5–9 days in total: 2–4 working days to print, then 3–5 days by courier"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
-    : [["Type","Printed iPhone case"],["Models","iPhone 13 to iPhone 17 Pro Max, and iPhone Air"],["Print","Full-colour design, printed to order"],["Delivery","5–9 days in total: 2–4 working days to print, then 3–5 days by courier"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]];
+    ? [["Type","11oz ceramic mug"],["Print","Full-colour design, printed to order"],["Theme",catLabel(p)],["Delivery","5–9 days"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
+    : [["Type","Printed iPhone case"],["Models","iPhone 13 to iPhone 17 Pro Max, and iPhone Air"],["Print","Full-colour design, printed to order"],["Delivery","5–9 days"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]];
   return `${head({title, desc, url, image: img, type:"product", root:"../", jsonld})}
 <body>
 ${header("../","")}
@@ -1359,7 +1359,7 @@ ${header("","shop")}
     <div class="trust">
       <div data-paytrust><b>Easy ordering</b>Order on WhatsApp. We confirm every detail before you pay</div>
       <div><b>Made to order</b>Printed fresh when you order</div>
-      <div><b>Delivering across Karnataka</b>Delivered in 5–9 days: we print in 2–4 working days, then the courier takes 3–5 days. <a href="policies/shipping.html">Details</a></div>
+      <div><b>Delivering across Karnataka</b>Delivered in 5–9 days. <a href="policies/shipping.html">Details</a></div>
       <div><b>Damage-free promise</b>Arrived broken? We replace it. <a href="policies/returns.html">See policy</a></div>
     </div>
     <div class="filters" id="filters">
@@ -1387,7 +1387,7 @@ ${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")
   <div class="faq">
     <h2>Questions</h2>
     <details><summary>How do custom pet orders work?</summary><p>Order the custom mug or case, then DM us a clear, well-lit photo of your pet on Instagram (@nevervoidstore). We create a custom portrait in your chosen style (watercolour, cartoon, minimal line art and more), touch it up, and send you a preview to approve before printing. Free changes until you're happy.</p></details>
-    <details><summary>When will my order arrive?</summary><p>Usually 5–9 days in total: we print and pack it in 2–4 working days, then the courier takes 3–5 days. Bengaluru orders often arrive sooner. You'll get tracking on WhatsApp once it ships.</p></details>
+    <details><summary>When will my order arrive?</summary><p>Usually 5–9 days. You'll get tracking on WhatsApp once it ships.</p></details>
     <details><summary>Do you do bulk or corporate orders?</summary><p>Yes. See our <a href="corporate.html">corporate gifting page</a> for logo mugs, team pet mugs and bulk pricing from ₹319 a piece.</p></details>
     <details><summary>What if it arrives damaged?</summary><p>Send us a photo or unboxing video within 48 hours of delivery and we'll ship a free replacement.</p></details>
   </div>

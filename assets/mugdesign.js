@@ -1,5 +1,5 @@
 // NevervoidStore mug design engine, shared by /custom-mug/, /team/ and the employee team links.
-// A design is {name, mode:"traits"|"msg", traits:[keys], msg, theme}. Output: 2550x1140 print (Printrove mug print area) + real-mug preview.
+// A design is {name, mode:"traits"|"msg", traits:[keys], msg, theme}. Output: 2550x1140 print (mug print area) + real-mug preview.
 (function () {
   "use strict";
   var PW = 2550, PH = 1140, FRONT = Math.round(0.78 * PW), BACK = Math.round(0.205 * PW);
@@ -25,7 +25,7 @@
     hand:    { label: "Handwritten", family: "NVHand, cursive", weight: 700, max: 220 },
     festive: { label: "Festive", family: "NVFestive, Georgia, serif", weight: 700, max: 190 }
   };
-  // Printrove mug colours: the handle and the inside take the colour; the printed body stays white
+  // Mug colours: the handle and the inside take the colour; the printed body stays white
   var MUG_COLORS = {
     white:  { label: "White", hex: "#ffffff" },
     black:  { label: "Black", hex: "#202020" },
@@ -277,7 +277,7 @@
   function newPrint() { var c = document.createElement("canvas"); c.width = PW; c.height = PH; return c; }
   function render(print, d) { return fontsReady.then(function () { return d.kind === "wish" ? drawWish(print, d) : drawPrint(print, d); }); }
 
-  // real-mug preview: Printrove's mug photo with the print wrapped using the measured cylinder maps
+  // real-mug preview: the mug photo with the print wrapped using the measured cylinder maps
   var MUGS = {}, small = document.createElement("canvas"); small.width = 1020; small.height = 456;
   function loadImg(src) { return new Promise(function (ok, no) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = no; i.src = src; }); }
   function pixels(img) { var c = document.createElement("canvas"); c.width = img.width; c.height = img.height; var x = c.getContext("2d"); x.drawImage(img, 0, 0); return x.getImageData(0, 0, img.width, img.height).data; }
@@ -314,7 +314,7 @@
         var cr = parseInt(mc.hex.slice(1, 3), 16), cg = parseInt(mc.hex.slice(3, 5), 16), cb = parseInt(mc.hex.slice(5, 7), 16), t = m.tint;
         for (var j = 0, nn = 620 * 620; j < nn; j++) {
           var q = j * 4, a = t[q + 3] / 255; if (!a) continue;
-          var L = t[q] / 255 * 1.3; // shading of Printrove's coloured-mug photo, soft edges in the alpha
+          var L = t[q] / 255 * 1.3; // shading of the coloured-mug photo, soft edges in the alpha
           o[q] = o[q] * (1 - a) + Math.min(255, cr * L) * a; o[q + 1] = o[q + 1] * (1 - a) + Math.min(255, cg * L) * a; o[q + 2] = o[q + 2] * (1 - a) + Math.min(255, cb * L) * a;
         }
       }

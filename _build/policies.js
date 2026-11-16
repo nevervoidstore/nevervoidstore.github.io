@@ -47,12 +47,9 @@ const PAGES = [
 <p>For now we deliver only within <strong>Karnataka</strong>, to pincodes starting with 56, 57, 58 or 59. We hope to deliver across India soon. <a href="https://wa.me/${CONTACT.whatsapp}?text=Hi%20Antony!%20Please%20let%20me%20know%20when%20you%20deliver%20outside%20Karnataka.">Ask us to let you know</a>.</p>
 <h2>How long it takes</h2>
 <table><thead><tr><th>Stage</th><th>Time</th></tr></thead><tbody>
-<tr><td>Printing, checking and packing</td><td>2–4 working days after your order (Sundays not counted)</td></tr>
-<tr><td>Courier to your door</td><td>3–5 days, depending on your location in Karnataka</td></tr>
-<tr><td><strong>Total</strong></td><td><strong>Usually 5–9 days</strong></td></tr>
+<tr><td>Delivery anywhere in Karnataka</td><td>Usually 5–9 days from your order</td></tr>
 <tr><td>Custom pet portraits</td><td>Printing starts after you approve your preview</td></tr>
 </tbody></table>
-<p>Bengaluru orders often arrive sooner. Our last Bengaluru order was printed the next day and delivered 3 days after it was placed.</p>
 <p>For delivery before Christmas, order by <strong>12 December</strong>.</p>
 <h2>Shipping charges</h2>
 <p>Any shipping charge is shown and confirmed with you before you pay. You will never be charged anything you haven't seen.</p>
@@ -163,7 +160,7 @@ ${CONTACT.grievanceOfficer ? `<h2>Grievance officer</h2><p>If you're not satisfi
   body: () => `
 <p class="lead">NevervoidStore is a brand by <a href="${CONTACT.photographySite}" rel="noopener"><strong>Nevervoid Photography</strong></a>, founded by <strong>Antony Pratap</strong>${CONTACT.linkedin ? ` <a class="li-inline" href="${CONTACT.linkedin}" rel="noopener" aria-label="Antony Pratap on LinkedIn">${LI_ICON}</a>` : ""}. It's a small, independent gift store from Bengaluru making mugs and phone cases people actually keep.</p>
 <h2>What we make</h2>
-<p>We design Christmas mugs, pet mugs, custom pet portraits and printed phone cases for iPhone, Samsung and OnePlus. Nothing sits in a warehouse. Each piece is printed fresh by our print partner in India when you order, then packed and delivered to you anywhere in Karnataka.</p>
+<p>We design Christmas mugs, pet mugs, custom pet portraits and printed phone cases for iPhone, Samsung and OnePlus. Nothing sits in a warehouse. Each piece is made fresh when you order, then packed and delivered to you anywhere in Karnataka.</p>
 <h2>How we work</h2>
 <ul>
 <li><strong>You see it before you pay:</strong> we confirm every order's details with you first.</li>

@@ -1,5 +1,5 @@
 // Mug colour picker for ready-made mug pages: recolours the handle and inside of the product photos
-// (same Printrove photo geometry as /custom-mug/) and adds the colour to the order.
+// (same product photo geometry as /custom-mug/) and adds the colour to the order.
 (function () {
   "use strict";
   var COLORS = { white: ["White", "#ffffff"], black: ["Black", "#202020"], red: ["Red", "#ce051f"], orange: ["Orange", "#ec692c"], yellow: ["Yellow", "#f4b63f"],
@@ -11,7 +11,7 @@
   function label(k) { return k === "white" ? "White" : COLORS[k][0] + " handle & inside"; }
   function loadImg(src) { return new Promise(function (ok, no) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = no; i.src = src; }); }
   function tint(v) { if (!tints[v]) tints[v] = loadImg("/assets/custommug/tint-" + v + ".png").then(function (im) { var c = document.createElement("canvas"); c.width = c.height = 620; var x = c.getContext("2d"); x.drawImage(im, 0, 0); return x.getImageData(0, 0, 620, 620).data; }); return tints[v]; }
-  // product photos are 620x620 crops of the same Printrove photo: -a = handle left, -b = handle right
+  // product photos are 620x620 crops of the same product photo: -a = handle left, -b = handle right
   function recolour(src, k) {
     var m = /-(a|b)\.webp(\?.*)?$/.exec(src); if (!m || k === "white") return Promise.resolve(src);
     var id = src + "|" + k; if (cache[id]) return cache[id];
