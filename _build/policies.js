@@ -8,6 +8,7 @@ const CONTACT = {
   email: "",              // e.g. "hello@nevervoidstore.com"
   phone: "",              // e.g. "+91 98765 43210"
   whatsapp: "919880000990", // digits only, e.g. "919876543210"
+  ga4: "G-29306NLS2P", // Google Analytics 4 measurement ID; empty = no Google Analytics
   metaPixel: "185720795222527", // Meta dataset (Pixel) ID, digits only; empty = no Meta tracking
   metaDomainVerify: "", // content of the facebook-domain-verification meta tag
   teamApi: "", // Google Apps Script web app URL (…/exec): the site backend (checkout + team links). Empty = both off
