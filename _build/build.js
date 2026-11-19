@@ -544,6 +544,54 @@ ${footer("../")}
 const WISH_OCC = JSON.parse(fs.readFileSync(path.join(SRC, "wish", "occasions.json"), "utf8"));
 const WISH_PATH = "send-a-wish-custom-mug";      // nevervoidstore.com/send-a-wish-custom-mug/<occasion>/
 const WISH_DEFAULT = "christmas";               // occasion the main page opens on (seasonal)
+
+// Family nickname mug: /family-mug/
+const FAMILY_PATH = "family-mug";
+function familyPage() {
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp), url = `${BASE}/${FAMILY_PATH}/`;
+  const desc = "A mug with the word your family really uses: Ajji, Paati, Nani, Amma, Akka. Add their own line and your name, see it instantly. Made to order, delivered across Karnataka.";
+  const jsonld = [{"@context":"https://schema.org","@type":"Product","name":"Family Nickname Mug","description":desc,"image":`${BASE}/images/family-mug.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
+    "offers":{"@type":"Offer","priceCurrency":"INR","price":String(price),"availability":"https://schema.org/MadeToOrder","url":url}}];
+  return `${head({title:"Ajji, Paati, Nani, Amma Mug: Personalised Christmas Gift | Nevervoid Store", desc, url, image:`${BASE}/images/family-mug.jpg`, root:"../", jsonld})}
+<body>
+${header("../","shop")}
+<main class="wrap cm">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Shop</a> › <span>Family nickname mug</span></nav>
+  <section class="cm-hero"><span class="eyebrow">New · Design your own</span><h1>Call them what <em>your family</em> calls them</h1>
+    <p class="lead">Ajji, Paati, Nani, Amma, Akka: the word only your family uses, their own line, and a little love from you. See it on the mug as you type.</p></section>
+  <section class="pdp cm-grid">
+    <div class="cm-preview">
+      <div class="gallery ph cm-stage"><canvas id="fm-mug" width="620" height="620" aria-label="Your mug preview"></canvas></div>
+      <div class="views cm-views"><button type="button" class="view fm-view on" data-v="r"><span>Handle right</span></button><button type="button" class="view fm-view" data-v="l"><span>Handle left</span></button></div>
+      <figure class="flat-wrap"><canvas id="fm-flat" width="1020" height="456"></canvas><figcaption>The full print, as it wraps round the mug. The design is on both sides.</figcaption></figure>
+    </div>
+    <div class="cm-form">
+      <div class="cm-step"><b>1. What does your family call them?</b>
+        <div id="fm-tabs" class="cm-modes fm-tabs" role="group" aria-label="Who"></div>
+        <div id="fm-words" class="cm-chips" role="group" aria-label="Family words"></div>
+        <div class="cm-own"><input id="fm-own" maxlength="14" autocomplete="off" autocapitalize="words" placeholder="Or type your own word, e.g. Ammi" aria-label="Type your own word"></div></div>
+      <label class="cm-step"><b>2. Their line</b><input id="fm-line" maxlength="32" autocomplete="off" placeholder="e.g. Best filter coffee in town">
+        <span class="cm-note">Something only they would be known for. Tap an idea or write your own (up to 32 characters).</span></label>
+      <div id="fm-lines" class="cm-chips fm-lines" role="group" aria-label="Line ideas"></div>
+      <label class="cm-step"><b>3. Love from</b><input id="fm-from" maxlength="14" autocomplete="off" autocapitalize="words" placeholder="Your name, e.g. Arjun (optional)"></label>
+      <div class="cm-step"><b>4. Style</b><div class="cm-themes"><label class="cm-theme"><input type="radio" name="fm-theme" value="xmas" checked><span><i style="background:#b3122a"></i><i style="background:#1c603a"></i>Christmas</span></label><label class="cm-theme"><input type="radio" name="fm-theme" value="home"><span><i style="background:#1f2a44"></i><i style="background:#b4583a"></i>Everyday</span></label></div></div>
+      <p id="fm-warn" class="cm-warn" aria-live="polite" hidden></p>
+      <div id="fm-order" class="buybox">
+        <div class="pprice"><span class="was">${rupee(cp.price)}</span> <span class="now">${rupee(price)}</span></div>
+        <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span><input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
+        <div class="pin-msg" hidden></div>
+        <button class="buy" type="button" data-order data-nobar data-rzp="custom_pet_mug" data-id="mug-name" data-name="Family Nickname Mug" data-price="${price}">Order now · ${rupee(price)}</button>
+        <img id="pimg" alt="" hidden>
+        <p class="pnote">We print exactly what you see. 11oz white ceramic mug, made to order, delivered in 5–9 days.</p>
+      </div>
+    </div>
+  </section>
+</main>
+${footer("../")}
+<style>.fm-tabs{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}.fm-tabs .cm-mode{padding:9px 8px;font-size:14px}#fm-line,#fm-from,#fm-own{display:block;width:100%;margin-top:8px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:#fff}.fm-lines{margin:-6px 0 6px}.fm-lines .cm-chip{font-size:13px}</style>
+<script defer src="/assets/mugdesign.js"></script>
+<script defer src="/assets/familymug.js"></script>`;
+}
 function wishPage(start) {
   const o = start ? WISH_OCC[start] : null, cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp);
   const rel = start ? "../../" : "../", url = `${BASE}/${WISH_PATH}/${start ? WISH_OCC[start].seo.slug + "/" : ""}`;
@@ -605,6 +653,15 @@ function wishRedirect() {
   const to = `/${WISH_PATH}/`;
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Send a Wish | Nevervoid Store</title><link rel="canonical" href="${BASE}${to}"><meta name="robots" content="noindex">
 <meta http-equiv="refresh" content="0; url=${to}"><script>location.replace("${to}" + location.search + location.hash);</script></head><body><a href="${to}">Send a Wish</a></body></html>`;
+}
+function familyCard(root) {
+  const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}${FAMILY_PATH}/`;
+  return `<article class="card coll-card" data-cat="christmas" data-type="mug">
+    <a class="stage ph" href="${href}" aria-label="Family nickname mug">${SALE.on ? `<span class="fx-badge">−${SALE.pct}%</span>` : ""}<img class="photo" src="/images/family-mug.jpg" alt="Family nickname mug: Ajji" width="620" height="620" loading="lazy"></a>
+    <div class="info"><div class="tags"><span class="tag">Personalised</span></div>
+      <h3><a href="${href}">Ajji, Nani, Amma Mug</a></h3><p>The word only your family uses, their own line and your name. See it as you type.</p>
+      <div class="price">${SALE.on ? `<span class="was">${rupee(cp.price)}</span> ` : ""}<span class="now">${rupee(salePrice(cp))}</span></div>
+      <a class="buy" href="${href}">Design yours</a></div></article>`;
 }
 function wishCard(root) {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), href = `${root}${WISH_PATH}/`;
@@ -1377,7 +1434,7 @@ ${header("","shop")}
       <a class="chip-link" href="initials/">🔤 Initials A–Z</a>
     </div>
     <div class="grid" id="grid">
-${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(0, 0, nameMugCard("")); list.splice(1, 0, wishCard("")); list.splice(2, 0, initialsCard("")); list.splice(4, 0, casesCard("")); return list.join("\n"); })()}
+${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(0, 0, nameMugCard("")); list.splice(1, 0, wishCard("")); list.splice(2, 0, familyCard("")); list.splice(2, 0, initialsCard("")); list.splice(4, 0, casesCard("")); return list.join("\n"); })()}
     </div>
   </div>
   <section class="band">
@@ -1492,11 +1549,14 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.mkdirSync(path.join(OUT,"custom-mug"),{recursive:true}); fs.writeFileSync(path.join(OUT,"custom-mug","index.html"), customMugPage());
 fs.copyFileSync(path.join(SRC,"custommug","custom-mug.js"), path.join(OUT,"assets","custom-mug.js"));
 fs.copyFileSync(path.join(SRC,"custommug","mugdesign.js"), path.join(OUT,"assets","mugdesign.js"));
+fs.copyFileSync(path.join(SRC,"custommug","familymug.js"), path.join(OUT,"assets","familymug.js"));
+fs.mkdirSync(path.join(OUT,FAMILY_PATH),{recursive:true}); fs.writeFileSync(path.join(OUT,FAMILY_PATH,"index.html"), familyPage());
 fs.copyFileSync(path.join(SRC,"custommug","mugcolor.js"), path.join(OUT,"assets","mugcolor.js"));
 fs.copyFileSync(path.join(SRC,"custommug","petmaker.js"), path.join(OUT,"assets","petmaker.js"));
 fs.copyFileSync(path.join(SRC,"custommug","wish.js"), path.join(OUT,"assets","wish.js"));
 fs.copyFileSync(path.join(SRC,"custommug","swipe.js"), path.join(OUT,"assets","swipe.js"));
 fs.mkdirSync(path.join(OUT,"assets","wish"),{recursive:true}); fs.readdirSync(path.join(SRC,"wish")).forEach(f => fs.copyFileSync(path.join(SRC,"wish",f), path.join(OUT,"assets","wish",f)));
+fs.copyFileSync(path.join(SRC,"family-mug.jpg"), path.join(OUT,"images","family-mug.jpg"));
 if (fs.existsSync(path.join(SRC,"send-a-wish.jpg"))) fs.copyFileSync(path.join(SRC,"send-a-wish.jpg"), path.join(OUT,"images","send-a-wish.jpg"));
 fs.mkdirSync(path.join(OUT,"send-a-wish"),{recursive:true}); fs.writeFileSync(path.join(OUT,"send-a-wish","index.html"), wishRedirect());
 fs.mkdirSync(path.join(OUT,WISH_PATH),{recursive:true}); fs.writeFileSync(path.join(OUT,WISH_PATH,"index.html"), wishPage());
@@ -1522,7 +1582,7 @@ fs.mkdirSync(path.join(OUT,"blog"), {recursive:true});
 fs.writeFileSync(path.join(OUT,"blog","index.html"), blogIndex());
 POSTS.forEach(p => fs.writeFileSync(path.join(OUT,"blog",p.slug+".html"), postPage(p)));
 fs.writeFileSync(path.join(OUT,"robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/"+WISH_PATH+"/", ...Object.values(WISH_OCC).map(x => `${BASE}/${WISH_PATH}/${x.seo.slug}/`), BASE+"/team/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
+const urls = [BASE+"/", BASE+"/custom-mug/", BASE+"/"+FAMILY_PATH+"/", BASE+"/"+WISH_PATH+"/", ...Object.values(WISH_OCC).map(x => `${BASE}/${WISH_PATH}/${x.seo.slug}/`), BASE+"/team/", BASE+"/cases/", BASE+"/initials/", ...INITIALS().map(p => `${BASE}/initials/${p.letter.toLowerCase()}/`), BASE+"/corporate.html", BASE+"/blog/index.html", ...PAGES.map(pg=>`${BASE}/policies/${pg.slug}.html`), ...POSTS.map(p=>`${BASE}/blog/${p.slug}.html`), ...PRODUCTS.map(p=>`${BASE}/products/${p.slug}.html`)];
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${u}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(OUT,"404.html"), `${head({title:"Page not found | Nevervoid Store", desc:"This page doesn't exist. Browse our Christmas mugs, pet mugs and phone cases.", url:BASE+"/404.html", image:BASE+"/images/og-home.jpg", root:"/"})}
 <body>${header("/","")}<main class="wrap" style="text-align:center;padding:80px 20px"><h1 style="font-family:Fraunces,serif;font-size:40px">This page wandered off</h1><p style="color:var(--muted);margin:10px 0 24px">Let's get you back to the mugs.</p><a class="buy" style="display:inline-block;padding:12px 22px" href="/index.html">Browse all products</a></main>${footer("/")}`);
