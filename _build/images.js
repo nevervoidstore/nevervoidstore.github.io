@@ -7,7 +7,7 @@ const fonts=`<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,
 for(const it of items){
   if(it.photo){ const b64=fs.readFileSync(it.photo).toString('base64'); it.art=`<img src="data:image/webp;base64,${b64}" style="height:820px">`; }
   const bg=it.cat==='christmas'?'#f1ebdf':'#e9efe4';
-  if(it.photo){ await p.setContent(`<body style="margin:0;width:1000px;height:1000px;background:#fff"><img src="data:image/webp;base64,${fs.readFileSync(it.photo).toString('base64')}" style="width:1000px;height:1000px;display:block"></body>`); await p.waitForTimeout(150); await p.screenshot({path:`site/images/products/${it.slug}.jpg`,type:'jpeg',quality:88}); continue; }
+  if(it.photo){ await p.setContent(`<body style="margin:0;width:1000px;height:1000px;background:#fff"><img src="data:image/webp;base64,${fs.readFileSync(it.photo).toString('base64')}" style="width:1000px;height:1000px;object-fit:contain;display:block"></body>`); await p.waitForTimeout(150); await p.screenshot({path:`site/images/products/${it.slug}.jpg`,type:'jpeg',quality:88}); continue; }
   await p.setContent(`<body style="margin:0;width:1000px;height:1000px;background:radial-gradient(circle at 50% 40%,#fff 0,${bg} 75%);display:flex;align-items:center;justify-content:center">${fonts}<div style="height:800px;display:flex;align-items:center;justify-content:center">${it.art.replace('<svg ','<svg style="height:800px;width:auto" ')}</div></body>`);
   await p.waitForTimeout(250);
   await p.screenshot({path:`site/images/products/${it.slug}.jpg`,type:'jpeg',quality:85});

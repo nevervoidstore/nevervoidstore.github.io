@@ -171,7 +171,7 @@
     }
     drawCase();
     if (!pv) { pv = el("canvas"); pv.id = "pmcanvas"; pv.width = 900; pv.height = 1200; gallery.appendChild(pv); if (pimg) pimg.style.visibility = "hidden"; var ph = gallery.querySelector("img.photo"); if (ph) ph.style.visibility = "hidden"; }
-    var slug = S.model, v = "?v=6";
+    var slug = S.model, v = "?v=7";
     return Promise.all([RECTS || fetch("/images/cases/frames/rects.json" + v).then(function (r) { return r.json(); }).then(function (j) { RECTS = j; return j; }),
       loadImg("/images/cases/frames/" + slug + "-frame.webp" + v), loadImg("/images/cases/frames/" + slug + "-mask.png" + v)]).then(function (r) {
       var R = r[0][slug], fr = r[1], mk = r[2], k = pv.width / 1200, ctx = pv.getContext("2d");
