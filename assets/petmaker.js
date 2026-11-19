@@ -208,7 +208,7 @@
   }, true);
   // case: follow the phone model the shopper picks
   document.querySelectorAll("select.model").forEach(function (sel) {
-    sel.addEventListener("change", function () { var o = sel.selectedOptions[0]; if (o && o.dataset.s) { S.model = o.dataset.s; if (KIND === "case") schedule(); } });
+    /* one clean preview frame for every model (iPhone 16 Pro) */
   });
 
   // ---- order: a photo is needed, and the design goes along with the order ----

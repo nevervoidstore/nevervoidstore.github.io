@@ -724,7 +724,7 @@ const extraCss = `
 .pin-msg a{color:inherit;font-weight:700}
 .buy.alt-wa{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:0}
 .buy.alt-wa:hover{background:#f4f1ea}
-.pay-note{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);font-weight:600}
+.pay-note a{color:inherit;text-decoration:none}.pay-note{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);font-weight:600}
 .pdp .buy{font-size:16px;padding:14px}
 .checks{list-style:none;display:grid;gap:8px;margin:18px 0 0}
 .checks li{font-size:14.5px;display:flex;gap:8px}
@@ -1207,7 +1207,7 @@ const CONFIG = {
       const row = document.createElement("div"); row.className = "buy-row";
       btn.before(row); row.appendChild(btn); row.appendChild(alt);
       const note = document.createElement("div"); note.className = "pay-note";
-      note.innerHTML = "<span>🔒 Safe payment</span><span>🚚 5–9 days</span><span>🔄 Free replacement</span>";
+      note.innerHTML = '<span>🔒 Safe payment</span><span>🚚 5–9 days</span><a href="/policies/returns.html">🔄 Free replacement</a>';
       row.after(note);
     }
     btn.addEventListener("click", () => {
@@ -1234,11 +1234,9 @@ const CONFIG = {
   document.querySelectorAll(".model").forEach(sel => sel.addEventListener("change", () => {
     // show the design on the phone the shopper picked
     const o = sel.selectedOptions[0], note = document.getElementById("shown-on"), cv = document.getElementById("pcanvas"), img = document.getElementById("pimg");
-    if (!o || !o.value || !o.dataset.s) return;
-    if (cv && sel.closest(".buybox")) { previewOn(cv, o.dataset.s, o.value); return; }
-    if (img && img.dataset.base && sel.closest(".buybox")) {
-      const n = new Image(); n.onload = () => { img.src = n.src; if (note) note.textContent = "Shown on your " + o.value + "."; }; n.src = img.dataset.base + o.dataset.s + ".webp";
-    }
+    // one clean preview for every model; just confirm the fit
+    if (!o || !o.value || !sel.closest(".buybox")) return;
+    if (note) note.textContent = "\u2713 Made to fit your " + o.value + ".";
   }));
   // live preview: the chosen design on the chosen phone model (frame + print-area mask + design)
   const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
@@ -1337,7 +1335,7 @@ function petHost(p) {
   return `<div class="pm-host" data-petmaker="${p.type}" data-wa="${POL.CONTACT.whatsapp}" data-api="${TEAM_API}"></div>${p.type === "mug" ? `<script defer src="/assets/mugdesign.js"></script>` : ""}<script defer src="/assets/petmaker.js"></script>`;
 }
 function galleryHtml(p) {
-  return petGal(p, `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" data-base="/images/cases/${p.folder}/" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : (p.galleryArt || p.art)}${p.code ? `<canvas id="pcanvas" class="photo" width="1200" height="1600" hidden data-art="/images/cases/designs/${p.slug.replace(/-glass-phone-case$/, "")}-art.webp?v=6"></canvas>` : ""}</div>${p.shownOn ? `<p class="shown-on" id="shown-on">Shown on an ${p.shownOn}. Choose your phone to see it on yours.</p>` : ""}${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`);
+  return petGal(p, `<div class="gal-col"><div class="gallery ${p.cat}${p.photoMug ? " ph" : ""}" role="img" aria-label="${esc(p.name)} mock-up">${SALE.on ? `<span class="fx-badge big">−${SALE.pct}%</span>` : ""}${p.photoMug ? `<img id="pimg" class="photo" src="/images/mugs/${p.slug}-${p.view}.webp" alt="${esc(p.name)}" width="620" height="620"><div id="m3d" class="m3d" hidden data-wrap="/images/mugs/${p.slug}-wrap.webp" data-start="${p.view === "a" ? "3.1416" : "0"}"><span class="m3d-side" aria-live="polite"></span><span class="m3d-note">Illustration only · sides shown for a right-hand hold</span></div>` : p.real ? `<img id="pimg" class="photo" data-base="/images/cases/${p.folder}/" src="${p.imgFor(p.defaultModel)}" alt="${esc(p.name)}" width="600" height="800">` : (p.galleryArt || p.art)}${p.code ? `<canvas id="pcanvas" class="photo" width="1200" height="1600" hidden data-art="/images/cases/designs/${p.slug.replace(/-glass-phone-case$/, "")}-art.webp?v=6"></canvas>` : ""}</div>${p.shownOn ? `<p class="shown-on" id="shown-on">Shown on an ${p.shownOn}. Made to fit the phone you choose.</p>` : ""}${p.photoMug ? `<div class="views" role="group" aria-label="Mug views"><button type="button" class="view on" data-src="/images/mugs/${p.slug}-${p.view}.webp"><img src="/images/mugs/${p.slug}-${p.view}.webp" alt="" loading="lazy"><span>${p.view === "a" ? "Handle left" : "Handle right"}</span></button><button type="button" class="view" data-src="/images/mugs/${p.slug}-${p.alt}.webp"><img src="/images/mugs/${p.slug}-${p.alt}.webp" alt="" loading="lazy"><span>${p.alt === "a" ? "Handle left" : "Handle right"}</span></button>${p.noExtras ? "" : `<button type="button" class="view v360" data-spin="1" aria-label="3D preview of the design"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="26" rx="19" ry="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M38 17l7 3-5 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><text x="26" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="DM Sans,sans-serif">3D</text></svg><span>3D preview</span></button>`}</div>${p.noExtras ? "" : `<figure class="flat-wrap"><img src="/images/mugs/${p.slug}-flat.webp" alt="Full wrap design for the ${esc(p.name)}" loading="lazy"><figcaption>The full design, as it wraps around the mug. The NevervoidStore watermark is only on this online preview, not on your mug.</figcaption></figure>`}` : ""}</div>`);
 }
 function petGal(p, html) { const h = petHost(p); return h ? html.replace(/<\/div>$/, h + "</div>") : html; }
 
@@ -1390,12 +1388,6 @@ ${header("../","")}
       <div class="buybox">
       ${orderBlock(p)}
       </div>
-      <ul class="checks">
-        <li data-paytrust>Order on WhatsApp. We confirm every detail before you pay</li>
-        <li>Printed fresh when you order</li>
-        <li>Arrived broken? <a href="../policies/returns.html">Free replacement or refund</a></li>
-      </ul>
-      <div class="trust-links"><a href="../policies/shipping.html">🚚 Delivered in 5–9 days</a><a href="../policies/returns.html">↺ Easy replacements</a><a href="../policies/privacy.html">🔒 Your data stays private</a></div>
       ${p.steps ? `<div class="pdp-steps"><h2>How it works</h2><ol><li>Upload a clear, well-lit photo of your pet.</li><li>Pick a style, move and zoom the photo, and add their name if you like.</li><li>Order, and send us your design in the same step.</li><li>We print exactly what you see and deliver in 5–9 days.</li></ol></div>` : ""}
       <div class="specs"><h2>Details</h2><dl>${specs.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>
     </div>

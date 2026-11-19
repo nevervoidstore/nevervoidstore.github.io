@@ -173,7 +173,7 @@ const CONFIG = {
       const row = document.createElement("div"); row.className = "buy-row";
       btn.before(row); row.appendChild(btn); row.appendChild(alt);
       const note = document.createElement("div"); note.className = "pay-note";
-      note.innerHTML = "<span>🔒 Safe payment</span><span>🚚 5–9 days</span><span>🔄 Free replacement</span>";
+      note.innerHTML = '<span>🔒 Safe payment</span><span>🚚 5–9 days</span><a href="/policies/returns.html">🔄 Free replacement</a>';
       row.after(note);
     }
     btn.addEventListener("click", () => {
@@ -200,11 +200,9 @@ const CONFIG = {
   document.querySelectorAll(".model").forEach(sel => sel.addEventListener("change", () => {
     // show the design on the phone the shopper picked
     const o = sel.selectedOptions[0], note = document.getElementById("shown-on"), cv = document.getElementById("pcanvas"), img = document.getElementById("pimg");
-    if (!o || !o.value || !o.dataset.s) return;
-    if (cv && sel.closest(".buybox")) { previewOn(cv, o.dataset.s, o.value); return; }
-    if (img && img.dataset.base && sel.closest(".buybox")) {
-      const n = new Image(); n.onload = () => { img.src = n.src; if (note) note.textContent = "Shown on your " + o.value + "."; }; n.src = img.dataset.base + o.dataset.s + ".webp";
-    }
+    // one clean preview for every model; just confirm the fit
+    if (!o || !o.value || !sel.closest(".buybox")) return;
+    if (note) note.textContent = "✓ Made to fit your " + o.value + ".";
   }));
   // live preview: the chosen design on the chosen phone model (frame + print-area mask + design)
   const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
