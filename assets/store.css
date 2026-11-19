@@ -113,6 +113,7 @@ footer a{font-weight:700;color:var(--ink)}
 .field{display:grid;gap:8px;font-size:15px;font-weight:700}
 .buybox select.model{font:inherit;font-size:16px;font-weight:600;padding:13px 12px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);min-height:50px}
 .buybox select.model:focus{outline:2px solid var(--green);outline-offset:1px}
+.model-note{font-size:13.5px;color:var(--muted);margin:-2px 0 2px}
 .model-miss{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 12px;border-radius:12px;border:1.5px dashed #9cc3a8;background:#f2f8f4;color:#1f4d36;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:-2px}
 .model-miss:hover{background:#e6f2ea}
 .buy-row{display:flex;gap:10px;align-items:stretch}.buy-row .buy{flex:1;margin:0}

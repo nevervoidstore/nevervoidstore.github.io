@@ -183,7 +183,7 @@ function orderBlock(p) {
     const brands = [...new Set(p.models.map(m => m.brand))];
     return `<label class="field">📱 Your phone
         <select class="model" aria-label="Phone model"><option value="">Tap to choose your phone</option>${brands.map(b => `<optgroup label="${b}">${p.models.filter(m=>m.brand===b).map(m=>`<option data-s="${m.slug}">${m.label}</option>`).join("")}</optgroup>`).join("")}</select></label>
-      <button class="model-miss" type="button" data-ask-model data-name="${esc(p.name)}"><span aria-hidden="true">💬</span> Phone not here? Tell us on WhatsApp</button>
+      <p class="model-note">Available for the phones in this list. More models coming soon.</p>
       <label class="field">📍 Delivery pincode
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
@@ -712,6 +712,7 @@ const extraCss = `
 .field{display:grid;gap:8px;font-size:15px;font-weight:700}
 .buybox select.model{font:inherit;font-size:16px;font-weight:600;padding:13px 12px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);min-height:50px}
 .buybox select.model:focus{outline:2px solid var(--green);outline-offset:1px}
+.model-note{font-size:13.5px;color:var(--muted);margin:-2px 0 2px}
 .model-miss{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 12px;border-radius:12px;border:1.5px dashed #9cc3a8;background:#f2f8f4;color:#1f4d36;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:-2px}
 .model-miss:hover{background:#e6f2ea}
 .buy-row{display:flex;gap:10px;align-items:stretch}.buy-row .buy{flex:1;margin:0}
