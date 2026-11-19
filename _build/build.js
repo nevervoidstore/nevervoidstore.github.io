@@ -181,24 +181,22 @@ function footer(root) {
 function orderBlock(p) {
   if (p.models) {
     const brands = [...new Set(p.models.map(m => m.brand))];
-    return `<label class="field">Your phone model
-        <select class="model" aria-label="Phone model"><option value="">Choose your phone</option>${brands.map(b => `<optgroup label="${b}">${p.models.filter(m=>m.brand===b).map(m=>`<option data-s="${m.slug}">${m.label}</option>`).join("")}</optgroup>`).join("")}</select></label>
-      <p class="model-help">Phone not listed? Tap <b>Ask a question</b> and tell us your model.</p>
-      <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
+    return `<label class="field">📱 Your phone
+        <select class="model" aria-label="Phone model"><option value="">Tap to choose your phone</option>${brands.map(b => `<optgroup label="${b}">${p.models.filter(m=>m.brand===b).map(m=>`<option data-s="${m.slug}">${m.label}</option>`).join("")}</optgroup>`).join("")}</select></label>
+      <button class="model-miss" type="button" data-ask-model data-name="${esc(p.name)}"><span aria-hidden="true">💬</span> Phone not here? Tell us on WhatsApp</button>
+      <label class="field">📍 Delivery pincode
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
-      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.orderName || p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>
-      <button class="ask" type="button" data-ask data-name="${esc(p.name)}">Ask a question</button>`;
+      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.orderName || p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>`;
   }
-  return `${p.type==="case" ? `<label class="field">Your iPhone model
-        <select class="model" aria-label="iPhone model"><option value="">Choose your iPhone</option>${IPHONES.map(m=>`<option>${m}</option>`).join("")}</select></label>` : ""}${p.rzpItem === "ceramic_mug" ? `
+  return `${p.type==="case" ? `<label class="field">📱 Your iPhone
+        <select class="model" aria-label="iPhone model"><option value="">Tap to choose your iPhone</option>${IPHONES.map(m=>`<option>${m}</option>`).join("")}</select></label>` : ""}${p.rzpItem === "ceramic_mug" ? `
       <div class="mc-row" data-mugcolors><span class="mc-head">Mug colour <span class="mc-name">White</span></span><div class="mc-list cm-colors" role="radiogroup" aria-label="Mug colour"></div><span class="cm-note">The handle and the inside take the colour; the design is printed on white.</span></div>
       <script defer src="/assets/mugcolor.js"></script>` : ""}
-      <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
+      <label class="field">📍 Delivery pincode
         <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <div class="pin-msg" hidden></div>
-      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.orderName || p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>
-      <button class="ask" type="button" data-ask data-name="${esc(p.name)}">Ask a question</button>`;
+      <button class="buy" type="button" data-order data-rzp="${p.rzpItem}" data-id="${p.id}" data-name="${esc(p.orderName || p.name)}" data-price="${salePrice(p)}">Order now · ${rupee(salePrice(p))}</button>`;
 }
 
 function card(p, root) {
@@ -434,7 +432,7 @@ ${header(join ? "../../" : "../","shop")}
       <div id="cm-order" class="buybox" hidden>
         <p class="cm-ok">✓ Design approved: <span id="cm-summary"></span></p>
         <div class="pprice"><span class="was">${rupee(cp.price)}</span> <span class="now">${rupee(price)}</span></div>
-        <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span><input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
+        <label class="field">📍 Delivery pincode<input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
         <div class="pin-msg" hidden></div>
         <button class="buy" type="button" data-order data-nobar data-rzp="custom_pet_mug" data-id="mug-name" data-name="Custom Name Mug" data-price="${price}">Order now · ${rupee(price)}</button>
         <img id="pimg" alt="" hidden>
@@ -578,7 +576,7 @@ ${header("../","shop")}
       <p id="fm-warn" class="cm-warn" aria-live="polite" hidden></p>
       <div id="fm-order" class="buybox">
         <div class="pprice"><span class="was">${rupee(cp.price)}</span> <span class="now">${rupee(price)}</span></div>
-        <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span><input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
+        <label class="field">📍 Delivery pincode<input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
         <div class="pin-msg" hidden></div>
         <button class="buy" type="button" data-order data-nobar data-rzp="custom_pet_mug" data-id="mug-name" data-name="Family Nickname Mug" data-price="${price}">Order now · ${rupee(price)}</button>
         <img id="pimg" alt="" hidden>
@@ -629,11 +627,10 @@ ${header(rel,"shop")}
       <div class="cm-step"><b>Mug colour</b> <span id="w-color-name" class="muted">White</span><div id="w-colors" class="cm-colors" role="radiogroup" aria-label="Mug colour"></div><span class="cm-note">The handle and the inside take the colour; the design is printed on white.</span></div>
       <p id="w-hint" class="cm-hint" aria-live="polite"></p>
       <div class="buybox sw-buy" id="w-order">
-        <label class="field">Delivery pincode <span class="hint">(Karnataka only for now)</span>
+        <label class="field">📍 Delivery pincode
           <input class="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
         <div class="pin-msg" hidden></div>
         <button class="buy sw-cta" type="button" data-order data-rzp="custom_pet_mug" data-id="mug-wish" data-name="Send a Wish Mug" data-price="${price}" disabled>Create My Mug · ${rupee(price)}</button>
-        <button class="ask" type="button" data-ask data-name="Send a Wish Mug">Ask a question</button>
         <img id="pimg" alt="" hidden>
       </div>
       <p class="sw-tag">Made personal. Made to be remembered.</p>
@@ -712,15 +709,21 @@ const extraCss = `
 .pdp .pnote{font-size:13.5px;color:var(--muted);margin-bottom:16px}
 .pdp .lead{font-size:16.5px;color:#36413b;margin-bottom:20px}
 .pdp .buybox{display:grid;gap:10px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
-.field{display:grid;gap:6px;font-size:13.5px;font-weight:700}
+.field{display:grid;gap:8px;font-size:15px;font-weight:700}
+.buybox select.model{font:inherit;font-size:16px;font-weight:600;padding:13px 12px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);min-height:50px}
+.buybox select.model:focus{outline:2px solid var(--green);outline-offset:1px}
+.model-miss{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 12px;border-radius:12px;border:1.5px dashed #9cc3a8;background:#f2f8f4;color:#1f4d36;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:-2px}
+.model-miss:hover{background:#e6f2ea}
+.buy-row{display:flex;gap:10px;align-items:stretch}.buy-row .buy{flex:1;margin:0}
+.wa-icon{flex:none;width:58px;border:0;border-radius:14px;background:#25d366;color:#fff;display:grid;place-items:center;cursor:pointer}.wa-icon:hover{background:#1ebe5a}
 .field .hint{font-weight:400;color:var(--muted)}
-.pin{font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--cream)}
+.pin{font:inherit;font-size:17px;padding:13px 12px;border-radius:10px;border:1px solid var(--line);background:var(--cream)}
 .pin-msg{font-size:13.5px;line-height:1.5;padding:10px 12px;border-radius:10px;background:#fbeeee;color:#7a1d23}
 .pin-msg.ok{background:#e9f2ec;color:#1f4d36}
 .pin-msg a{color:inherit;font-weight:700}
 .buy.alt-wa{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:0}
 .buy.alt-wa:hover{background:#f4f1ea}
-.pay-note{font-size:12.5px;color:var(--muted);text-align:center}
+.pay-note{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);font-weight:600}
 .pdp .buy{font-size:16px;padding:14px}
 .checks{list-style:none;display:grid;gap:8px;margin:18px 0 0}
 .checks li{font-size:14.5px;display:flex;gap:8px}
@@ -1076,7 +1079,7 @@ const CONFIG = {
     el.value = el.value.replace(/\\D/g, "").slice(0, 6);
     const box = el.closest(".buybox"), m = box && box.querySelector(".pin-msg"); if (!m) return;
     if (el.value.length < 6) { m.hidden = true; return; }
-    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ We deliver to " + el.value + "."; }
+    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here"; }
     else showPinMsg(box, el.value);
   }));
 
@@ -1190,7 +1193,8 @@ const CONFIG = {
     if (CONFIG.razorpayPage && !pay) {
       btn.textContent = "Buy now · " + rupee(btn.dataset.price);
       const alt = document.createElement("button");
-      alt.type = "button"; alt.className = "buy alt-wa"; alt.textContent = "Order on WhatsApp instead";
+      alt.type = "button"; alt.className = "wa-icon"; alt.setAttribute("aria-label", "Order on WhatsApp instead"); alt.title = "Order on WhatsApp";
+      alt.innerHTML = '<svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-1.9c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.4c-2.1 0-4.1-.6-5.9-1.6l-.4-.3-3.8 1.1 1.1-3.7-.3-.4c-1.2-1.8-1.8-3.8-1.8-5.9C4.9 9.8 9.9 5 16 5s11.1 4.8 11.1 10.8S22.1 26.4 16 26.4zm6.1-8c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.3-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.5 0-.6-.1-.2-.8-1.8-1-2.5-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.5c.2.2 2.4 3.6 5.8 5 .8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg>';
       alt.addEventListener("click", () => {
         const box = btn.closest(".buybox"), sel = box && box.querySelector(".model"), pinEl = box && box.querySelector(".pin");
         const model = sel ? sel.value : "", pin = pinEl ? pinEl.value.trim() : "";
@@ -1199,10 +1203,11 @@ const CONFIG = {
         if (pinEl && !isKA(pin)){ showPinMsg(box, pin); return; }
         send("Hi Antony! I'd like to order: " + btn.dataset.name + " (" + rupee(btn.dataset.price) + ")" + (model ? " for " + model : "") + ". Delivery pincode: " + pin + ".");
       });
-      btn.after(alt);
+      const row = document.createElement("div"); row.className = "buy-row";
+      btn.before(row); row.appendChild(btn); row.appendChild(alt);
       const note = document.createElement("div"); note.className = "pay-note";
-      note.textContent = "🔒 Secure payment by Razorpay · UPI, cards & netbanking";
-      alt.after(note);
+      note.innerHTML = "<span>🔒 Safe payment</span><span>🚚 5–9 days</span><span>🔄 Free replacement</span>";
+      row.after(note);
     }
     btn.addEventListener("click", () => {
       const box = btn.closest(".buybox"), sel = box && box.querySelector(".model");
@@ -1301,6 +1306,8 @@ const CONFIG = {
   }));
   document.querySelectorAll("[data-ask]").forEach(b => b.addEventListener("click", () =>
     send("Hi Antony! I have a question about the " + b.dataset.name + ".")));
+  document.querySelectorAll("[data-ask-model]").forEach(b => b.addEventListener("click", () =>
+    send("Hi Antony! I'd like the " + b.dataset.name + " but my phone isn't in the list. My phone is: ")));
 
   // trust line switches once Razorpay links exist
   if (CONFIG.razorpayPage || Object.values(CONFIG.payLinks).some(Boolean)) document.querySelectorAll("[data-paytrust]").forEach(el => {
