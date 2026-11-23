@@ -1,14 +1,14 @@
 import json,re
 B="https://nevervoidstore.com"
 s=open('src/corporate-src.html').read()
-title="Corporate Christmas Gifts Bengaluru & Karnataka | Logo & Pet Mugs from ₹319 | NevervoidStore"
-desc="Custom corporate gifts for teams in Bengaluru and across Karnataka: logo mugs, team pet portrait mugs and glass phone cases from ₹319. Sample first, preview before print, 50% advance."
+title="Corporate Christmas Gifts Bengaluru, Chennai, Mumbai, Hyderabad & Kochi | Logo & Pet Mugs from ₹319 | NevervoidStore"
+desc="Custom corporate gifts for teams in Bengaluru, Chennai, Mumbai, Hyderabad and Kochi: logo mugs, team pet portrait mugs and glass phone cases from ₹319. Sample first, preview before print, 50% advance."
 faq=[("Can each employee get a different design?","Yes. With team pet mugs, every person gets their own pet and name. We collect the photos through a simple form, so you don't have to."),
-("Can you ship to remote employees?","Yes, anywhere in Karnataka. Send us a list of addresses and we'll ship to each person directly. Shipping is quoted per address. We don't deliver outside Karnataka yet."),
+("Can you ship to remote employees?","Yes, anywhere in Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Send us a list of addresses and we'll ship to each person directly. Shipping is quoted per address. Other cities are coming soon."),
 ("What if a mug arrives broken?","Send a photo within 48 hours of delivery and we'll replace that piece free."),
 ("Do you provide an invoice?","Yes, every order comes with a bill for your records. We’re a new business and not GST-registered yet, so our bills don’t include GST and can’t be used to claim input tax credit. Ask us if your finance team needs a GST invoice."),
 ("What is the minimum order for corporate gifts?","The minimum order is 25 pieces. Prices start at ₹379 per mug for 25–49 pieces and drop to ₹319 per mug for 100 or more.")]
-ld=[{"@context":"https://schema.org","@type":"Service","name":"Corporate Christmas gifting","serviceType":"Custom printed corporate gifts","areaServed":{"@type":"State","name":"Karnataka"},
+ld=[{"@context":"https://schema.org","@type":"Service","name":"Corporate Christmas gifting","serviceType":"Custom printed corporate gifts","areaServed":[{"@type":"City","name":"Bengaluru"},{"@type":"City","name":"Chennai"},{"@type":"City","name":"Mumbai"},{"@type":"City","name":"Hyderabad"},{"@type":"City","name":"Kochi"}],
  "provider":{"@type":"Organization","name":"NevervoidStore","url":B+"/","founder":{"@type":"Person","name":"Antony Pratap"},"parentOrganization":{"@type":"Organization","name":"Nevervoid Photography"},"sameAs":["https://instagram.com/nevervoidstore"]},
  "offers":{"@type":"AggregateOffer","priceCurrency":"INR","lowPrice":"319","highPrice":"549","offerCount":"3"}},
  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for q,a in faq]},
@@ -37,10 +37,10 @@ reps=[
  ('<html lang="en">','<html lang="en-IN">'),
  (re.search(r'<title>.*?</title>',s).group(0), f'<title>{title}</title>'),
  (re.search(r'<meta name="description"[^>]*>',s).group(0), f'<meta name="description" content="{esc(desc)}">\n'+headextra),
- ('Corporate gifting · Christmas 2026','Corporate Christmas gifts · Karnataka 2026'),
+ ('Corporate gifting · Christmas 2026','Corporate Christmas gifts 2026'),
  ('<details><summary>Do you provide an invoice?</summary><p>Yes, every order comes with a bill for your records. We’re a new business and not GST-registered yet, so our bills don’t include GST and can’t be used to claim input tax credit. Ask us if your finance team needs a GST invoice.</p></details>',
   '<details><summary>Do you provide an invoice?</summary><p>Yes, every order comes with a bill for your records. We’re a new business and not GST-registered yet, so our bills don’t include GST and can’t be used to claim input tax credit. Ask us if your finance team needs a GST invoice.</p></details>\n          <details><summary>What is the minimum order for corporate gifts?</summary><p>The minimum order is 25 pieces. Prices start at ₹379 per mug for 25–49 pieces and drop to ₹319 per mug for 100 or more.</p></details>'),
- ('<footer>\n  <span style=','<footer>\n  <p style="max-width:720px;margin:0 auto 14px">Nevervoid Store makes custom corporate gifts for teams in Bengaluru and across Karnataka: logo mugs for employees and clients, team mugs with each person\'s own pet, festive Christmas mugs and printed glass phone cases. Bulk pricing from ₹319 a piece, with a sample before you commit.</p>\n  <span style='),
+ ('<footer>\n  <span style=','<footer>\n  <p style="max-width:720px;margin:0 auto 14px">Nevervoid Store makes custom corporate gifts for teams in Bengaluru, Chennai, Mumbai, Hyderabad and Kochi: logo mugs for employees and clients, team mugs with each person\'s own pet, festive Christmas mugs and printed glass phone cases. Bulk pricing from ₹319 a piece, with a sample before you commit.</p>\n  <span style='),
  ('<a class="hide-sm" href="index.html">Shop</a>','<a class="hide-sm" href="index.html">Shop</a>\n      <a class="hide-sm" href="blog/index.html">Blog</a>'),
  ('<a href="index.html">Shop individual gifts</a>','<a href="index.html">Shop individual gifts</a> · <a href="blog/corporate-christmas-gifting-guide-india.html">Corporate gifting guide</a><br><span style="display:inline-block;margin-top:10px"><a style="font-weight:400" href="policies/about.html">About us</a> · <a style="font-weight:400" href="policies/contact.html">Contact</a> · <a style="font-weight:400" href="policies/shipping.html">Shipping</a> · <a style="font-weight:400" href="policies/returns.html">Returns &amp; refunds</a> · <a style="font-weight:400" href="policies/privacy.html">Privacy</a> · <a style="font-weight:400" href="policies/terms.html">Terms</a></span>'),
 ]

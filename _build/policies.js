@@ -41,17 +41,17 @@ const contactLines = () => [
 const PAGES = [
 {
   slug: "shipping", title: "Shipping & Delivery Policy", nav: "Shipping",
-  desc: "How NevervoidStore delivers made-to-order mugs and phone cases across Karnataka: dispatch times, delivery times, tracking and charges.",
+  desc: "How NevervoidStore delivers made-to-order mugs and phone cases to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi: dispatch times, delivery times, tracking and charges.",
   body: () => `
 <p class="lead">Every mug and phone case is printed fresh when you order. It is then packed and shipped to you with tracking.</p>
 <h2>Where we ship</h2>
-<p>For now we deliver only within <strong>Karnataka</strong>, to pincodes starting with 56, 57, 58 or 59. We hope to deliver across India soon. <a href="https://wa.me/${CONTACT.whatsapp}?text=Hi%20Antony!%20Please%20let%20me%20know%20when%20you%20deliver%20outside%20Karnataka.">Ask us to let you know</a>.</p>
+<p>For now we deliver to <strong>Bengaluru, Chennai, Mumbai, Hyderabad and Kochi</strong>. More cities are coming soon. <a href="https://wa.me/${CONTACT.whatsapp}?text=Hi%20Antony!%20Please%20let%20me%20know%20when%20you%20deliver%20to%20my%20city.">Ask us to let you know</a>.</p>
 <h2>How long it takes</h2>
 <table><thead><tr><th>Stage</th><th>Time</th></tr></thead><tbody>
-<tr><td>Delivery anywhere in Karnataka</td><td>Usually 5–9 days from your order</td></tr>
+<tr><td>Delivery to our cities</td><td>Usually 5–9 days from your order</td></tr>
 <tr><td>Custom pet portraits</td><td>Printing starts after you approve your preview</td></tr>
 </tbody></table>
-<p>For delivery before Christmas, order by <strong>12 December</strong>.</p>
+<p>For delivery before Christmas, order by <strong>14 December</strong>.</p>
 <h2>Shipping charges</h2>
 <p>Any shipping charge is shown and confirmed with you before you pay. You will never be charged anything you haven't seen.</p>
 <h2>Tracking</h2>
@@ -157,11 +157,11 @@ ${CONTACT.grievanceOfficer ? `<h2>Grievance officer</h2><p>If you're not satisfi
 },
 {
   slug: "about", title: "About NevervoidStore", nav: "About us",
-  desc: "NevervoidStore makes Christmas mugs, pet mugs, custom pet portraits and phone cases to order, delivered across Karnataka.",
+  desc: "NevervoidStore makes Christmas mugs, pet mugs, custom pet portraits and phone cases to order, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.",
   body: () => `
 <p class="lead">NevervoidStore is a brand by <a href="${CONTACT.photographySite}" rel="noopener"><strong>Nevervoid Photography</strong></a>, founded by <strong>Antony Pratap</strong>${CONTACT.linkedin ? ` <a class="li-inline" href="${CONTACT.linkedin}" rel="noopener" aria-label="Antony Pratap on LinkedIn">${LI_ICON}</a>` : ""}. It's a small, independent gift store from Bengaluru making mugs and phone cases people actually keep.</p>
 <h2>What we make</h2>
-<p>We design Christmas mugs, pet mugs, custom pet portraits and printed phone cases for iPhone, Samsung and OnePlus. Nothing sits in a warehouse. Each piece is made fresh when you order, then packed and delivered to you anywhere in Karnataka.</p>
+<p>We design Christmas mugs, pet mugs, custom pet portraits and printed phone cases for iPhone, Samsung and OnePlus. Nothing sits in a warehouse. Each piece is made fresh when you order, then packed and delivered to you in Bengaluru, Chennai, Mumbai, Hyderabad or Kochi.</p>
 <h2>How we work</h2>
 <ul>
 <li><strong>You see it before you pay:</strong> we confirm every order's details with you first.</li>

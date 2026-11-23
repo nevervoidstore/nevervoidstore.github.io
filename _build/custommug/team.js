@@ -208,7 +208,7 @@
   $("#tm-send").addEventListener("click", function () {
     var co = $("#tm-co").value.trim(), who = $("#tm-who").value.trim(), pin = $("#tm-pin").value.trim(), when = $("#tm-when").value, ship = ($("[name=tm-ship]:checked") || {}).value || "office";
     if (!co || !who) { flash("#tm-send-hint", "Add your company and your name so we know who the quote is for."); ($("#tm-co").value ? $("#tm-who") : $("#tm-co")).focus(); return; }
-    if (ship === "office" && !/^5[6-9]\d{4}$/.test(pin)) { flash("#tm-send-hint", "Add the office pincode (Karnataka, starts with 56–59)."); $("#tm-pin").focus(); return; }
+    if (ship === "office" && !/^(560|600|400|500|682)\d{3}$/.test(pin)) { flash("#tm-send-hint", "Add the office pincode (we deliver to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi)."); $("#tm-pin").focus(); return; }
     var n = rows.length, each = priceFor(n), own = rows.filter(function (r) { return r.own; }).length;
     var win = window.open("about:blank", "_blank");
     link().then(function (url) {

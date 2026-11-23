@@ -35,18 +35,20 @@ const CONFIG = {
   window.nvToast = toast;
   // product view for ads reporting
   (function(){ const b = document.querySelector(".buybox [data-order]"); if (b && b.dataset.id) window.nvTrack("ViewContent", { content_ids: [b.dataset.id], content_type: "product", content_name: b.dataset.name, value: +b.dataset.price || 0, currency: "INR" }); })();
-  const isKA = p => /^5[6-9]\d{4}$/.test(p);
+  const isKA = p => /^(560|600|400|500|682)\d{3}$/.test(p);   // Bengaluru, Chennai, Mumbai, Hyderabad, Kochi
+  // "Get it by": 9 days from today, plus a day for each Sunday in between (no work on Sundays)
+  function getBy(){ const d = new Date(); let n = 9; while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0) n--; } return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" }); }
   function showPinMsg(box, pin){
     const m = box.querySelector(".pin-msg"); if (!m) return;
     m.hidden = false; m.classList.remove("ok");
     const wa = CONFIG.whatsapp ? "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent("Hi Antony! Please let me know when you deliver to pincode " + pin + ".") : "";
-    m.innerHTML = "Sorry, we deliver only within Karnataka for now (pincodes starting 56–59)." + (wa ? ' <a href="' + wa + '" target="_blank" rel="noopener">Tell me when you deliver to ' + pin + '</a>' : "");
+    m.innerHTML = "Sorry, we don’t deliver here yet. For now we deliver to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi." + (wa ? ' <a href="' + wa + '" target="_blank" rel="noopener">Tell me when you deliver to ' + pin + '</a>' : "");
   }
   document.querySelectorAll(".pin").forEach(el => el.addEventListener("input", () => {
     el.value = el.value.replace(/\D/g, "").slice(0, 6);
     const box = el.closest(".buybox"), m = box && box.querySelector(".pin-msg"); if (!m) return;
     if (el.value.length < 6) { m.hidden = true; return; }
-    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here"; }
+    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here · 📦 Get it by " + getBy(); }
     else showPinMsg(box, el.value);
   }));
 
@@ -96,7 +98,7 @@ const CONFIG = {
       const v = { e: form.e.value.trim(), n: form.n.value.trim(), p: form.p.value.replace(/\D/g, ""), a: form.a.value.trim().replace(/\s+/g, " "), c: form.c.value.trim(), z: form.z.value.trim() };
       const bad = !v.n ? [form.n, "Please enter your name"] : !/^[6-9]\d{9}$/.test(v.p) ? [form.p, "Please enter a valid 10-digit mobile number"] : !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v.e) ? [form.e, "Please enter your email so we can send your order confirmation"] :
         v.a.length < 8 ? [form.a, "Please enter your full delivery address"] : !v.c ? [form.c, "Please enter your city"] :
-        !isKA(v.z) ? [form.z, "We deliver within Karnataka only for now (pincodes starting 56–59)"] : null;
+        !isKA(v.z) ? [form.z, "For now we deliver only to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Please check the pincode."] : null;
       if (bad) { err.hidden = false; err.textContent = bad[1]; bad[0].focus(); return; }
       try { localStorage.setItem("nv_addr", JSON.stringify(v)); localStorage.setItem("nv_last", JSON.stringify({ name, model, price, pic: pic && pic.length < 200000 ? pic : "", at: Date.now() })); } catch (e) {}
       if (CONFIG.api) { payHere(btn, v, name, price, model, form, err); return; }
@@ -173,7 +175,7 @@ const CONFIG = {
       const row = document.createElement("div"); row.className = "buy-row";
       btn.before(row); row.appendChild(btn); row.appendChild(alt);
       const note = document.createElement("div"); note.className = "pay-note";
-      note.innerHTML = '<span>🔒 Safe payment</span><span>🚚 5–9 days</span><a href="/policies/returns.html">🔄 Free replacement</a>';
+      note.innerHTML = '<span>🔒 Safe payment</span><span>📦 Get it by ' + getBy() + '</span><a href="/policies/returns.html">🔄 Free replacement</a>';
       row.after(note);
     }
     btn.addEventListener("click", () => {

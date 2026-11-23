@@ -21,7 +21,7 @@ const og=async(file,left,right)=>{await p.setViewportSize({width:1200,height:630
  <div style="width:600px;padding:0 0 0 70px">${left}</div><div style="width:560px;height:560px;border-radius:32px;background:#fff;position:relative;margin-right:40px">${right}</div></body>`);
  await p.waitForTimeout(600);await p.screenshot({path:file,type:'jpeg',quality:88});};
 const brand=`<div style="font-family:Fraunces;font-weight:700;font-size:30px;color:#1c2420">NevervoidStore</div>`;
-await og('site/images/og-home.jpg',`${brand}<div style="font-family:Fraunces;font-weight:700;font-size:60px;line-height:1.05;color:#1c2420;margin:22px 0 18px">Christmas &amp; pet mugs, <i style="font-weight:500;color:#1f4d36">made to order</i></div><div style="font-size:24px;color:#5d6862">Mugs &amp; glass phone cases · delivered across Karnataka</div>`,
+await og('site/images/og-home.jpg',`${brand}<div style="font-family:Fraunces;font-weight:700;font-size:60px;line-height:1.05;color:#1c2420;margin:22px 0 18px">Christmas &amp; pet mugs, <i style="font-weight:500;color:#1f4d36">made to order</i></div><div style="font-size:24px;color:#5d6862">Mugs &amp; glass phone cases · delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi</div>`,
  `<div style="position:absolute;width:62%;left:3%;top:20%">${uri('site/images/mugs/dear-santa-it-wasnt-me-mug-b.webp')}</div><div style="position:absolute;width:33%;right:7%;top:9%;transform:rotate(6deg)">${uri('site/images/cases/knitted-christmas-puppies/iphone-16-pro.webp')}</div>`);
 await og('site/images/og-corporate.jpg',`${brand}<div style="font-family:Fraunces;font-weight:700;font-size:56px;line-height:1.05;color:#1c2420;margin:22px 0 18px">Corporate Christmas gifts your team <i style="font-weight:500;color:#1f4d36">keeps</i></div><div style="font-size:24px;color:#5d6862">Logo &amp; team pet mugs · from ₹319 · sample first</div>`,
  `<div style="position:absolute;width:62%;left:3%;top:20%">${logoMug}</div><div style="position:absolute;width:33%;right:7%;top:9%;transform:rotate(6deg)">${uri('site/images/cases/knitted-christmas-puppies/iphone-16-pro.webp')}</div>`);
@@ -46,7 +46,7 @@ for(const it of items){
   .sale{display:inline-block;align-self:flex-start;margin-top:16px;background:#a8332f;color:#fff;font-weight:700;font-size:20px;padding:8px 16px;border-radius:99px}
   .foot{margin-top:auto;font-size:19px;color:#4c5a52}</style></head><body>
   <div class="pic"><img src="data:image/jpeg;base64,${img}"></div>
-  <div class="txt"><div class="brand">NevervoidStore</div><div class="type">${escH(it.type)}</div><h1>${escH(it.name)}</h1><div class="price">${price}</div>${it.sale?`<div class="sale">Christmas Sale · ${it.pct}% off</div>`:''}<div class="foot">Made to order · Delivered across Karnataka · nevervoidstore.com</div></div></body></html>`);
+  <div class="txt"><div class="brand">NevervoidStore</div><div class="type">${escH(it.type)}</div><h1>${escH(it.name)}</h1><div class="price">${price}</div>${it.sale?`<div class="sale">Christmas Sale · ${it.pct}% off</div>`:''}<div class="foot">Made to order · Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi · nevervoidstore.com</div></div></body></html>`);
   await sp.waitForTimeout(120);
   await sp.screenshot({path:`site/images/share/${it.slug}.jpg`,type:'jpeg',quality:86});
 }

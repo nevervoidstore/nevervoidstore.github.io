@@ -52,7 +52,7 @@ function createOrder_(d) {
     var price = prices_()[d.id];
     if (!price) return out_({ ok: false, err: "Unknown product" });
     var c = d.customer || {}, email = clean_(c.email, 100), name = clean_(c.name, 60), phone = String(c.phone || "").replace(/\D/g, "").slice(-10), addr = clean_(c.address, 250), city = clean_(c.city, 60), pin = String(c.pincode || "").replace(/\D/g, "");
-    if (!name || !/^[6-9]\d{9}$/.test(phone) || addr.length < 8 || !city || !/^5[6-9]\d{4}$/.test(pin)) return out_({ ok: false, err: "Please check your delivery details" });
+    if (!name || !/^[6-9]\d{9}$/.test(phone) || addr.length < 8 || !city || !/^(560|600|400|500|682)\d{3}$/.test(pin)) return out_({ ok: false, err: "Please check your delivery details" });
     var product = clean_(d.product, 120), options = clean_(d.options, 250), design = clean_(d.design, 250), model = clean_(d.model, 60);
     var notes = { product: product, ship_name: name, phone: "+91 " + phone, email: email, address: addr, city: city, pincode: pin };
     if (options) notes.options = options;

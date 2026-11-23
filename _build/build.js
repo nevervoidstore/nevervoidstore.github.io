@@ -139,7 +139,8 @@ function header(root, active) {
   <span class="tb-dot">·</span>
   <span>Founded by ${POL.CONTACT.linkedin ? `<a href="${POL.CONTACT.linkedin}" rel="noopener">Antony Pratap</a> <a class="tb-li" href="${POL.CONTACT.linkedin}" rel="noopener" aria-label="Antony Pratap on LinkedIn">${POL.LI_ICON}</a>` : "Antony Pratap"}</span>
   <span class="tb-wide tb-dot">·</span><span class="tb-wide">🔒 Secure payments by Razorpay</span>
-  <span class="tb-wide tb-dot">·</span><span class="tb-wide">🚚 Delivered across Karnataka</span>
+  <span class="tb-wide tb-dot">·</span><span class="tb-wide">📍 Delivering to Bengaluru · Chennai · Mumbai · Hyderabad · Kochi</span>
+  <span class="tb-mob">📍 We deliver to <b>Bengaluru · Chennai · Mumbai · Hyderabad · Kochi</b></span>
 </div></div>`;
 }
 
@@ -169,7 +170,7 @@ function footer(root) {
     ${POL.CONTACT.linkedin ? `<a href="${POL.CONTACT.linkedin}" rel="noopener" aria-label="Antony Pratap on LinkedIn">${POL.LI_ICON}</a>` : ""}
     ${POL.CONTACT.whatsapp ? `<a href="https://wa.me/${POL.CONTACT.whatsapp}" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#25D366"/><path fill="#fff" d="M12 5.5a6.4 6.4 0 0 0-5.5 9.7L5.6 18l2.9-.8A6.4 6.4 0 1 0 12 5.5zm3.4 8.6c-.1.4-.8.7-1.1.8-.6.1-1 0-2-.4a6.7 6.7 0 0 1-2.7-2.4c-.2-.3-.7-1-.7-1.8s.4-1.2.6-1.4.3-.2.4-.2h.3c.1 0 .3 0 .4.3l.5 1.2v.3l-.4.5c-.1.1-.2.2-.1.4.3.6 1 1.4 2 1.8.2.1.3.1.4 0l.5-.6c.1-.2.3-.2.4-.1l1.2.5c.2.1.3.1.3.2s0 .5-.1.9z"/></svg></a>` : ""}
   </div>
-  <p>Made-to-order mugs &amp; phone cases · Delivering across Karnataka · <a href="https://instagram.com/nevervoidstore" rel="noopener">@nevervoidstore</a></p>
+  <p>Made-to-order mugs &amp; phone cases · Delivering to Bengaluru, Chennai, Mumbai, Hyderabad &amp; Kochi · <a href="https://instagram.com/nevervoidstore" rel="noopener">@nevervoidstore</a></p>
 </footer>
 <div class="toast" id="toast"></div>
 <script src="${root}assets/store.js"></script>
@@ -231,7 +232,7 @@ function casesCard(root) {
 }
 function casesPage() {
   const items = PRODUCTS.filter(p => p.collection === "cases"), url = `${BASE}/cases/`;
-  const desc = `${items.length} Christmas glass phone cases: Santa, gnomes, reindeer, snow globes, trees and patterns. Made to order for your exact iPhone, Galaxy or OnePlus model. Delivered across Karnataka.`;
+  const desc = `${items.length} Christmas glass phone cases: Santa, gnomes, reindeer, snow globes, trees and patterns. Made to order for your exact iPhone, Galaxy or OnePlus model. Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.`;
   const jsonld = [{"@context":"https://schema.org","@type":"CollectionPage","name":"Christmas Phone Cases","url":url,"description":desc,
     "mainEntity":{"@type":"ItemList","itemListElement":items.map((p,i)=>({"@type":"ListItem","position":i+1,"url":`${BASE}/products/${p.slug}.html`,"name":p.name}))}},
     {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Christmas Phone Cases","item":url}]}];
@@ -275,8 +276,8 @@ function initialsPage(letter) {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(L => have[L]
     ? `<a class="lt ok${L === cur.letter ? " on" : ""}" href="/initials/${L.toLowerCase()}/" data-letter="${L}" aria-current="${L === cur.letter ? "true" : "false"}" aria-label="Letter ${L}">${L}</a>`
     : `<span class="lt soon" aria-label="Letter ${L}, coming soon" title="Coming soon">${L}</span>`).join("");
-  const desc = letter ? `A Christmas mug with a big festive letter ${cur.letter} in a Santa hat, printed on both sides. ${SALE.on ? rupee(salePrice(cur)) + " in the Christmas Sale. " : ""}Made to order, delivered across Karnataka.`
-                      : "Christmas mugs with a big festive initial in a Santa hat, printed on both sides. Choose your letter and order. Made to order, delivered across Karnataka.";
+  const desc = letter ? `A Christmas mug with a big festive letter ${cur.letter} in a Santa hat, printed on both sides. ${SALE.on ? rupee(salePrice(cur)) + " in the Christmas Sale. " : ""}Made to order, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.`
+                      : "Christmas mugs with a big festive initial in a Santa hat, printed on both sides. Choose your letter and order. Made to order, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.";
   const title = letter ? `${cur.name} | Christmas Initial Mugs | Nevervoid Store` : "Christmas Initial Mugs A–Z | Personalised Letter Mugs | Nevervoid Store";
   const jsonld = [{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Christmas Initial Mugs","item":`${BASE}/initials/`}].concat(letter ? [{"@type":"ListItem","position":3,"name":cur.name,"item":url}] : [])}];
   const askUrl = `https://wa.me/${wa}?text=${encodeURIComponent("Hi Antony, I'd like the Christmas initial mug with the letter ")}`;
@@ -303,7 +304,7 @@ ${header(root,"shop")}
       </div>
     </div>
     <div class="ini-buy">
-      <div class="pnote">Made to order · delivering across Karnataka</div>
+      <div class="pnote">Made to order · delivering to Bengaluru, Chennai, Mumbai, Hyderabad &amp; Kochi</div>
       <div class="share"><button type="button" class="share-btn" data-share-url="${pageUrl(cur.letter)}" data-share-title="${esc(cur.name)}" data-share-text="${esc(shareText(cur.letter))}" aria-haspopup="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Share</span></button><div class="share-menu" hidden role="menu"><a role="menuitem" data-net="wa" target="_blank" rel="noopener">WhatsApp</a><a role="menuitem" data-net="fb" target="_blank" rel="noopener">Facebook</a><a role="menuitem" data-net="x" target="_blank" rel="noopener">X</a><button type="button" role="menuitem" data-net="copy">Copy link</button></div></div>
       <p class="lead">A big festive initial in a Santa hat, strung with fairy lights, with a snowman, gifts and holly. Printed on both sides of an 11oz ceramic mug, so the letter faces you and whoever sits opposite.</p>
       <div class="buybox">
@@ -392,7 +393,7 @@ ${footer("")}
 
 function customMugPage(join) {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp), url = `${BASE}/custom-mug/`;
-  const desc = "Design a personalised name mug: type a name, pick 4 things that describe them, see your mug instantly. Made to order, delivered across Karnataka. Perfect for team gifts.";
+  const desc = "Design a personalised name mug: type a name, pick 4 things that describe them, see your mug instantly. Made to order, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Perfect for team gifts.";
   const traits = fs.readFileSync(path.join(SRC, "custommug", "traits.json"), "utf8");
   const themes = [["classic","Christmas Classic","#c41826","#1c603a"],["navy","Navy & Gold","#162c54","#b88c3c"],["sage","Charcoal & Sage","#2b2f33","#6e8c78"],["rose","Rose","#a8445e","#c9877a"]];
   const jsonld = [{"@context":"https://schema.org","@type":"Product","name":"Personalised Name Mug","description":desc,"image":`${BASE}/images/custom-name-mug.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
@@ -449,7 +450,7 @@ ${footer("../")}
 }
 function teamPage() {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), url = `${BASE}/team/`;
-  const desc = "Name mugs for your whole team: paste or upload your list, see a real preview of every person's mug, and get one quote. From ₹319 a mug, delivered across Karnataka.";
+  const desc = "Name mugs for your whole team: paste or upload your list, see a real preview of every person's mug, and get one quote. From ₹319 a mug, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.";
   const traits = fs.readFileSync(path.join(SRC, "custommug", "traits.json"), "utf8");
   const themes = [["classic","Christmas Classic","#c41826","#1c603a"],["navy","Navy & Gold","#162c54","#b88c3c"],["sage","Charcoal & Sage","#2b2f33","#6e8c78"],["rose","Rose","#a8445e","#c9877a"]];
   const cfg = {tiers:[[25,379],[50,349],[100,319]], small: salePrice(cp), wa: POL.CONTACT.whatsapp, api: TEAM_API};
@@ -519,7 +520,7 @@ Anita: Thank you for an amazing year!"></textarea>
       <label class="field">Company<input id="tm-co" autocomplete="organization" placeholder="e.g. Acme Labs"></label>
       <label class="field">Your name<input id="tm-who" autocomplete="name" placeholder="e.g. Kavya"></label>
       <div class="field tm-ship"><span>Delivery</span><label><input type="radio" name="tm-ship" value="office" checked> To one office</label><label><input type="radio" name="tm-ship" value="homes"> To each person's home</label></div>
-      <label class="field">Office pincode <span class="hint">(Karnataka)</span><input id="tm-pin" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
+      <label class="field">Office pincode<input id="tm-pin" inputmode="numeric" maxlength="6" placeholder="e.g. 560001" autocomplete="postal-code"></label>
       <label class="field">Needed by <span class="hint">(optional)</span><input id="tm-when" type="date"></label>
     </div>
     <p id="tm-send-hint" class="cm-hint" aria-live="polite"></p>
@@ -547,7 +548,7 @@ const WISH_DEFAULT = "christmas";               // occasion the main page opens 
 const FAMILY_PATH = "family-mug";
 function familyPage() {
   const cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp), url = `${BASE}/${FAMILY_PATH}/`;
-  const desc = "A mug with the word your family really uses: Ajji, Paati, Nani, Amma, Akka. Add their own line and your name, see it instantly. Made to order, delivered across Karnataka.";
+  const desc = "A mug with the word your family really uses: Ajji, Paati, Nani, Amma, Akka. Add their own line and your name, see it instantly. Made to order, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.";
   const jsonld = [{"@context":"https://schema.org","@type":"Product","name":"Family Nickname Mug","description":desc,"image":`${BASE}/images/family-mug.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
     "offers":{"@type":"Offer","priceCurrency":"INR","price":String(price),"availability":"https://schema.org/MadeToOrder","url":url}}];
   return `${head({title:"Ajji, Paati, Nani, Amma Mug: Personalised Christmas Gift | Nevervoid Store", desc, url, image:`${BASE}/images/family-mug.jpg`, root:"../", jsonld})}
@@ -594,7 +595,7 @@ function wishPage(start) {
   const o = start ? WISH_OCC[start] : null, cp = PRODUCTS.find(p => p.id === "mug-custom"), price = salePrice(cp);
   const rel = start ? "../../" : "../", url = `${BASE}/${WISH_PATH}/${start ? WISH_OCC[start].seo.slug + "/" : ""}`;
   const title = o ? `${o.seo.title} | Send a Wish | Nevervoid Store` : "Send a Wish: Custom Mug with Your Own Message | Nevervoid Store";
-  const desc = o ? o.seo.desc : "Send a wish on a custom mug: write your own message for a birthday, anniversary, Mom, Dad, a friend, thank you or Christmas, add your name, pick a design. Delivered across Karnataka.";
+  const desc = o ? o.seo.desc : "Send a wish on a custom mug: write your own message for a birthday, anniversary, Mom, Dad, a friend, thank you or Christmas, add your name, pick a design. Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.";
   const jsonld = [{"@context":"https://schema.org","@type":"Product","name": o ? o.seo.title : "Send a Wish Custom Mug","description":desc,"image":`${BASE}/images/send-a-wish.jpg`,"brand":{"@type":"Brand","name":"NevervoidStore"},
     "offers":{"@type":"Offer","priceCurrency":"INR","price":String(price),"availability":"https://schema.org/MadeToOrder","url":url}}];
   const first = start || WISH_DEFAULT;
@@ -634,7 +635,7 @@ ${header(rel,"shop")}
         <img id="pimg" alt="" hidden>
       </div>
       <p class="sw-tag">Made personal. Made to be remembered.</p>
-      <ul class="checks"><li>We print exactly the wish you see, no edits</li><li>Made to order, delivered across Karnataka in 5–9 days</li><li>Arrived broken? <a href="${rel}policies/returns.html">Free replacement or refund</a></li></ul>
+      <ul class="checks"><li>We print exactly the wish you see, no edits</li><li>Made to order, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi in 5–9 days</li><li>Arrived broken? <a href="${rel}policies/returns.html">Free replacement or refund</a></li></ul>
       <div id="w-admin" hidden><button id="w-dl" type="button" class="ask">Download print file (2550 × 1140)</button></div>
     </div>
   </div>
@@ -953,7 +954,8 @@ body.co-lock{overflow:hidden}
 .tb-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;padding:7px 0;text-align:center}
 .trustbar a{color:var(--green);font-weight:600;text-decoration:none}.trustbar a:hover{text-decoration:underline}
 .tb-li{display:inline-flex;vertical-align:-3px}.tb-li svg{width:15px;height:15px}
-@media (max-width:640px){.tb-wide,.tb-dot{display:none}.trustbar{font-size:12px}.tb-in{padding:6px 0;gap:2px 10px}}
+.tb-mob{display:none}
+@media (max-width:640px){.tb-mob{display:block;width:100%;text-align:center;font-weight:600;color:#1f4d36;font-size:11.5px;letter-spacing:-.1px}.tb-mob b{font-weight:700}.tb-wide,.tb-dot{display:none}.trustbar{font-size:12px}.tb-in{padding:6px 0;gap:2px 10px}}
 .trust-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .trust-links a{font-size:13px;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
 .checks a,.trust a{color:var(--green);font-weight:600}
@@ -1069,18 +1071,20 @@ const CONFIG = {
   window.nvToast = toast;
   // product view for ads reporting
   (function(){ const b = document.querySelector(".buybox [data-order]"); if (b && b.dataset.id) window.nvTrack("ViewContent", { content_ids: [b.dataset.id], content_type: "product", content_name: b.dataset.name, value: +b.dataset.price || 0, currency: "INR" }); })();
-  const isKA = p => /^5[6-9]\\d{4}$/.test(p);
+  const isKA = p => /^(560|600|400|500|682)\\d{3}$/.test(p);   // Bengaluru, Chennai, Mumbai, Hyderabad, Kochi
+  // "Get it by": 9 days from today, plus a day for each Sunday in between (no work on Sundays)
+  function getBy(){ const d = new Date(); let n = 9; while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0) n--; } return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" }); }
   function showPinMsg(box, pin){
     const m = box.querySelector(".pin-msg"); if (!m) return;
     m.hidden = false; m.classList.remove("ok");
     const wa = CONFIG.whatsapp ? "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent("Hi Antony! Please let me know when you deliver to pincode " + pin + ".") : "";
-    m.innerHTML = "Sorry, we deliver only within Karnataka for now (pincodes starting 56–59)." + (wa ? ' <a href="' + wa + '" target="_blank" rel="noopener">Tell me when you deliver to ' + pin + '</a>' : "");
+    m.innerHTML = "Sorry, we don\u2019t deliver here yet. For now we deliver to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi." + (wa ? ' <a href="' + wa + '" target="_blank" rel="noopener">Tell me when you deliver to ' + pin + '</a>' : "");
   }
   document.querySelectorAll(".pin").forEach(el => el.addEventListener("input", () => {
     el.value = el.value.replace(/\\D/g, "").slice(0, 6);
     const box = el.closest(".buybox"), m = box && box.querySelector(".pin-msg"); if (!m) return;
     if (el.value.length < 6) { m.hidden = true; return; }
-    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here"; }
+    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here · 📦 Get it by " + getBy(); }
     else showPinMsg(box, el.value);
   }));
 
@@ -1130,7 +1134,7 @@ const CONFIG = {
       const v = { e: form.e.value.trim(), n: form.n.value.trim(), p: form.p.value.replace(/\\D/g, ""), a: form.a.value.trim().replace(/\\s+/g, " "), c: form.c.value.trim(), z: form.z.value.trim() };
       const bad = !v.n ? [form.n, "Please enter your name"] : !/^[6-9]\\d{9}$/.test(v.p) ? [form.p, "Please enter a valid 10-digit mobile number"] : !/^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$/i.test(v.e) ? [form.e, "Please enter your email so we can send your order confirmation"] :
         v.a.length < 8 ? [form.a, "Please enter your full delivery address"] : !v.c ? [form.c, "Please enter your city"] :
-        !isKA(v.z) ? [form.z, "We deliver within Karnataka only for now (pincodes starting 56–59)"] : null;
+        !isKA(v.z) ? [form.z, "For now we deliver only to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Please check the pincode."] : null;
       if (bad) { err.hidden = false; err.textContent = bad[1]; bad[0].focus(); return; }
       try { localStorage.setItem("nv_addr", JSON.stringify(v)); localStorage.setItem("nv_last", JSON.stringify({ name, model, price, pic: pic && pic.length < 200000 ? pic : "", at: Date.now() })); } catch (e) {}
       if (CONFIG.api) { payHere(btn, v, name, price, model, form, err); return; }
@@ -1207,7 +1211,7 @@ const CONFIG = {
       const row = document.createElement("div"); row.className = "buy-row";
       btn.before(row); row.appendChild(btn); row.appendChild(alt);
       const note = document.createElement("div"); note.className = "pay-note";
-      note.innerHTML = '<span>🔒 Safe payment</span><span>🚚 5–9 days</span><a href="/policies/returns.html">🔄 Free replacement</a>';
+      note.innerHTML = '<span>🔒 Safe payment</span><span>📦 Get it by ' + getBy() + '</span><a href="/policies/returns.html">🔄 Free replacement</a>';
       row.after(note);
     }
     btn.addEventListener("click", () => {
@@ -1343,7 +1347,7 @@ function productPage(p) {
   const url = `${BASE}/products/${p.slug}.html`, img = `${BASE}/images/share/${p.slug}.jpg`;
   const imgs = p.photoMug ? [img, `${BASE}/images/mugs/${p.slug}-b.webp`, `${BASE}/images/mugs/${p.slug}-a.webp`] : [img];
   const title = `${p.name} | ${catLabel(p)} ${typeLabel(p)} | Nevervoid Store`;
-  const desc = `${p.desc} ${SALE.on ? SALE.label + " " + rupee(salePrice(p)) + " (was " + rupee(p.price) + ")" : rupee(p.price)}, made to order and delivered across Karnataka.`.slice(0, 158);
+  const desc = `${p.desc} ${SALE.on ? SALE.label + " " + rupee(salePrice(p)) + " (was " + rupee(p.price) + ")" : rupee(p.price)}, made to order and delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi.`.slice(0, 158);
   const others = PRODUCTS.filter(x => x.id !== p.id);
   // same type only (cases with cases, mugs with mugs), single initial letters left out, picks vary per page
   const pool = others.filter(x => x.type === p.type && x.collection !== "initials");
@@ -1360,10 +1364,10 @@ function productPage(p) {
       {"@type":"ListItem","position":3,"name":p.name,"item":url}]}
   ];
   const specs = p.type === "case"
-    ? [["Type","Glass phone case"],["Models",`${p.models.length} models: iPhone 11 to iPhone 17 Pro Max, Galaxy S22 Ultra to S25, OnePlus 11 to 12R`],["Print","Full-colour design, printed to order"],["Delivery","5–9 days"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
+    ? [["Type","Glass phone case"],["Models",`${p.models.length} models: iPhone 11 to iPhone 17 Pro Max, Galaxy S22 Ultra to S25, OnePlus 11 to 12R`],["Print","Full-colour design, printed to order"],["Delivery","5–9 days"],["Delivers to","Bengaluru, Chennai, Mumbai, Hyderabad, Kochi"]]
     : p.type === "mug"
-    ? [["Type","11oz ceramic mug"],["Print","Full-colour design, printed to order"],["Theme",catLabel(p)],["Delivery","5–9 days"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]]
-    : [["Type","Printed iPhone case"],["Models","iPhone 13 to iPhone 17 Pro Max, and iPhone Air"],["Print","Full-colour design, printed to order"],["Delivery","5–9 days"],["Delivers to","Anywhere in Karnataka (pincodes 56–59)"]];
+    ? [["Type","11oz ceramic mug"],["Print","Full-colour design, printed to order"],["Theme",catLabel(p)],["Delivery","5–9 days"],["Delivers to","Bengaluru, Chennai, Mumbai, Hyderabad, Kochi"]]
+    : [["Type","Printed iPhone case"],["Models","iPhone 13 to iPhone 17 Pro Max, and iPhone Air"],["Print","Full-colour design, printed to order"],["Delivery","5–9 days"],["Delivers to","Bengaluru, Chennai, Mumbai, Hyderabad, Kochi"]];
   return `${head({title, desc, url, image: img, type:"product", root:"../", jsonld})}
 <body>
 ${header("../","")}
@@ -1382,7 +1386,7 @@ ${header("../","")}
       <div class="tags"><span class="tag">${catLabel(p)} · ${typeLabel(p)}</span></div>
       <h1>${esc(p.name)}</h1>
       ${priceHtml(p,"pprice")}${SALE.on ? `<div class="save">You save ${rupee(p.price - salePrice(p))} · ${SALE.label} ends 25 Dec</div>` : ""}
-      <div class="pnote">Made to order · delivering across Karnataka</div>
+      <div class="pnote">Made to order · delivering to Bengaluru, Chennai, Mumbai, Hyderabad &amp; Kochi</div>
       <div class="share"><button type="button" class="share-btn" data-share-url="${BASE}/products/${p.slug}.html" data-share-title="${esc(p.name)}" data-share-text="${esc(p.name)} · ${SALE.on ? rupee(salePrice(p)) + " in the Christmas Sale" : rupee(p.price)} at NevervoidStore" aria-haspopup="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Share</span></button><div class="share-menu" hidden role="menu"><a role="menuitem" data-net="wa" target="_blank" rel="noopener">WhatsApp</a><a role="menuitem" data-net="fb" target="_blank" rel="noopener">Facebook</a><a role="menuitem" data-net="x" target="_blank" rel="noopener">X</a><button type="button" role="menuitem" data-net="copy">Copy link</button></div></div>
       <p class="lead">${esc(p.long)}</p>
       <div class="buybox">
@@ -1402,7 +1406,7 @@ ${footer("../")}`;
 
 function indexPage() {
   const title = "Christmas Mugs, Pet Mugs & Phone Cases | NevervoidStore Bengaluru";
-  const desc = (SALE.on ? SALE.label + ": " + SALE.pct + "% off. " : "") + "Made-to-order Christmas mugs, pet mugs, custom pet portrait gifts and phone cases. Delivered across Karnataka. Order by 12 December for Christmas.";
+  const desc = (SALE.on ? SALE.label + ": " + SALE.pct + "% off. " : "") + "Made-to-order Christmas mugs, pet mugs, custom pet portrait gifts and phone cases. Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Order by 12 December for Christmas.";
   const jsonld = [
     Object.assign({"@context":"https://schema.org"}, org),
     {"@context":"https://schema.org","@type":"WebSite","name":"Nevervoid Store","url":BASE+"/"},
@@ -1417,12 +1421,12 @@ ${header("","shop")}
       <span class="eyebrow">Christmas Drop 2026</span>
       <h1>Mugs &amp; phone cases, <em>made to order</em> for you</h1>
       <p>Cosy Christmas designs and cute pet prints. Or send us a photo of your pet and we'll turn it into a custom portrait for your mug or case.</p>
-      <div class="deadline">🎁 Order by 12 December for delivery before Christmas</div>
+      <div class="deadline">🎁 Order by 14 December for delivery before Christmas</div>
     </section>
     <div class="trust">
       <div data-paytrust><b>Easy ordering</b>Order on WhatsApp. We confirm every detail before you pay</div>
       <div><b>Made to order</b>Printed fresh when you order</div>
-      <div><b>Delivering across Karnataka</b>Delivered in 5–9 days. <a href="policies/shipping.html">Details</a></div>
+      <div><b>Delivering to 5 cities</b>Bengaluru, Chennai, Mumbai, Hyderabad &amp; Kochi. Delivered in 5–9 days. <a href="policies/shipping.html">Details</a></div>
       <div><b>Damage-free promise</b>Arrived broken? We replace it. <a href="policies/returns.html">See policy</a></div>
     </div>
     <div class="filters" id="filters">
@@ -1454,7 +1458,7 @@ ${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")
     <details><summary>Do you do bulk or corporate orders?</summary><p>Yes. See our <a href="corporate.html">corporate gifting page</a> for logo mugs, team pet mugs and bulk pricing from ₹319 a piece.</p></details>
     <details><summary>What if it arrives damaged?</summary><p>Send us a photo or unboxing video within 48 hours of delivery and we'll ship a free replacement.</p></details>
   </div>
-  <p class="intro-seo">Nevervoid Store makes Christmas mugs, pet mugs, custom pet portrait mugs and glass phone cases to order, delivered across Karnataka. Each piece is printed fresh for you.</p>
+  <p class="intro-seo">Nevervoid Store makes Christmas mugs, pet mugs, custom pet portrait mugs and glass phone cases to order, delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Each piece is printed fresh for you.</p>
 </main>
 ${footer("")}`;
 }
