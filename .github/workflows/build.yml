@@ -35,6 +35,9 @@ jobs:
           cp -r _build "$RUNNER_TEMP/work/src"
           mv "$RUNNER_TEMP/work/src/build.sh" "$RUNNER_TEMP/work/build.sh"
           chmod +x "$RUNNER_TEMP/work/build.sh"
+          # mug photos: the private print files stay off GitHub; the build only needs the display photos, which are already published
+          mkdir -p "$RUNNER_TEMP/work/src/realmugs"
+          cp images/mugs/*.webp "$RUNNER_TEMP/work/src/realmugs/"
 
       - name: Install Playwright (for share images)
         working-directory: ${{ runner.temp }}/work
