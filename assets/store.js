@@ -48,7 +48,7 @@ const CONFIG = {
     el.value = el.value.replace(/\D/g, "").slice(0, 6);
     const box = el.closest(".buybox"), m = box && box.querySelector(".pin-msg"); if (!m) return;
     if (el.value.length < 6) { m.hidden = true; return; }
-    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here · 📦 Get it by " + getBy(); }
+    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here · 📦 By " + getBy() + ", often much sooner"; }
     else showPinMsg(box, el.value);
   }));
 
@@ -175,7 +175,7 @@ const CONFIG = {
       const row = document.createElement("div"); row.className = "buy-row";
       btn.before(row); row.appendChild(btn); row.appendChild(alt);
       const note = document.createElement("div"); note.className = "pay-note";
-      note.innerHTML = '<span>🔒 Safe payment</span><span>📦 Get it by ' + getBy() + '</span><a href="/policies/returns.html">🔄 Free replacement</a>';
+      note.innerHTML = '<span>🔒 Safe payment</span><span>📦 By ' + getBy() + ' or sooner</span><a href="/policies/returns.html">🔄 Free replacement</a>';
       row.after(note);
     }
     btn.addEventListener("click", () => {

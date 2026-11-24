@@ -1084,7 +1084,7 @@ const CONFIG = {
     el.value = el.value.replace(/\\D/g, "").slice(0, 6);
     const box = el.closest(".buybox"), m = box && box.querySelector(".pin-msg"); if (!m) return;
     if (el.value.length < 6) { m.hidden = true; return; }
-    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here · 📦 Get it by " + getBy(); }
+    if (isKA(el.value)) { m.hidden = false; m.classList.add("ok"); m.textContent = "✓ Yes, we deliver here · 📦 By " + getBy() + ", often much sooner"; }
     else showPinMsg(box, el.value);
   }));
 
@@ -1211,7 +1211,7 @@ const CONFIG = {
       const row = document.createElement("div"); row.className = "buy-row";
       btn.before(row); row.appendChild(btn); row.appendChild(alt);
       const note = document.createElement("div"); note.className = "pay-note";
-      note.innerHTML = '<span>🔒 Safe payment</span><span>📦 Get it by ' + getBy() + '</span><a href="/policies/returns.html">🔄 Free replacement</a>';
+      note.innerHTML = '<span>🔒 Safe payment</span><span>📦 By ' + getBy() + ' or sooner</span><a href="/policies/returns.html">🔄 Free replacement</a>';
       row.after(note);
     }
     btn.addEventListener("click", () => {
@@ -1417,18 +1417,24 @@ function indexPage() {
 ${header("","shop")}
 <main id="top">
   <div class="wrap">
-    <section class="hero">
-      <span class="eyebrow">Christmas Drop 2026</span>
-      <h1>Mugs &amp; phone cases, <em>made to order</em> for you</h1>
-      <p>Cosy Christmas designs and cute pet prints. Or send us a photo of your pet and we'll turn it into a custom portrait for your mug or case.</p>
-      <div class="deadline">🎁 Order by 14 December for delivery before Christmas</div>
+    <section class="hero hero2">
+      <span class="eyebrow">🎄 Christmas 2026 · order by 14 Dec</span>
+      <h1>Mugs &amp; phone cases, <em>made personal</em></h1>
+      <p>Add a name, a family nickname or your pet's photo. See it before you buy.</p>
+      <div class="pz" role="list">
+        <a class="pz-t" role="listitem" href="custom-mug/"><img src="/images/custom-name-mug.jpg" alt="" width="620" height="620"><span>✏️ Their name</span></a>
+        <a class="pz-t" role="listitem" href="family-mug/"><img src="/images/family-mug.jpg" alt="" width="620" height="620"><span>👵 Ajji, Amma…</span></a>
+        <a class="pz-t" role="listitem" href="products/custom-pet-portrait-mug.html"><img src="/images/pet-mug.jpg" alt="" width="620" height="620"><span>🐾 Your pet</span></a>
+        <a class="pz-t" role="listitem" href="send-a-wish-custom-mug/"><img src="/images/send-a-wish.jpg" alt="" width="620" height="620"><span>💌 Your wish</span></a>
+      </div>
+      <a class="pz-more" href="#filters">Or shop ready-made designs ↓</a>
     </section>
-    <div class="trust">
-      <div data-paytrust><b>Easy ordering</b>Order on WhatsApp. We confirm every detail before you pay</div>
-      <div><b>Made to order</b>Printed fresh when you order</div>
-      <div><b>Delivering to 5 cities</b>Bengaluru, Chennai, Mumbai, Hyderabad &amp; Kochi. Delivered in 5–9 days. <a href="policies/shipping.html">Details</a></div>
-      <div><b>Damage-free promise</b>Arrived broken? We replace it. <a href="policies/returns.html">See policy</a></div>
-    </div>
+    <ul class="trust2" aria-label="Why shop with us">
+      <li>📍 Bengaluru · Chennai · Mumbai · Hyderabad · Kochi</li>
+      <li>📦 Delivered in 3–9 days</li>
+      <li>🔒 Safe UPI &amp; card payment</li>
+      <li><a href="policies/returns.html">🔄 Free replacement if damaged</a></li>
+    </ul>
     <div class="filters" id="filters">
       <button class="on" data-f="all">All</button>
       <button data-f="christmas">🎄 Christmas</button>
@@ -1453,8 +1459,8 @@ ${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")
   </section>
   <div class="faq">
     <h2>Questions</h2>
-    <details><summary>How do custom pet orders work?</summary><p>Order the custom mug or case, then DM us a clear, well-lit photo of your pet on Instagram (@nevervoidstore). We create a custom portrait in your chosen style (watercolour, cartoon, minimal line art and more), touch it up, and send you a preview to approve before printing. Free changes until you're happy.</p></details>
-    <details><summary>When will my order arrive?</summary><p>Usually 5–9 days. You'll get tracking on WhatsApp once it ships.</p></details>
+    <details><summary>Can I personalise a mug or case?</summary><p>Yes. Add a name on the <a href="custom-mug/">name mug</a>, a family nickname like Ajji or Amma on the <a href="family-mug/">family mug</a>, your own message on <a href="send-a-wish-custom-mug/">Send a Wish</a>, or upload your pet's photo for a <a href="products/custom-pet-portrait-mug.html">pet mug</a> or <a href="products/custom-pet-iphone-case.html">pet case</a>. You see the design before you buy.</p></details>
+    <details><summary>When will my order arrive?</summary><p>Usually within 3–9 days, often sooner in big cities. You'll get tracking on WhatsApp once it ships.</p></details>
     <details><summary>Do you do bulk or corporate orders?</summary><p>Yes. See our <a href="corporate.html">corporate gifting page</a> for logo mugs, team pet mugs and bulk pricing from ₹319 a piece.</p></details>
     <details><summary>What if it arrives damaged?</summary><p>Send us a photo or unboxing video within 48 hours of delivery and we'll ship a free replacement.</p></details>
   </div>
@@ -1561,6 +1567,7 @@ fs.copyFileSync(path.join(SRC,"custommug","wish.js"), path.join(OUT,"assets","wi
 fs.copyFileSync(path.join(SRC,"custommug","swipe.js"), path.join(OUT,"assets","swipe.js"));
 fs.mkdirSync(path.join(OUT,"assets","wish"),{recursive:true}); fs.readdirSync(path.join(SRC,"wish")).forEach(f => fs.copyFileSync(path.join(SRC,"wish",f), path.join(OUT,"assets","wish",f)));
 fs.copyFileSync(path.join(SRC,"family-mug.jpg"), path.join(OUT,"images","family-mug.jpg"));
+fs.copyFileSync(path.join(SRC,"pet-mug.jpg"), path.join(OUT,"images","pet-mug.jpg"));
 if (fs.existsSync(path.join(SRC,"send-a-wish.jpg"))) fs.copyFileSync(path.join(SRC,"send-a-wish.jpg"), path.join(OUT,"images","send-a-wish.jpg"));
 fs.mkdirSync(path.join(OUT,"send-a-wish"),{recursive:true}); fs.writeFileSync(path.join(OUT,"send-a-wish","index.html"), wishRedirect());
 fs.mkdirSync(path.join(OUT,WISH_PATH),{recursive:true}); fs.writeFileSync(path.join(OUT,WISH_PATH,"index.html"), wishPage());
