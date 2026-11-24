@@ -8,11 +8,11 @@
   var KIND = root.dataset.petmaker, WA = root.dataset.wa || "";
   var gallery = document.querySelector(".gallery"), pimg = document.getElementById("pimg");
   var STYLES = KIND === "mug"
-    ? [["circle", "Circle"], ["square", "Square"], ["wrap", "Full photo"]]
+    ? [["photo", "Photo"], ["circle", "Circle"], ["wrap", "Full wrap"]]
     : [["full", "Full photo"], ["circle", "Circle"]];
-  var BGS = [["#f6efe4", "Cream"], ["#ffffff", "White"], ["#f7dcdc", "Blush"], ["#dde9da", "Sage"], ["#d9e6f4", "Sky"], ["#f6e3b4", "Honey"], ["#1f2a44", "Navy"], ["#1d1d1f", "Black"]];
+  var BGS = [["#ffffff", "White"], ["#f6efe4", "Cream"], ["#f7dcdc", "Blush"], ["#dde9da", "Sage"], ["#d9e6f4", "Sky"], ["#f6e3b4", "Honey"], ["#1f2a44", "Navy"], ["#1d1d1f", "Black"]];
   var FONTS = [["classic", "Classic", "900 1em NVPlayfair, Georgia, serif"], ["script", "Script", "700 1em NVDancing, cursive"], ["modern", "Modern", "800 1em NVModern, Arial, sans-serif"], ["hand", "Handwritten", "700 1em NVHand, cursive"]];
-  var S = { img: null, w: 0, h: 0, style: STYLES[0][0], bg: BGS[0][0], name: "", font: "classic", zoom: 1, ox: 0, oy: 0, both: true, view: "r", model: "iphone-16-pro", ref: "" };
+  var S = { img: null, w: 0, h: 0, style: STYLES[0][0], bg: BGS[0][0], name: "", font: "classic", zoom: 1, ox: 0, oy: 0, both: true, view: "r", edit: false, model: "iphone-16-pro", ref: "" };
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -59,23 +59,25 @@
   function drawCtrls() {
     var bgOn = S.style !== "wrap" && S.style !== "full";
     ctrls.innerHTML =
-      '<div class="pm-row"><b>Style</b><div class="pm-chips">' + chips(STYLES, "style") + "</div></div>" +
-      (bgOn ? '<div class="pm-row"><b>Background</b><div class="pm-chips">' + chips(BGS, "bg", "pm-sw") + "</div></div>" : "") +
-      '<div class="pm-row"><b>Pet\'s name <span class="pm-small">(optional)</span></b><input type="text" maxlength="14" placeholder="e.g. Bruno" value="' + esc(S.name) + '" aria-label="Pet\'s name"></div>' +
-      (S.name ? '<div class="pm-row"><b>Lettering</b><div class="pm-chips">' + chips(FONTS, "font") + "</div></div>" : "") +
-      '<div class="pm-row"><b>Zoom</b><input type="range" min="1" max="3" step="0.01" value="' + S.zoom + '" aria-label="Zoom"><span class="pm-small">Drag the picture to move your pet into place.</span></div>' +
-      (KIND === "mug" ? '<label class="pm-small"><input type="checkbox" ' + (S.both ? "checked" : "") + '> Print on both sides (looks right in either hand)</label>' : "") +
+      '<div class="pm-row"><b>Add their name <span class="pm-small">(optional)</span></b><input type="text" maxlength="14" placeholder="e.g. Bruno" value="' + esc(S.name) + '" aria-label="Name"></div>' +
+      '<span class="pm-small">' + (KIND === "mug" ? "Drag the picture to move it. Printed on both sides, so it looks right in either hand." : "Drag the picture to move it.") + '</span>' +
       (S.w && Math.min(S.w, S.h) < 900 ? '<div class="pm-warn">This photo is quite small, so the print may look soft. A larger, sharper photo will look better.</div>' : "") +
-      '<div class="pm-links"><button type="button" data-a="change">Change photo</button><button type="button" data-a="reset">Reset position</button></div>';
+      '<div class="pm-links"><button type="button" data-a="edit" aria-expanded="' + S.edit + '">' + (S.edit ? "Hide options ▴" : "✏️ Edit design ▾") + '</button><button type="button" data-a="change">Change photo</button></div>' +
+      (S.edit ?
+        '<div class="pm-row"><b>Style</b><div class="pm-chips">' + chips(STYLES, "style") + "</div></div>" +
+        (bgOn ? '<div class="pm-row"><b>Background</b><div class="pm-chips">' + chips(BGS, "bg", "pm-sw") + "</div></div>" : "") +
+        (S.name ? '<div class="pm-row"><b>Lettering</b><div class="pm-chips">' + chips(FONTS, "font") + "</div></div>" : "") +
+        '<div class="pm-row"><b>Zoom</b><input type="range" min="1" max="3" step="0.01" value="' + S.zoom + '" aria-label="Zoom"></div>' +
+        '<div class="pm-links"><button type="button" data-a="reset">Reset position</button></div>' : "");
     var name = ctrls.querySelector("input[type=text]");
-    name.addEventListener("input", function () { var had = !!S.name; S.name = name.value.replace(/[^\p{L}\p{N} .'&-]/gu, "").slice(0, 14); if (had !== !!S.name) { var pos = name.selectionStart; drawCtrls(); var n2 = ctrls.querySelector("input[type=text]"); n2.focus(); try { n2.setSelectionRange(pos, pos); } catch (e) {} } schedule(); });
-    ctrls.querySelector("input[type=range]").addEventListener("input", function (e) { S.zoom = +e.target.value; schedule(); });
-    var both = ctrls.querySelector("input[type=checkbox]"); if (both) both.addEventListener("change", function () { S.both = both.checked; schedule(); });
+    name.addEventListener("input", function () { var had = !!S.name; S.name = name.value.replace(/[^\p{L}\p{N} .'&-]/gu, "").slice(0, 14); if (had !== !!S.name && S.edit) { var pos = name.selectionStart; drawCtrls(); var n2 = ctrls.querySelector("input[type=text]"); n2.focus(); try { n2.setSelectionRange(pos, pos); } catch (e) {} } schedule(); });
+    var z = ctrls.querySelector("input[type=range]"); if (z) z.addEventListener("input", function (e) { S.zoom = +e.target.value; schedule(); });
   }
   ctrls.addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
     if (b.dataset.k) { S[b.dataset.k] = b.dataset.v; drawCtrls(); schedule(); }
     else if (b.dataset.a === "change") file.click();
+    else if (b.dataset.a === "edit") { S.edit = !S.edit; drawCtrls(); }
     else if (b.dataset.a === "reset") { S.zoom = 1; S.ox = 0; S.oy = 0; drawCtrls(); schedule(); }
   });
 
@@ -134,12 +136,21 @@
     if (S.style === "wrap") {
       c.fillStyle = "#fff"; c.fillRect(0, 0, W, H); cover(c, 0, 0, W, H);
       if (S.name) { var g = c.createLinearGradient(0, H * 0.62, 0, H); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.55)"); c.fillStyle = g; c.fillRect(0, H * 0.62, W, H * 0.38);
-        nameText(c, F, H - 120, 900, 170, "#fff", true); if (S.both) nameText(c, B, H - 120, 900, 170, "#fff", true); }
+        nameText(c, F, H - 120, 900, 170, "#fff", true); nameText(c, B, H - 120, 900, 170, "#fff", true); }
       return;
     }
     c.fillStyle = S.bg; c.fillRect(0, 0, W, H);
-    var d = S.name ? 760 : 880, cy = S.name ? 455 : 570, ink = lum(S.bg) > 0.55 ? "#2b2622" : "#ffffff";
-    [F].concat(S.both ? [B] : []).forEach(function (x) { portrait(c, S.style, x, cy, d, 18); nameText(c, x, 1005, 980, 165, ink); });
+    var ink = lum(S.bg) > 0.55 ? "#2b2622" : "#ffffff";
+    [F, B].forEach(function (x) {
+      if (S.style === "photo") {   // a large rounded photo filling the side of the mug
+        var w = 860, h = S.name ? 790 : 1000, y = S.name ? 50 : 70;
+        c.save(); c.beginPath(); c.roundRect ? c.roundRect(x - w / 2, y, w, h, 46) : c.rect(x - w / 2, y, w, h); c.clip(); cover(c, x - w / 2, y, w, h); c.restore();
+        nameText(c, x, 990, 900, 170, ink);
+      } else {
+        var d = S.name ? 660 : 760, cy = S.name ? 440 : 570;
+        portrait(c, "circle", x, cy, d, 16); nameText(c, x, 990, 900, 165, ink);
+      }
+    });
   }
   // case print: 1000 x 2080 (the case print area's shape)
   var casePrint = document.createElement("canvas"); casePrint.width = 1000; casePrint.height = 2080;
@@ -158,14 +169,19 @@
 
   // preview surfaces
   var mugOut = document.createElement("canvas"); mugOut.width = 620; mugOut.height = 620;
+  var mugL = document.createElement("canvas"); mugL.width = 620; mugL.height = 620;
+  var two = document.createElement("canvas"); two.width = 620; two.height = 620;
   var pv = null, RECTS = null, IM = {};
   function loadImg(src) { if (!IM[src]) IM[src] = new Promise(function (ok, no) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = no; i.src = src; }); return IM[src]; }
   function preview() {
     if (!S.img) return Promise.resolve();
     if (KIND === "mug") {
       drawMug();
-      return window.NVMug.wrapMug(mugPrint, S.view, mugOut, "white").then(function () {
-        if (pimg) { pimg.src = mugOut.toDataURL("image/jpeg", 0.88); pimg.removeAttribute("srcset"); }
+      return window.NVMug.wrapMug(mugPrint, "l", mugL, "white").then(function () { return window.NVMug.wrapMug(mugPrint, "r", mugOut, "white"); }).then(function () {
+        var t = two.getContext("2d"); t.globalCompositeOperation = "source-over"; t.fillStyle = "#fff"; t.fillRect(0, 0, 620, 620);
+        t.globalCompositeOperation = "multiply"; t.drawImage(mugL, -14, 150, 330, 330); t.drawImage(mugOut, 304, 150, 330, 330); t.globalCompositeOperation = "source-over";
+        if (pimg) { pimg.src = two.toDataURL("image/jpeg", 0.9); pimg.removeAttribute("srcset"); }
+        var vw = document.querySelector(".gal-col .views"); if (vw) vw.style.display = "none";
         var m3d = document.getElementById("m3d"); if (m3d) m3d.hidden = true;
       });
     }
@@ -199,13 +215,6 @@
     ["touchstart", "touchmove"].forEach(function (t) { gallery.addEventListener(t, function (e) { if (S.img) e.stopPropagation(); }, { passive: true }); });
   }
 
-  // mug: the "Handle right / Handle left" buttons show the shopper's own design from that side
-  document.addEventListener("click", function (e) {
-    var v = e.target.closest && e.target.closest(".views .view"); if (!v || !S.img || KIND !== "mug") return;
-    e.preventDefault(); e.stopImmediatePropagation();
-    var all = v.parentNode.querySelectorAll(".view"); all.forEach(function (x) { x.classList.toggle("on", x === v); });
-    S.view = v === all[0] ? "r" : "l"; schedule();
-  }, true);
   // case: follow the phone model the shopper picks
   document.querySelectorAll("select.model").forEach(function (sel) {
     /* one clean preview frame for every model (iPhone 16 Pro) */
@@ -214,7 +223,7 @@
   // ---- order: a photo is needed, and the design goes along with the order ----
   function summary() {
     var st = STYLES.filter(function (x) { return x[0] === S.style; })[0][1];
-    return [st, S.name ? "Name: " + S.name : "", S.style !== "wrap" && S.style !== "full" ? "Background: " + (BGS.filter(function (x) { return x[0] === S.bg; })[0] || [0, S.bg])[1] : "", KIND === "mug" && !S.both ? "One side" : "", "Ref " + S.ref].filter(Boolean).join(" | ");
+    return [st, S.name ? "Name: " + S.name : "", S.style !== "wrap" && S.style !== "full" ? "Background: " + (BGS.filter(function (x) { return x[0] === S.bg; })[0] || [0, S.bg])[1] : "", "Ref " + S.ref].filter(Boolean).join(" | ");
   }
   function printBlob() {
     var src = KIND === "mug" ? (drawMug(), mugPrint) : (drawCase(), casePrint);
@@ -265,7 +274,7 @@
       '<button class="ask" type="button" data-next style="width:100%">I\'ve sent it, continue to payment</button>' +
       '<p class="pm-small" style="margin-top:10px">Your photo is used only to print your order.</p></div>';
     document.body.appendChild(wrap); document.body.classList.add("co-lock");
-    wrap.querySelector("img").src = KIND === "mug" ? mugOut.toDataURL("image/jpeg", 0.85) : pv.toDataURL("image/jpeg", 0.85);
+    wrap.querySelector("img").src = KIND === "mug" ? two.toDataURL("image/jpeg", 0.85) : pv.toDataURL("image/jpeg", 0.85);
     function close() { wrap.remove(); document.body.classList.remove("co-lock"); }
     function swap(on, off) { wrap.querySelector(on).className = "buy"; wrap.querySelector(off).className = "ask"; }
     wrap.querySelectorAll("[data-x]").forEach(function (x) { x.addEventListener("click", close); });
