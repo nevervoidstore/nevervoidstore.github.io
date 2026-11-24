@@ -1,5 +1,6 @@
 // Trust & policy pages. Fill CONTACT, then rebuild. Empty values are left out of the pages.
 const CONTACT = {
+  adminSheet: "",   // link to the admin Google Sheet (shared "Anyone with the link: Viewer")
   businessName: "NevervoidStore",
   legalName: "Nevervoid Photography",
   founder: "Antony Pratap",

@@ -8,7 +8,9 @@ faq=[("Can each employee get a different design?","Yes. With team pet mugs, ever
 ("What if a mug arrives broken?","Send a photo within 48 hours of delivery and we'll replace that piece free."),
 ("Do you provide an invoice?","Yes, every order comes with a bill for your records. We’re a new business and not GST-registered yet, so our bills don’t include GST and can’t be used to claim input tax credit. Ask us if your finance team needs a GST invoice."),
 ("What is the minimum order for corporate gifts?","The minimum order is 25 pieces. Prices start at ₹379 per mug for 25–49 pieces and drop to ₹319 per mug for 100 or more.")]
-ld=[{"@context":"https://schema.org","@type":"Service","name":"Corporate Christmas gifting","serviceType":"Custom printed corporate gifts","areaServed":[{"@type":"City","name":"Bengaluru"},{"@type":"City","name":"Chennai"},{"@type":"City","name":"Mumbai"},{"@type":"City","name":"Hyderabad"},{"@type":"City","name":"Kochi"}],
+import json as _j, subprocess as _sp
+CITIES=_j.loads(_sp.run(["node","-e","console.log(JSON.stringify(require('./src/admin.js').cities.names))"],capture_output=True,text=True,cwd=__import__("os").path.dirname(__import__("os").path.abspath(__file__))+"/..").stdout)
+ld=[{"@context":"https://schema.org","@type":"Service","name":"Corporate Christmas gifting","serviceType":"Custom printed corporate gifts","areaServed":[{"@type":"City","name":c} for c in CITIES],
  "provider":{"@type":"Organization","name":"NevervoidStore","url":B+"/","founder":{"@type":"Person","name":"Antony Pratap"},"parentOrganization":{"@type":"Organization","name":"Nevervoid Photography"},"sameAs":["https://instagram.com/nevervoidstore"]},
  "offers":{"@type":"AggregateOffer","priceCurrency":"INR","lowPrice":"319","highPrice":"549","offerCount":"3"}},
  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for q,a in faq]},

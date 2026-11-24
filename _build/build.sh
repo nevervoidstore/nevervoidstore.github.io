@@ -2,9 +2,11 @@
 # Full site build. Always run this, never the steps on their own: build.js clears site/, so images must be regenerated after it.
 set -e
 cd "$(dirname "$0")"
+node src/sheet.js
 node src/build.js
 python3 src/corp.py
 node src/prices.js
+node src/apply_admin.js
 node src/images.js
 node src/version_assets.js > /dev/null
 test -f site/images/og-home.jpg

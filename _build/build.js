@@ -3,6 +3,7 @@
 const fs = require("fs"), path = require("path");
 const SRC = __dirname, OUT = path.join(SRC, "..", "site");
 const BASE = "https://nevervoidstore.com";
+const ADMIN = require("./admin.js");
 const TODAY = "2026-11-03";
 
 // ---- load drawing code + products from the original catalogue ----
@@ -66,12 +67,17 @@ for (let i = PRODUCTS.length - 1; i >= 0; i--) if (HIDDEN.has(PRODUCTS[i].id)) P
 const MASTER_MODELS = REAL[0].models;
 PRODUCTS.forEach(p => { if (p.type === "case" && !p.models) { p.models = MASTER_MODELS; p.imgFor = null; } });
 // Razorpay Payment Page item field for each product (field label lowercased, spaces -> underscores)
+// prices and hidden products from the Sheet (the pet makers can't be hidden: other pages link to them)
+PRODUCTS.forEach(p => { const o = ADMIN.PRICES[p.id] || ADMIN.PRICES[p.slug]; if (o && o.price) p.price = o.price; });
+for (let i = PRODUCTS.length - 1; i >= 0; i--) { const q = PRODUCTS[i], o = ADMIN.PRICES[q.id] || ADMIN.PRICES[q.slug]; if (o && !o.show && q.id !== "mug-custom" && q.id !== "case-custom") PRODUCTS.splice(i, 1); }
+if (process.env.NV_DUMP) require("fs").writeFileSync(process.env.NV_DUMP, JSON.stringify(PRODUCTS.map(p => [p.slug, p.name, p.price])));   // used to make the admin Sheet template
 PRODUCTS.forEach(p => { p.rzpItem = p.type === "mug" ? (p.id === "mug-custom" ? "custom_pet_mug" : "ceramic_mug") : (p.id === "case-custom" ? "custom_phone_case" : "glass_phone_case"); });
 
 const IPHONES = ["iPhone 17 Pro Max","iPhone 17 Pro","iPhone 17","iPhone Air","iPhone 16 Pro Max","iPhone 16 Pro","iPhone 16","iPhone 15 Pro Max","iPhone 15 Pro","iPhone 15","iPhone 14 Pro","iPhone 14","iPhone 13"];
 const rupee = n => "₹" + n.toLocaleString("en-IN");
 // ---- SEASON SALE: change pct/ends or set on:false, then rebuild ----
-const SALE = { on: true, pct: 20, ends: "2026-12-25", label: "Christmas Sale" };
+// sale, prices, delivery cities, Christmas cut-off and reviews come from the owner's Google Sheet (admin.js / sheet.js)
+const SALE = ADMIN.SALE;
 const salePrice = p => SALE.on ? Math.floor(p.price * (1 - SALE.pct/100) / 10) * 10 + 9 : p.price;
 const priceHtml = (p, cls="price") => SALE.on
   ? `<div class="${cls}"><span class="was">${rupee(p.price)}</span> <span class="now">${rupee(salePrice(p))}</span></div>`
@@ -1344,6 +1350,20 @@ function galleryHtml(p) {
 }
 function petGal(p, html) { const h = petHost(p); return h ? html.replace(/<\/div>$/, h + "</div>") : html; }
 
+// ---------- reviews (approved in the Sheet) ----------
+function reviewsFor(p) {
+  const n = p.name.toLowerCase(), sl = p.slug;
+  return ADMIN.REVIEWS.filter(r => { const t = r.product.toLowerCase(); return t && (t.includes(sl) || t.includes(n) || n.includes(t)); });
+}
+function stars(n) { return `<span class="rv-stars" aria-label="${n} out of 5 stars">${"★".repeat(n)}<span>${"★".repeat(5 - n)}</span></span>`; }
+function reviewCards(list) {
+  return list.map(r => `<figure class="rv"><div>${stars(r.rating)}</div><blockquote>${esc(r.text)}</blockquote><figcaption>${esc(r.name)}${r.city ? ", " + esc(r.city) : ""}</figcaption></figure>`).join("");
+}
+function reviewsBlock(list, title) {
+  if (!list.length) return "";
+  const avg = list.reduce((a, r) => a + r.rating, 0) / list.length;
+  return `<section class="rvs"><h2>${title}</h2><p class="rv-sum">${stars(Math.round(avg))} <b>${avg.toFixed(1)}</b> from ${list.length} review${list.length > 1 ? "s" : ""}</p><div class="rv-list">${reviewCards(list.slice(0, 6))}</div></section>`;
+}
 function productPage(p) {
   const url = `${BASE}/products/${p.slug}.html`, img = `${BASE}/images/share/${p.slug}.jpg`;
   const imgs = p.photoMug ? [img, `${BASE}/images/mugs/${p.slug}-b.webp`, `${BASE}/images/mugs/${p.slug}-a.webp`] : [img];
@@ -1364,6 +1384,9 @@ function productPage(p) {
       {"@type":"ListItem","position":2,"name":catLabel(p)+" gifts","item":BASE+"/#"+p.cat},
       {"@type":"ListItem","position":3,"name":p.name,"item":url}]}
   ];
+  { const rv = reviewsFor(p); if (rv.length) Object.assign(jsonld[0], {   // star ratings in Google, only from real approved reviews
+      "aggregateRating":{"@type":"AggregateRating","ratingValue":(rv.reduce((a, r) => a + r.rating, 0) / rv.length).toFixed(1),"reviewCount":String(rv.length)},
+      "review":rv.slice(0, 5).map(r => ({"@type":"Review","reviewRating":{"@type":"Rating","ratingValue":String(r.rating)},"author":{"@type":"Person","name":r.name},"reviewBody":r.text})) }); }
   const specs = p.type === "case"
     ? [["Type","Glass phone case"],["Models",`${p.models.length} models: iPhone 11 to iPhone 17 Pro Max, Galaxy S22 Ultra to S25, OnePlus 11 to 12R`],["Print","Full-colour design, printed to order"],["Delivery","5–9 days"],["Delivers to","Bengaluru, Chennai, Mumbai, Hyderabad, Kochi"]]
     : p.type === "mug"
@@ -1395,6 +1418,7 @@ ${header("../","")}
       </div>
       ${p.steps ? `<div class="pdp-steps"><h2>How it works</h2><ol><li>Upload a clear, well-lit photo of your pet.</li><li>Pick a style, move and zoom the photo, and add their name if you like.</li><li>Order, and send us your design in the same step.</li><li>We print exactly what you see and deliver in 5–9 days.</li></ol></div>` : ""}
       <div class="specs"><h2>Details</h2><dl>${specs.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>
+      ${reviewsBlock(reviewsFor(p), "What customers say")}
     </div>
   </section>
   <section class="related">
@@ -1407,7 +1431,7 @@ ${footer("../")}`;
 
 function indexPage() {
   const title = "Christmas Mugs, Pet Mugs & Phone Cases | NevervoidStore Bengaluru";
-  const desc = (SALE.on ? SALE.label + ": " + SALE.pct + "% off. " : "") + "Made-to-order Christmas mugs, pet mugs, custom pet portrait gifts and phone cases. Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Order by 12 December for Christmas.";
+  const desc = (SALE.on ? SALE.label + ": " + SALE.pct + "% off. " : "") + "Made-to-order Christmas mugs, pet mugs, custom pet portrait gifts and phone cases. Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi. Order by 14 December for Christmas.";
   const jsonld = [
     Object.assign({"@context":"https://schema.org"}, org),
     {"@context":"https://schema.org","@type":"WebSite","name":"Nevervoid Store","url":BASE+"/"},
@@ -1448,6 +1472,7 @@ ${header("","shop")}
 ${(() => { const list = PRODUCTS.filter(p => !p.collection).map(p => card(p, "")); list.splice(0, 0, nameMugCard("")); list.splice(1, 0, wishCard("")); list.splice(2, 0, familyCard("")); list.splice(2, 0, initialsCard("")); list.splice(4, 0, casesCard("")); return list.join("\n"); })()}
     </div>
   </div>
+  <div class="wrap">${reviewsBlock(ADMIN.REVIEWS, "Loved by our customers")}</div>
   <section class="band">
     <div class="wrap">
       <h2>How ordering works</h2>

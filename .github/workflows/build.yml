@@ -1,0 +1,73 @@
+# Rebuilds the store from _build/ and the admin Google Sheet, then publishes it.
+# Runs every night (about 2 AM India time), whenever _build/ changes, and when you press
+# "Run workflow" on GitHub (Actions tab -> "Rebuild store" -> Run workflow).
+name: Rebuild store
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 20 * * *"   # 20:30 UTC = 02:00 IST
+  push:
+    branches: [main]
+    paths: ["_build/**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Prepare build folder
+        run: |
+          mkdir -p "$RUNNER_TEMP/work"
+          cp -r _build "$RUNNER_TEMP/work/src"
+          mv "$RUNNER_TEMP/work/src/build.sh" "$RUNNER_TEMP/work/build.sh"
+          chmod +x "$RUNNER_TEMP/work/build.sh"
+
+      - name: Install Playwright (for share images)
+        working-directory: ${{ runner.temp }}/work
+        run: |
+          npm init -y > /dev/null
+          npm install playwright@1 > /dev/null
+          npx playwright install --with-deps chromium
+
+      - name: Build
+        working-directory: ${{ runner.temp }}/work
+        run: ./build.sh
+
+      - name: Copy changed files into the site
+        run: |
+          W="$RUNNER_TEMP/work"
+          cp "$W/src/admin-data.json" _build/admin-data.json
+          cd "$W/site"
+          find . -type f | while read -r f; do
+            if ! cmp -s "$f" "$GITHUB_WORKSPACE/$f"; then
+              mkdir -p "$GITHUB_WORKSPACE/$(dirname "$f")"
+              cp "$f" "$GITHUB_WORKSPACE/$f"
+            fi
+          done
+
+      - name: Publish if anything really changed
+        run: |
+          # share images re-render with tiny byte differences every run; only publish them along with a real change
+          if git status --porcelain | grep -v ' images/share/' | grep -q .; then
+            git config user.name "NevervoidStore bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Rebuild from admin Sheet ($(date -u +%F))"
+            git push
+          else
+            echo "No changes to publish."
+          fi

@@ -95,3 +95,12 @@ footer a{font-weight:700;color:var(--ink)}
 .trust2 li{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;color:#3f4a44}
 .trust2 a{color:inherit;text-decoration:none}
 @media (max-width:640px){.pz{grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}.pz-t span{font-size:13.5px}.hero2{padding-top:22px}.trust2 li{font-size:12px;padding:6px 11px}}
+
+/* reviews */
+.rvs{margin:28px 0 8px}.rvs h2{font-family:Fraunces,serif;font-size:24px;margin:0 0 6px}
+.rv-sum{margin:0 0 14px;color:var(--muted);font-size:14px}.rv-sum b{color:var(--ink)}
+.rv-stars{color:#e0a526;letter-spacing:1px}.rv-stars span{color:#d8d0c2}
+.rv-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.rv{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.rv blockquote{margin:6px 0 8px;font-size:15px;line-height:1.45}
+.rv figcaption{font-size:13px;color:var(--muted);font-weight:600}

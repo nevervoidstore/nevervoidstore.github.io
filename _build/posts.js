@@ -38,7 +38,7 @@ module.exports = [
 </ul>
 
 <h2>4. Order early</h2>
-<p>Made-to-order gifts need a few days to print and a few more to ship. For delivery before Christmas, aim to order by <strong>12 December</strong>. Custom pet portraits need a little extra time for you to approve the preview.</p>
+<p>Made-to-order gifts need a few days to print and a few more to ship. For delivery before Christmas, aim to order by <strong>14 December</strong>. Custom pet portraits need a little extra time for you to approve the preview.</p>
 
 <p>Buying for the whole team rather than one person? Bulk orders get lower prices per piece.</p>
 {{cta:corporate}}

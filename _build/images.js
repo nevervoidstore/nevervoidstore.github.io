@@ -1,4 +1,4 @@
-const {chromium}=require('playwright');const fs=require('fs');
+const {chromium}=require('playwright');const fs=require('fs');const ADMIN=require('./admin.js');
 const items=JSON.parse(fs.readFileSync('src/images.json','utf8'));
 const by=s=>{const i=items.find(i=>i.slug===s);return i?i.art:'';};
 const uri=f=>`<img src="data:image/webp;base64,${fs.readFileSync(f).toString('base64')}" style="width:100%;display:block">`;
@@ -34,7 +34,7 @@ const escH=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 for(const it of items){
   const img=fs.readFileSync(`site/images/products/${it.slug}.jpg`).toString('base64');
   const price=it.sale?`<b>${rup(it.sale)}</b><s>${rup(it.price)}</s>`:`<b>${rup(it.price)}</b>`;
-  await sp.setContent(`<html><head>${fonts}<style>
+  await sp.setContent(ADMIN.replaceText(`<html><head>${fonts}<style>
   body{margin:0;width:1200px;height:630px;display:flex;background:#fbf6ec;font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#1c2420}
   .pic{width:630px;height:630px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .pic img{width:630px;height:630px;object-fit:contain}
@@ -46,7 +46,7 @@ for(const it of items){
   .sale{display:inline-block;align-self:flex-start;margin-top:16px;background:#a8332f;color:#fff;font-weight:700;font-size:20px;padding:8px 16px;border-radius:99px}
   .foot{margin-top:auto;font-size:19px;color:#4c5a52}</style></head><body>
   <div class="pic"><img src="data:image/jpeg;base64,${img}"></div>
-  <div class="txt"><div class="brand">NevervoidStore</div><div class="type">${escH(it.type)}</div><h1>${escH(it.name)}</h1><div class="price">${price}</div>${it.sale?`<div class="sale">Christmas Sale · ${it.pct}% off</div>`:''}<div class="foot">Made to order · Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi · nevervoidstore.com</div></div></body></html>`);
+  <div class="txt"><div class="brand">NevervoidStore</div><div class="type">${escH(it.type)}</div><h1>${escH(it.name)}</h1><div class="price">${price}</div>${it.sale?`<div class="sale">${ADMIN.SALE.label} · ${it.pct}% off</div>`:''}<div class="foot">Made to order · Delivered to Bengaluru, Chennai, Mumbai, Hyderabad and Kochi · nevervoidstore.com</div></div></body></html>`));
   await sp.waitForTimeout(120);
   await sp.screenshot({path:`site/images/share/${it.slug}.jpg`,type:'jpeg',quality:86});
 }
