@@ -28,7 +28,8 @@
   try { seen = sessionStorage.getItem("wa-seen") === "1"; } catch (e) {}
   function show(){ card.classList.add("show"); }
   function hide(){ card.classList.remove("show"); try { sessionStorage.setItem("wa-seen","1"); } catch (e) {} }
-  if (!seen) setTimeout(show, 5000);
+  // stay quiet on pages where people are designing or buying, and while the page guide is showing
+  if (!seen && !document.querySelector(".buybox, .cm-form, [data-petmaker]")) setTimeout(function () { if (!window.nvGuideOn) show(); }, 5000);
   wrap.querySelector(".wa-x").addEventListener("click", hide);
   wrap.querySelector(".wa-go").addEventListener("click", hide);
   // phones: step aside while the "Previous / Next design" buttons are on screen, so it never covers them

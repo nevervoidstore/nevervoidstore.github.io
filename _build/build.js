@@ -175,6 +175,7 @@ function footer(root) {
 <div class="toast" id="toast"></div>
 <script src="${root}assets/store.js"></script>
 <script defer src="${root}assets/report.js"></script>
+<script defer src="${root}assets/guide.js"></script>
 </body>
 </html>`;
 }
@@ -1552,6 +1553,7 @@ fs.writeFileSync(path.join(OUT,"assets","store.css"), fs.readFileSync(path.join(
 fs.writeFileSync(path.join(OUT,"assets","store.js"), storeJs.replace("__WA__", POL.CONTACT.whatsapp).replace("__RZP__", POL.CONTACT.razorpayPage || "").replace("__RZPPAGES__", JSON.stringify(POL.CONTACT.rzpPages || {})).replace("__API__", (POL.CONTACT.checkoutApi || process.env.CHECKOUT_ON) ? TEAM_API : ""));
 fs.writeFileSync(path.join(OUT,"assets","festive.css"), fs.readFileSync(path.join(SRC,"festive.css"),"utf8"));
 fs.copyFileSync(path.join(SRC,"mug3d.js"), path.join(OUT,"assets","mug3d.js"));
+fs.copyFileSync(path.join(SRC,"guide.js"), path.join(OUT,"assets","guide.js"));
 fs.writeFileSync(path.join(OUT,"assets","report.js"), fs.readFileSync(path.join(SRC,"report.js"),"utf8").replace("__WA__", POL.CONTACT.whatsapp));
 fs.writeFileSync(path.join(OUT,"assets","chat.js"), fs.readFileSync(path.join(SRC,"chat.js"),"utf8").replace("__WA__", require(path.join(SRC,"policies.js")).CONTACT.whatsapp));
 fs.writeFileSync(path.join(OUT,"assets","festive.js"), fs.readFileSync(path.join(SRC,"festive.js"),"utf8").replace("__SALE__", JSON.stringify(SALE)));

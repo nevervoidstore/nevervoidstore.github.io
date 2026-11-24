@@ -40,6 +40,9 @@
     "#pmcanvas{position:absolute;inset:28px;width:calc(100% - 56px);height:calc(100% - 56px);object-fit:contain}" +
     ".pm-gup{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#2f5d46;color:#fff;border:0;border-radius:999px;padding:12px 18px;font:inherit;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.18);cursor:pointer}" +
     ".pm-up[hidden],.pm-gup[hidden],.pm[hidden]{display:none}" +
+    ".pm-load{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(255,253,248,.82);border-radius:inherit;z-index:3;font-size:15px}" +
+    ".pm-load[hidden]{display:none}.pm-spin{width:34px;height:34px;border-radius:50%;border:3px solid #d8d0c2;border-top-color:#2f5d46;animation:pmSpin .8s linear infinite}" +
+    "@keyframes pmSpin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.pm-spin{animation-duration:2s}}" +
     ".pm-need{outline:3px solid #c0392b;outline-offset:3px;border-radius:18px}";
   document.head.appendChild(css);
 
@@ -81,10 +84,19 @@
     else if (b.dataset.a === "reset") { S.zoom = 1; S.ox = 0; S.oy = 0; drawCtrls(); schedule(); }
   });
 
+  // ---- "adding your photo" while it loads ----
+  var spin = el("div", "pm-load", '<span class="pm-spin" aria-hidden="true"></span><b>Adding your photo…</b>');
+  spin.setAttribute("role", "status"); spin.hidden = true;
+  if (gallery) gallery.appendChild(spin);
+  function loading(on) {
+    spin.hidden = !on; up.disabled = on; gup.disabled = on;
+    up.querySelector("b").textContent = on ? "Adding your photo…" : "Upload your pet's photo";
+  }
   // ---- photo in ----
   file.addEventListener("change", function () {
     var f = file.files && file.files[0]; if (!f) return;
     if (!/^image\//.test(f.type) && !/\.(heic|heif)$/i.test(f.name)) { alert("Please choose a photo (JPG or PNG)."); return; }
+    loading(true);
     var url = URL.createObjectURL(f), im = new Image();
     im.onload = function () {
       // keep up to 2400 px on the long side: plenty for print, light enough for phones
@@ -95,9 +107,9 @@
       S.ref = "PET-" + Math.random().toString(36).slice(2, 6).toUpperCase();
       up.hidden = true; gup.hidden = true; ctrls.hidden = false; root.classList.remove("pm-need");
       if (gallery) gallery.classList.add("pm-on");
-      drawCtrls(); schedule(); track("CustomizeProduct", { content_name: "pet_" + KIND });
+      drawCtrls(); S.pending = true; schedule(); track("CustomizeProduct", { content_name: "pet_" + KIND });
     };
-    im.onerror = function () { URL.revokeObjectURL(url); alert("Sorry, that photo couldn't be opened. Please try a JPG or PNG."); };
+    im.onerror = function () { loading(false); URL.revokeObjectURL(url); alert("Sorry, that photo couldn't be opened. Please try a JPG or PNG."); };
     im.src = url; file.value = "";
   });
 
@@ -199,7 +211,7 @@
     });
   }
   var queued = false, busy = false;
-  function schedule() { if (queued) return; queued = true; requestAnimationFrame(function () { queued = false; if (busy) { schedule(); return; } busy = true; preview().catch(function () {}).then(function () { busy = false; }); }); }
+  function schedule() { if (queued) return; queued = true; requestAnimationFrame(function () { queued = false; if (busy) { schedule(); return; } busy = true; preview().catch(function () {}).then(function () { busy = false; if (S.pending) { S.pending = false; loading(false); document.dispatchEvent(new Event("nv:pm-photo")); } }); }); }
 
   // drag to move
   if (gallery) {
