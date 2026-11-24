@@ -65,7 +65,7 @@ jobs:
       - name: Publish if anything really changed
         run: |
           # share images re-render with tiny byte differences every run; only publish them along with a real change
-          if git status --porcelain | grep -v ' images/share/' | grep -q .; then
+          if git status --porcelain | grep -v -E ' images/(share/|og-)' | grep -q .; then
             git config user.name "NevervoidStore bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
