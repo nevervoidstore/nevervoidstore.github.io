@@ -28,11 +28,11 @@
     if (orig.indexOf("data:") === 0) return; el.dataset.orig = orig;
     var k = cur; recolour(orig, k).then(function (s) { if (k === cur && el.dataset.orig === orig) { el.dataset.painting = "1"; el.src = s; } });
   }
-  function apply() { imgs().forEach(paint); btns.forEach(function (b) { b.dataset.name = b.dataset.baseName + (cur === "white" ? "" : " | " + label(cur)); }); row.querySelector(".mc-name").textContent = label(cur); }
+  function apply() { imgs().forEach(paint); btns.forEach(function (b) { var want = b.dataset.baseName + (cur === "white" ? "" : " | " + label(cur)); if (b.dataset.name !== want) b.dataset.name = want; }); row.querySelector(".mc-name").textContent = label(cur); }
   row.addEventListener("click", function (e) { var b = e.target.closest(".cm-color"); if (!b) return; cur = b.dataset.c; row.querySelectorAll(".cm-color").forEach(function (x) { var on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-checked", on); }); apply(); });
   // when the page swaps the photo (view buttons, letter picker), colour the new one too
   var mo = new MutationObserver(function (list) { list.forEach(function (m) { var el = m.target; if (el.dataset.painting) { delete el.dataset.painting; return; } if (el.src.indexOf("data:") !== 0) { el.dataset.orig = el.getAttribute("src"); if (cur !== "white") paint(el); } }); });
   imgs().forEach(function (el) { mo.observe(el, { attributes: true, attributeFilter: ["src"] }); });
   // names in the order may also be changed by other scripts (initial letter): keep the colour on the end
-  btns.forEach(function (b) { new MutationObserver(function () { var n = b.dataset.name, suf = cur === "white" ? "" : " | " + label(cur); if (suf && n.slice(-suf.length) === suf) return; b.dataset.baseName = n.replace(/ \| [A-Za-z ]+ handle & inside$/, ""); b.dataset.name = b.dataset.baseName + suf; }).observe(b, { attributes: true, attributeFilter: ["data-name"] }); });
+  btns.forEach(function (b) { new MutationObserver(function () { var n = b.dataset.name, suf = cur === "white" ? "" : " | " + label(cur); if (suf && n.slice(-suf.length) === suf) return; b.dataset.baseName = n.replace(/ \| [A-Za-z ]+ handle & inside$/, ""); var want = b.dataset.baseName + suf; if (n !== want) b.dataset.name = want; }).observe(b, { attributes: true, attributeFilter: ["data-name"] }); });
 })();
