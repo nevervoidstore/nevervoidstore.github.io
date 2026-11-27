@@ -3,11 +3,12 @@
 set -e
 cd "$(dirname "$0")"
 node src/sheet.js
-node src/build.js
+NV_DUMP=src/.products.json node src/build.js
 python3 src/corp.py
 node src/prices.js
 node src/apply_admin.js
 node src/images.js
+node src/google_feed.js
 node src/version_assets.js > /dev/null
 node src/check_watermarks.js
 test -f site/images/og-home.jpg
