@@ -3,7 +3,7 @@
 ## THE RULES (never skip, never forget)
 1. **Every public design image is watermarked.** New mugs are added only with `add_mug.py` (or `mug_printrove.py`), which watermark the design preview and register it in `watermarked.json`. `build.sh` refuses to publish if any mug design preview is not registered. Never make or copy design images by hand.
 2. **Print files and full-size artwork never go public.** `*-print.png` and `realmugs/` stay git-ignored; public images are screen-sized (max 1200×1600).
-3. **Mug artwork stays exactly as uploaded to Printrove.** Prefer Printrove's own mock-ups for the product photos.
+3. **Mug artwork stays exactly as uploaded to Printrove.** Prefer Printrove's own mock-ups for the product photos, cropped (never resized) to the same framing as every other mug, or the handle/inside colour options won't line up. `add_mug.py` does this. After adding a mug, check it with a coloured handle (e.g. Red).
 4. **Never mention AI, the supplier, or where/how products are made.** No fake reviews.
 5. **Always pull the repo and copy `_build` first** (other sessions may have changed it), then build with `build.sh` and copy only changed files.
 6. **Don't change prices, descriptions, checkout or Razorpay** without the owner's approval.
