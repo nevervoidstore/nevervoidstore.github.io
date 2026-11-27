@@ -93,6 +93,14 @@ def watermark(img, text="NevervoidStore", size=None, alpha=34):
     tile = tile.rotate(24, resample=Image.BICUBIC).crop((W // 2, H // 2, W // 2 + W, H // 2 + H))
     return Image.alpha_composite(im.convert("RGBA"), tile).convert("RGB")
 
+def register_watermarked(path):
+    """Record a watermarked public image in watermarked.json. build.sh refuses to publish any mug design preview not listed."""
+    import json, hashlib
+    reg = os.path.join(HERE, "watermarked.json")
+    d = json.load(open(reg)) if os.path.exists(reg) else {}
+    d[os.path.basename(path)] = hashlib.sha256(open(path, "rb").read()).hexdigest()
+    json.dump(dict(sorted(d.items())), open(reg, "w"), indent=1)
+
 def blank(view):
     """Printrove photo with its sample print removed (only inked pixels are rebuilt)."""
     if view in _blank_cache: return _blank_cache[view]
@@ -185,6 +193,7 @@ if __name__ == "__main__":
         finalize(render(w, view), view).save(f"{prefix}-{view}.webp", "WEBP", quality=90, method=6)
     flat = pr.copy(); flat.thumbnail((1000, 500), Image.LANCZOS)
     watermark(flat).save(f"{prefix}-flat.webp", "WEBP", quality=80, method=6)
+    register_watermarked(f"{prefix}-flat.webp")
     tex = pr.convert("RGB").resize((1024, 458), Image.LANCZOS)          # 3D preview texture: no watermark, screen resolution only (~120 dpi at print size)
     tex.save(f"{prefix}-wrap.webp", "WEBP", quality=80, method=6)
     print("ok", prefix)

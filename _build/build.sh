@@ -9,6 +9,7 @@ node src/prices.js
 node src/apply_admin.js
 node src/images.js
 node src/version_assets.js > /dev/null
+node src/check_watermarks.js
 test -f site/images/og-home.jpg
 n=$(ls site/images/share | wc -l); p=$(ls site/products | wc -l)
 [ "$n" -eq "$p" ] || { echo "share images: $n, product pages: $p"; exit 1; }

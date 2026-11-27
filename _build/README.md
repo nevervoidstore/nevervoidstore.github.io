@@ -1,5 +1,17 @@
 # Site build sources
 
+## THE RULES (never skip, never forget)
+1. **Every public design image is watermarked.** New mugs are added only with `add_mug.py` (or `mug_printrove.py`), which watermark the design preview and register it in `watermarked.json`. `build.sh` refuses to publish if any mug design preview is not registered. Never make or copy design images by hand.
+2. **Print files and full-size artwork never go public.** `*-print.png` and `realmugs/` stay git-ignored; public images are screen-sized (max 1200×1600).
+3. **Mug artwork stays exactly as uploaded to Printrove.** Prefer Printrove's own mock-ups for the product photos.
+4. **Never mention AI, the supplier, or where/how products are made.** No fake reviews.
+5. **Always pull the repo and copy `_build` first** (other sessions may have changed it), then build with `build.sh` and copy only changed files.
+6. **Don't change prices, descriptions, checkout or Razorpay** without the owner's approval.
+
+## Adding a new mug
+`python3 _build/add_mug.py <slug> <print.png> <printrove-front.png> <printrove-back.png>`, add the product to `realmugs.js`, then run `build.sh`.
+
+
 Pages are generated, not hand-edited.
 
 1. `node _build/build.js` (writes ./site from draw.js + products.js + base.css)
