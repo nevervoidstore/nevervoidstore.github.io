@@ -105,7 +105,7 @@ module.exports = [
   { slug: "i-regret-nothing-christmas-cat-mug", view: "a", name: "I Regret Nothing Christmas Cat Mug", cats: ["christmas", "pets"], isNew: true,
     desc: "An orange cat caught knocking over the milk.",
     long: "An orange cat in a Santa hat, mid-crime, tipping over the milk next to the cookies, with a cosy Christmas kitchen behind: “I regret nothing”. A wraparound design on an 11oz ceramic mug." },
-  { slug: "im-long-for-the-holidays-dachshund-mug", name: "I'm Long for the Holidays Dachshund Mug", cats: ["christmas", "pets"], isNew: true,
+  { slug: "sausage-dog-christmas-mug", name: "Sausage Dog Christmas Mug", cats: ["christmas", "pets"], isNew: true,
     desc: "A very long dachshund in a very long Christmas scarf.",
     long: "A smiling long-haired dachshund stretched all the way round the mug, wrapped in a red-and-cream striped scarf with a sprig of holly: “I'm long for the holidays!”. A wraparound design on an 11oz ceramic mug, for sausage-dog lovers at Christmas." },
   { slug: "cat-lady-in-bloom-mug", name: "Cat Lady in Bloom Mug", cats: ["pets"], isNew: true,
