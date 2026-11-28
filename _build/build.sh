@@ -9,6 +9,7 @@ node src/prices.js
 node src/apply_admin.js
 node src/images.js
 node src/google_feed.js
+(cd site && python3 ../src/catalog_feed.py)
 node src/version_assets.js > /dev/null
 node src/check_watermarks.js
 test -f site/images/og-home.jpg
